@@ -1,9 +1,10 @@
 <script>
+    import SmartLink from '@lib/SmartLink.svelte';
     import '../app.postcss';
 </script>
 
 <nav>
-    <a href="/pack">packs</a>
+    <SmartLink href="/pack">packs</SmartLink>
 </nav>
 
 <slot />
