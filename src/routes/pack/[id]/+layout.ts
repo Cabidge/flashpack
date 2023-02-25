@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { invoke } from '@tauri-apps/api';
-import type { Card } from '../../../bindings/Card';
-import type { Pack } from '../../../bindings/Pack';
+import type { Card } from '@bindings/Card';
+import type { Pack } from '@bindings/Pack';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ params }) => {
