@@ -1,12 +1,15 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import type { Pack } from '@bindings/Pack';
 
     export let pack: Pack;
-    export let selectedId: undefined | string;
 
-    $: classes = selectedId === pack.id ? 'font-bold' : '';
+    $: href = `/pack/${pack.id}`;
+    $: selected = $page.url.pathname.startsWith(href);
+
+    $: classes = selected ? 'font-bold' : '';
 </script>
 
-<a href="/pack/{pack.id}" class={classes}>
+<a {href} class={classes}>
     {pack.title}
 </a>
