@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { LayoutData } from './$types';
-    import CreatePack from './CreatePack.svelte';
-    import PackSelector from './PackSelector.svelte';
+    import CreatePack from '@lib/CreatePack.svelte';
+    import PackSelector from '@lib/PackSelector.svelte';
 
     export let data: LayoutData;
 

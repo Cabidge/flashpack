@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { PageData } from './$types';
-    import RenamePack from './RenamePack.svelte';
+    import RenamePack from '@lib/RenamePack.svelte';
 
     export let data: PageData;
 
