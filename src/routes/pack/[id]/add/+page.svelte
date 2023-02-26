@@ -2,7 +2,7 @@
     import { goto, invalidateAll } from '$app/navigation';
     import { page } from '$app/stores';
     import { invoke } from '@tauri-apps/api';
-    import type { CardAdd } from '../../../../bindings/CardAdd';
+    import type { CardAdd } from '@bindings/CardAdd';
 
     $: id = $page.params.id;
 
