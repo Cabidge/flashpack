@@ -2,6 +2,7 @@
     import { invalidateAll } from '$app/navigation';
     import type { PackCreate } from '@bindings/PackCreate';
     import { invoke } from '@tauri-apps/api';
+    import { createPack } from './commands';
     import Modal from './Modal.svelte';
 
     let active = false;
@@ -17,9 +18,7 @@
     const submit = async () => {
         active = false;
 
-        const pack: PackCreate = { title };
-        await invoke('create_pack', { pack });
-
+        await createPack({ title });
         await invalidateAll();
     };
 </script>

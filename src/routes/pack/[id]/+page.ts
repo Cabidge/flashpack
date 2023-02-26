@@ -1,16 +1,14 @@
-import type { Card } from '@bindings/Card';
-import type { Pack } from '@bindings/Pack';
-import { invoke } from '@lib/commands';
+import { getPack, invoke, listCards } from '@lib/commands';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params }) => {
     const id = params.id;
 
-    const pack = await invoke<Pack>('get_pack', { id });
-    const cards = await invoke<Card[]>('list_cards', { id });
+    const pack = await getPack(id);
+    const cards = await listCards(id);
 
     return {
         pack,
-        cards
+        cards,
     };
 };
