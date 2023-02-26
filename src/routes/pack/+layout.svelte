@@ -8,25 +8,13 @@
     export let data: LayoutData;
 </script>
 
-<div class="sidebar">
+<div class="w-1/4 max-w-[32rem] float-left overflow-x-hidden">
     <CreatePack />
     <PackSelector packs={$packs.list} disabled={$packs.loading} />
 </div>
 
-<main class="content">
+<main>
     <Transition key={data.href}>
         <slot />
     </Transition>
 </main>
-
-<style lang="postcss">
-    .sidebar {
-        width: min(40vw, 200px);
-        position: absolute;
-    }
-
-    .content {
-        margin-left: min(40vw, 200px);
-        font-size: 18px;
-    }
-</style>
