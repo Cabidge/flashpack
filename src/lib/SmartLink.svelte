@@ -7,11 +7,13 @@
 
     export let href: string;
 
+    export let strict = true;
+
     export let disabled = false;
 
     $: link = disabled ? 'javascript:void(0)' : href;
 
-    $: selected = $page.url.pathname.startsWith(href);
+    $: selected = strict ? $page.url.pathname == href : $page.url.pathname.startsWith(href);
 
     $: classes = `${fixedStyle} ${selected ? selectedStyle : ''} ${disabled ? disabledStyle : ''}`;
 </script>
