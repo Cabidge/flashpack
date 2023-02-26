@@ -9,13 +9,15 @@
     $: packs = data.packs;
 </script>
 
-<div class="w-1/4 max-w-[32rem] float-left overflow-x-hidden">
-    <CreatePack />
-    <PackSelector {packs} />
-</div>
+<div class="flex flex-row h-full">
+    <div class="w-1/3 max-w-[16rem] float-left overflow-x-hidden">
+        <CreatePack />
+        <PackSelector {packs} />
+    </div>
 
-<main>
-    <Transition key={data.href}>
-        <slot />
-    </Transition>
-</main>
+    <main>
+        <Transition key={data.href}>
+            <slot />
+        </Transition>
+    </main>
+</div>

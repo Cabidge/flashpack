@@ -7,19 +7,21 @@
     });
 </script>
 
-<nav class="bg-slate-200 flex pl-2 item-stretch gap-2">
-    {#each routes as route}
-        <SmartLink
-            styling={{
-                base: "h-full p-2",
-                unselected: "hover:bg-slate-300",
-                selected: "bg-slate-400 hover:bg-slate-400",
-            }}
-            href={route[1]}
-        >
-            {route[0]}
-        </SmartLink>
-    {/each}
-</nav>
+<div class="h-screen flex flex-col">
+    <nav class="bg-slate-200 flex pl-2 item-stretch gap-2">
+        {#each routes as route}
+            <SmartLink
+                styling={{
+                    base: "h-full p-2",
+                    unselected: "hover:bg-slate-300",
+                    selected: "bg-slate-400 hover:bg-slate-400",
+                }}
+                href={route[1]}
+            >
+                {route[0]}
+            </SmartLink>
+        {/each}
+    </nav>
 
-<slot />
+    <slot />
+</div>
