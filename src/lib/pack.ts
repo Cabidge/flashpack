@@ -2,7 +2,7 @@ import type { Card } from "@bindings/Card";
 import type { Pack } from "@bindings/Pack";
 import { invoke } from "@tauri-apps/api";
 
-type CardPack = {
+export type CardPack = {
     pack: Pack,
     cards: Card[],
 }

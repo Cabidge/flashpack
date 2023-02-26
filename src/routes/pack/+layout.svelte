@@ -6,7 +6,7 @@
 
 <div class="sidebar">
     <CreatePack />
-    <PackSelector packs={$packs} />
+    <PackSelector packs={$packs.list} disabled={$packs.loading} />
 </div>
 
 <main class="content">

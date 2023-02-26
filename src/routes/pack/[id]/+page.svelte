@@ -1,13 +1,20 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { loadPack } from '@lib/pack';
+    import { loadPack, type CardPack } from '@lib/pack';
+    import { fly } from 'svelte/transition';
 
-    let cardPack = loadPack($page.params.id);
+    let cardPack: CardPack | undefined;
+
+    $: {
+        (async () => {
+            cardPack = await loadPack($page.params.id);
+        })();
+    }
+
+    const transitionDuration = 100;
 </script>
 
-{#await cardPack}
-    <p>Loading...</p>
-{:then cardPack}
+{#if cardPack !== undefined}
     <h1>{cardPack.pack.title} <a href="{$page.url.pathname}/edit">edit</a></h1>
 
     <h2>Cards ({cardPack.cards.length}) <a href="{$page.url.pathname}/add">add</a></h2>
@@ -17,4 +24,4 @@
     {:else}
         <p>Add more cards to begin practicing</p>
     {/if}
-{/await}
+{/if}
