@@ -15,8 +15,10 @@
                 unselected: "hover:bg-slate-300",
                 selected: "bg-slate-400 hover:bg-slate-400",
             }}
-            href={route[1]}>{route[0]}</SmartLink
+            href={route[1]}
         >
+            {route[0]}
+        </SmartLink>
     {/each}
 </nav>
 
