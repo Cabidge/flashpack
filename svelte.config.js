@@ -13,7 +13,9 @@ const config = {
         })
     ],
     kit: {
-        adapter: adapter(),
+        adapter: adapter({
+            fallback: "200.html"
+        }),
         alias: {
             '@lib/*': './src/lib/*',
             '@bindings/*': './src/bindings/*'
