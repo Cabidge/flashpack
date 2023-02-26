@@ -1,18 +1,18 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import UrlMatch from './UrlMatch.svelte';
 
-    export let fixedStyle = '';
-    export let selectedStyle = 'font-bold';
+    export let styling = {
+        base: "",
+        selected: "font-bold",
+        unselected: "",
+    };
 
     export let href: string;
-
     export let strict = true;
-
-    $: selected = strict ? $page.url.pathname == href : $page.url.pathname.startsWith(href);
-
-    $: classes = `${fixedStyle} ${selected ? selectedStyle : ''}`;
 </script>
 
-<a {href} class={classes}>
-    <slot />
-</a>
+<UrlMatch {href} {strict} let:selected>
+    <a {href} class="{styling.base} {selected ? styling.selected : styling.unselected}">
+        <slot />
+    </a>
+</UrlMatch>
