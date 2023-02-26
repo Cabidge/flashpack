@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { loadPack, type CardPack } from '@lib/pack';
-    import { fly } from 'svelte/transition';
 
     let cardPack: CardPack | undefined;
 
@@ -10,8 +9,6 @@
             cardPack = await loadPack($page.params.id);
         })();
     }
-
-    const transitionDuration = 100;
 </script>
 
 {#if cardPack !== undefined}
