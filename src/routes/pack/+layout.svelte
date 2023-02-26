@@ -2,6 +2,10 @@
     import CreatePack from '@lib/CreatePack.svelte';
     import PackSelector from '@lib/PackSelector.svelte';
     import { packs } from '@lib/packs';
+    import Transition from '@lib/Transition.svelte';
+    import type { LayoutData } from './$types';
+
+    export let data: LayoutData;
 </script>
 
 <div class="sidebar">
@@ -10,7 +14,9 @@
 </div>
 
 <main class="content">
-    <slot />
+    <Transition key={data.href}>
+        <slot />
+    </Transition>
 </main>
 
 <style lang="postcss">
