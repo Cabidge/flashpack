@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { Pack } from '@bindings/Pack';
     import { flip } from 'svelte/animate';
-    import { fade } from 'svelte/transition';
+    import { fly } from 'svelte/transition';
     import SmartLink from './SmartLink.svelte';
 
     export let packs: Pack[];
@@ -10,7 +10,8 @@
 <ul class="flex flex-col gap-2 items-stretch m-2">
     {#each packs as pack (pack.id)}
         <li
-            transition:fade={{ duration: 150 }}
+            in:fly={{ x: -10, duration: 150 }}
+            out:fly={{ y: 10, duration: 150 }}
             animate:flip={{ duration: 200 }}
             class="flex items-stretch"
         >
