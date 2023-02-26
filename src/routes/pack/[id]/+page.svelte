@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { loadPack, type CardPack } from '@lib/pack';
 
@@ -6,7 +7,11 @@
 
     $: {
         (async () => {
-            cardPack = await loadPack($page.params.id);
+            try {
+                cardPack = await loadPack($page.params.id);
+            } catch {
+                await goto('/pack');
+            }
         })();
     }
 </script>
