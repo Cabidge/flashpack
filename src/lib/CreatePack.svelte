@@ -1,8 +1,8 @@
 <script lang="ts">
+    import { invalidateAll } from '$app/navigation';
     import type { PackCreate } from '@bindings/PackCreate';
     import { invoke } from '@tauri-apps/api';
     import Modal from './Modal.svelte';
-    import { packs } from './packs';
 
     let active = false;
 
@@ -20,7 +20,7 @@
         const pack: PackCreate = { title };
         await invoke('create_pack', { pack });
 
-        packs.reload();
+        await invalidateAll();
     };
 </script>
 
