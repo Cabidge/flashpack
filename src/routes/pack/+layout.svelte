@@ -1,16 +1,12 @@
 <script lang="ts">
-    import type { LayoutData } from './$types';
     import CreatePack from '@lib/CreatePack.svelte';
     import PackSelector from '@lib/PackSelector.svelte';
-
-    export let data: LayoutData;
-
-    $: packs = data.packs;
+    import { packs } from '@lib/packs';
 </script>
 
 <div class="sidebar">
-    <PackSelector bind:packs />
     <CreatePack />
+    <PackSelector packs={$packs} />
 </div>
 
 <main class="content">
