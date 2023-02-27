@@ -28,6 +28,13 @@ struct PackCreate {
     title: String,
 }
 
+#[derive(TS, Deserialize, Debug)]
+#[ts(export, export_to = "../src/bindings/")]
+struct PackUpdate {
+    id: String,
+    title: String,
+}
+
 #[derive(TS, Serialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
 struct Card {
@@ -123,8 +130,10 @@ async fn main() -> Result<()> {
             list_packs,
             create_pack,
             get_pack,
+            delete_pack,
+            update_pack,
             list_cards,
-            add_card
+            add_card,
         ])
         .manage(db)
         .run(tauri::generate_context!())
@@ -174,6 +183,40 @@ async fn get_pack(db: State<'_, Db>, id: String) -> Result<Pack> {
     };
 
     db.get("SELECT id, title FROM $th", Some(vars)).await
+}
+
+#[tauri::command]
+async fn delete_pack(db: State<'_, Db>, id: String) -> Result<()> {
+    let th = Thing {
+        id: id.into(),
+        tb: String::from("pack"),
+    };
+
+    let vars = vars! {
+        "th" => th,
+    };
+
+    db.execute("DELETE $th", Some(vars)).await?;
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn update_pack(db: State<'_, Db>, update: PackUpdate) -> Result<()> {
+    let th = Thing {
+        id: update.id.into(),
+        tb: String::from("pack"),
+    };
+
+    let vars = vars! {
+        "th" => th,
+        "title" => update.title,
+    };
+
+    db.execute("UPDATE $th SET title = $title", Some(vars))
+        .await?;
+
+    Ok(())
 }
 
 #[tauri::command]
