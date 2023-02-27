@@ -25,12 +25,10 @@
 
 <button on:click={() => (active = true)}>create pack...</button>
 
-{#if active}
-    <Modal>
-        <form on:submit|preventDefault={submit}>
-            <input type="text" bind:value={title} />
-            <button type="submit">+</button>
-            <button type="button" on:click={() => (active = false)}>cancel</button>
-        </form>
-    </Modal>
-{/if}
+<Modal bind:active>
+    <form on:submit|preventDefault={submit}>
+        <input type="text" bind:value={title} />
+        <button type="submit">+</button>
+        <button type="button" on:click={() => (active = false)}>cancel</button>
+    </form>
+</Modal>
