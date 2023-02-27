@@ -1,7 +1,5 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
-    import type { PackCreate } from '@bindings/PackCreate';
-    import { invoke } from '@tauri-apps/api';
     import { createPack } from './commands';
     import Modal from './Modal.svelte';
 
