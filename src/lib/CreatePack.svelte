@@ -21,7 +21,7 @@
     };
 </script>
 
-<button class="rounded bg-blue-500 text-white hover:bg-blue-600 text-center w-full py-2 shadow font-semibold" on:click={() => (active = true)}>Create Pack</button>
+<button class="rounded bg-indigo-500 text-white hover:bg-indigo-600 text-center w-full py-2 shadow font-semibold" on:click={() => (active = true)}>Create Pack</button>
 
 <Modal bind:active>
     <form on:submit|preventDefault={submit}>
