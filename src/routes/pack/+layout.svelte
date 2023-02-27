@@ -10,12 +10,12 @@
 </script>
 
 <div class="flex flex-row h-full">
-    <div class="w-1/3 max-w-[16rem] float-left overflow-x-hidden">
+    <div class="w-1/3 max-w-[16rem] p-2 float-left overflow-x-hidden shadow">
         <CreatePack />
         <PackSelector {packs} />
     </div>
 
-    <main>
+    <main class="p-2">
         <Transition key={data.href}>
             <slot />
         </Transition>
