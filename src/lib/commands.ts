@@ -11,7 +11,7 @@ type Window = {
     };
 };
 
-export const invoke: typeof invoke_ = async (cmd, args) => {
+const invoke: typeof invoke_ = async (cmd, args) => {
     const invoke = (window as unknown as Window).__TAURI__.invoke;
     return await invoke(cmd, args);
 };
