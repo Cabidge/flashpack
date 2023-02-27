@@ -1,8 +1,7 @@
 <script lang="ts">
     import { goto, invalidateAll } from '$app/navigation';
     import { page } from '$app/stores';
-    import { invoke } from '@tauri-apps/api';
-    import type { CardAdd } from '@bindings/CardAdd';
+    import { addCard } from '@lib/commands';
 
     $: id = $page.params.id;
 
@@ -10,10 +9,10 @@
     let back = '';
 
     const submit = async () => {
-        const card: CardAdd = { pack_id: id, front, back };
+        const card = { pack_id: id, front, back };
 
         try {
-            await invoke('add_card', { card });
+            await addCard(card);
         } catch (err) {
             console.log(err);
         }

@@ -1,4 +1,4 @@
-import { getPack, invoke, listCards } from '@lib/commands';
+import { getPack, listCards } from '@lib/commands';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params }) => {
@@ -9,6 +9,6 @@ export const load: PageLoad = async ({ params }) => {
 
     return {
         pack,
-        cards,
+        cards
     };
 };
