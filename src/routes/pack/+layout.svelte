@@ -10,8 +10,9 @@
 </script>
 
 <div class="flex flex-row h-full">
-    <div class="w-1/3 max-w-[16rem] p-2 float-left overflow-x-hidden shadow">
+    <div class="w-1/3 max-w-[16rem] p-4 float-left overflow-x-hidden shadow flex flex-col gap-3">
         <CreatePack />
+        <div class="border-b-2"></div>
         <PackSelector {packs} />
     </div>
 

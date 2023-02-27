@@ -7,7 +7,7 @@
     export let packs: Pack[];
 </script>
 
-<ul class="flex flex-col gap-2 items-stretch m-2">
+<ul class="flex flex-col gap-3 items-stretch">
     {#each packs as pack (pack.id)}
         <li
             in:fly={{ x: -10, duration: 150 }}
