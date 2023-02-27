@@ -10,7 +10,7 @@
 {#if packs.length == 0}
     <p>No packs found...</p>
 {:else}
-    <ul class="flex flex-col gap-3 items-stretch">
+    <ul class="flex flex-col gap-1 items-stretch">
         {#each packs as pack (pack.id)}
             <li
                 in:fly={{ x: -10, duration: 150 }}
@@ -22,9 +22,9 @@
                     href="/pack/{pack.id}"
                     strict={false}
                     styling={{
-                        base: 'w-full shadow text-center font-semibold py-1 px-2 rounded',
-                        unselected: 'bg-slate-100 hover:bg-slate-200',
-                        selected: 'bg-indigo-500 hover:bg-indigo-600 text-white',
+                        base: 'w-full font-semibold py-1 px-4 rounded',
+                        unselected: 'hover:bg-slate-200',
+                        selected: 'bg-indigo-500 hover:bg-indigo-600 text-white'
                     }}
                 >
                     {pack.title}
