@@ -1,25 +1,21 @@
 <script lang="ts">
-    import { goto, invalidateAll } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { invalidateAll } from '$app/navigation';
     import { addCard } from '@lib/commands';
+    import { createEventDispatcher } from 'svelte';
 
-    $: id = $page.params.id;
+    const dispatch = createEventDispatcher<{ close: undefined }>();
+
+    export let id: string;
 
     let front = '';
     let back = '';
 
     const submit = async () => {
+        dispatch('close');
+
         const card = { pack_id: id, front, back };
 
-        try {
-            await addCard(card);
-        } catch (err) {
-            console.log(err);
-        }
-
-        const url = `/pack/${id}`;
-
-        await goto(url);
+        await addCard(card);
         await invalidateAll();
     };
 </script>
@@ -31,4 +27,4 @@
     <button type="submit">add</button>
 </form>
 
-<button on:click={() => history.back()}>Cancel</button>
+<button on:click={() => dispatch('close')}>Cancel</button>
