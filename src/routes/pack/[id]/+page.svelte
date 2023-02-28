@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { page } from '$app/stores';
     import AddCard from '@lib/AddCard.svelte';
     import CardView from '@lib/CardView.svelte';
     import ModalContext from '@lib/ModalContext.svelte';
