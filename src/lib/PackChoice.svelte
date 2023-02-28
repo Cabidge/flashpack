@@ -9,15 +9,18 @@
 
     let hovering = false;
 
+    $: href = `/pack/${pack.id}`;
+    $: selected = $page.url.pathname.startsWith(href);
+
     const remove = async () => {
+        if (selected) {
+            await goto('/pack');
+        }
+
         await deletePack(pack.id);
-        await goto('/pack');
 
         await invalidateAll();
     };
-
-    $: href = `/pack/${pack.id}`;
-    $: selected = $page.url.pathname.startsWith(href);
 
     $: linkClass = conditionalClass(selected, {
         base: 'relative w-full font-semibold py-1 px-4 rounded',
