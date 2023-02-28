@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
-    import { addCard } from '@lib/commands';
+    import { addCard } from '$lib/commands';
     import { createEventDispatcher } from 'svelte';
 
     const dispatch = createEventDispatcher<{ close: undefined }>();

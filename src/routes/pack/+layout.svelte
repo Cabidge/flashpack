@@ -1,8 +1,8 @@
 <script lang="ts">
-    import CreatePack from '@lib/CreatePack.svelte';
-    import ModalContext from '@lib/ModalContext.svelte';
-    import PackSelector from '@lib/PackSelector.svelte';
-    import Transition from '@lib/Transition.svelte';
+    import CreatePack from '$lib/CreatePack.svelte';
+    import ModalContext from '$lib/ModalContext.svelte';
+    import PackSelector from '$lib/PackSelector.svelte';
+    import Transition from '$lib/Transition.svelte';
     import type { LayoutData } from './$types';
 
     export let data: LayoutData;

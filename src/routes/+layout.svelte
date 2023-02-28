@@ -1,6 +1,6 @@
 <script lang="ts">
-    import SmartLink from '@lib/SmartLink.svelte';
-    import Transition from '@lib/Transition.svelte';
+    import SmartLink from '$lib/SmartLink.svelte';
+    import Transition from '$lib/Transition.svelte';
     import '../app.postcss';
     import type { LayoutData } from './$types';
 

@@ -1,8 +1,8 @@
 <script lang="ts">
-    import AddCard from '@lib/AddCard.svelte';
-    import CardView from '@lib/CardView.svelte';
-    import ModalContext from '@lib/ModalContext.svelte';
-    import RenamePack from '@lib/RenamePack.svelte';
+    import AddCard from '$lib/AddCard.svelte';
+    import CardView from '$lib/CardView.svelte';
+    import ModalContext from '$lib/ModalContext.svelte';
+    import RenamePack from '$lib/RenamePack.svelte';
     import type { PageData } from './$types';
 
     export let data: PageData;
