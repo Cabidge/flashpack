@@ -15,8 +15,15 @@
         <div
             on:click|stopPropagation
             transition:fly={{ y: 50, duration: 380, easing: expoOut }}
-            class="bg-white shadow-lg p-4 rounded"
+            class="relative bg-white shadow-lg p-6 rounded"
         >
+            <button
+                class="absolute top-0 right-2 hover:font-bold"
+                on:click={() => (active = false)}
+            >
+                x
+            </button>
+
             <slot />
         </div>
     </div>
