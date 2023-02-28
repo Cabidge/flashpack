@@ -16,8 +16,10 @@
     const submit = async () => {
         dispatch('close');
 
-        await updatePack({ id, title: newTitle });
-        await invalidateAll();
+        if (canSave) {
+            await updatePack({ id, title: newTitle });
+            await invalidateAll();
+        }
     };
 
     $: canSave = newTitle !== title && newTitle !== '';
@@ -25,5 +27,5 @@
 
 <form on:submit|preventDefault={submit}>
     <input type="text" bind:value={newTitle} />
-    <button type="submit" disabled={!canSave}>save</button>
+    <button type="submit">save</button>
 </form>
