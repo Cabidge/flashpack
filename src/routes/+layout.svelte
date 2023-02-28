@@ -24,6 +24,7 @@
                     selected: 'bg-white hover:bg-slate-100'
                 }}
                 href={route[1]}
+                strict={false}
             >
                 {route[0]}
             </SmartLink>
