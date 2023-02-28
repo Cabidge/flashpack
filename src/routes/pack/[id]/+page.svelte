@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import AddCard from '@lib/AddCard.svelte';
+    import CardView from '@lib/CardView.svelte';
     import ModalContext from '@lib/ModalContext.svelte';
     import RenamePack from '@lib/RenamePack.svelte';
     import type { PageData } from './$types';
@@ -25,6 +26,18 @@
 
 {#if cards.length > 1}
     <a href="{$page.url.pathname}/practice">begin practice</a>
+    <br />
 {:else}
     <p>Add more cards to begin practicing</p>
 {/if}
+
+<ul>
+    {#each cards as card (card.id)}
+        <li>
+            <ModalContext let:open>
+                <button on:click={open}>{card.front}</button>
+                <CardView slot="modal" {card} />
+            </ModalContext>
+        </li>
+    {/each}
+</ul>
