@@ -2,9 +2,9 @@
     import { fly } from 'svelte/transition';
 
     export let duration = 120;
-    export let key: any;
+    export let key: unknown;
 
-    let clazz: string = '';
+    let clazz = '';
     export { clazz as class };
 </script>
 
