@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import RenamePack from '@lib/RenamePack.svelte';
     import type { PageData } from './$types';
 
     export let data: PageData;
@@ -8,7 +9,7 @@
     $: cards = data.cards;
 </script>
 
-<h1>{pack.title} <a href="{$page.url.pathname}/edit">edit</a></h1>
+<h1>{pack.title} <RenamePack {pack} /></h1>
 
 <h2>Cards ({cards.length}) <a href="{$page.url.pathname}/add">add</a></h2>
 

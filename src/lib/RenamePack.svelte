@@ -1,27 +1,40 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
+    import { invalidateAll } from '$app/navigation';
+    import type { Pack } from '@bindings/Pack';
+    import { updatePack } from './commands';
+    import Modal from './Modal.svelte';
 
-    export let title: string;
-    export const id: string = '';
+    export let pack: Pack;
 
-    let newTitle = title;
+    $: title = pack.title;
+    $: id = pack.id;
 
-    const dispatch = createEventDispatcher<{ end: undefined }>();
+    let newTitle: string;
 
-    const submit = (save: boolean) => {
-        if (save) {
-            // TODO: tauri command
-            title = newTitle;
-        }
+    let active = false;
 
-        dispatch('end');
+    const close = () => (active = false);
+
+    const submit = async () => {
+        close();
+
+        await updatePack({ id, title: newTitle });
+        await invalidateAll();
     };
+
+    $: if (active) {
+        newTitle = title;
+    }
 
     $: canSave = newTitle !== title && newTitle !== '';
 </script>
 
-<form on:submit|preventDefault={() => submit(true)}>
-    <input type="text" bind:value={newTitle} />
-    <button type="submit" disabled={!canSave}>save</button>
-    <button type="button" on:click={() => submit(false)}>cancel</button>
-</form>
+<button on:click={() => (active = true)}>rename</button>
+
+<Modal {active}>
+    <form on:submit|preventDefault={() => submit}>
+        <input type="text" bind:value={newTitle} />
+        <button type="submit" disabled={!canSave}>save</button>
+        <button type="button" on:click={close}>cancel</button>
+    </form>
+</Modal>
