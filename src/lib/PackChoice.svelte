@@ -35,10 +35,10 @@
         {pack.title}
         {#if hovering}
             <button
-                class="absolute right-3 top-0 bottom-0 hover:bg-black hover:bg-opacity-10"
+                class="absolute right-2 top-1 bottom-1 hover:bg-black hover:bg-opacity-20 aspect-square rounded-full"
                 on:click|preventDefault={remove}
             >
-                del
+                X
             </button>
         {/if}
     </a>
