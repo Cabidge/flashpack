@@ -1,32 +1,21 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
+    import { createEventDispatcher } from 'svelte';
     import { createPack } from './commands';
-    import Modal from './Modal.svelte';
 
-    let active = false;
+    const dispatch = createEventDispatcher<{ close: undefined }>();
 
     let title = '';
 
-    $: {
-        if (!active) {
-            title = '';
-        }
-    }
-
     const submit = async () => {
-        active = false;
+        dispatch('close');
 
         await createPack({ title });
         await invalidateAll();
     };
 </script>
 
-<button class="rounded bg-indigo-500 text-white hover:bg-indigo-600 text-center w-full py-2 shadow font-semibold" on:click={() => (active = true)}>Create Pack</button>
-
-<Modal bind:active>
-    <form on:submit|preventDefault={submit}>
-        <input type="text" bind:value={title} />
-        <button type="submit">+</button>
-        <button type="button" on:click={() => (active = false)}>cancel</button>
-    </form>
-</Modal>
+<form on:submit|preventDefault={submit}>
+    <input type="text" bind:value={title} />
+    <button type="submit">+</button>
+</form>
