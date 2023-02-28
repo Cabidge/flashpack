@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import ModalContext from '@lib/ModalContext.svelte';
     import RenamePack from '@lib/RenamePack.svelte';
     import type { PageData } from './$types';
 
@@ -9,7 +10,11 @@
     $: cards = data.cards;
 </script>
 
-<h1>{pack.title} <RenamePack {pack} /></h1>
+<ModalContext let:open let:close>
+    <h1>{pack.title} <button on:click={open}>rename</button></h1>
+
+    <RenamePack slot="modal" on:close={close} {pack} />
+</ModalContext>
 
 <h2>Cards ({cards.length}) <a href="{$page.url.pathname}/add">add</a></h2>
 
