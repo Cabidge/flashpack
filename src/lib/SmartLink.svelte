@@ -2,9 +2,9 @@
     import UrlMatch from './UrlMatch.svelte';
 
     export let styling = {
-        base: "",
-        selected: "font-bold",
-        unselected: "",
+        base: '',
+        selected: 'font-bold',
+        unselected: ''
     };
 
     export let href: string;

@@ -14,8 +14,8 @@
     $: root = data.href.split('/')[1] ?? '';
 </script>
 
-<div class="h-screen flex flex-col">
-    <nav class="bg-slate-300 flex pl-2 item-stretch gap-2">
+<div class="flex h-screen flex-col">
+    <nav class="item-stretch flex gap-2 bg-slate-300 pl-2">
         {#each routes as route}
             <SmartLink
                 styling={{
@@ -31,7 +31,7 @@
         {/each}
     </nav>
 
-    <Transition class="flex flex-row h-full" key={root}>
+    <Transition class="flex h-full flex-row" key={root}>
         <slot />
     </Transition>
 </div>

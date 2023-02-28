@@ -7,4 +7,4 @@
     $: selected = strict ? $page.url.pathname == href : $page.url.pathname.startsWith(href);
 </script>
 
-<slot {selected}></slot>
+<slot {selected} />

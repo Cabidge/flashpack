@@ -11,11 +11,11 @@
 </script>
 
 <div
-    class="w-1/3 max-w-[16rem] p-4 float-left overflow-x-hidden shadow flex flex-col gap-3 bg-slate-100"
+    class="float-left flex w-1/3 max-w-[16rem] flex-col gap-3 overflow-x-hidden bg-slate-100 p-4 shadow"
 >
     <ModalContext let:open let:close>
         <button
-            class="rounded bg-indigo-500 text-white hover:bg-indigo-600 text-center w-full py-2 shadow font-semibold"
+            class="w-full rounded bg-indigo-500 py-2 text-center font-semibold text-white shadow hover:bg-indigo-600"
             on:click={open}
         >
             Create Pack
