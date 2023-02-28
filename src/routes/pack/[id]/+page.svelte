@@ -24,13 +24,6 @@
     <AddCard slot="modal" id={pack.id} on:close={close} />
 </ModalContext>
 
-{#if cards.length > 1}
-    <a href="{$page.url.pathname}/practice">begin practice</a>
-    <br />
-{:else}
-    <p>Add more cards to begin practicing</p>
-{/if}
-
 <ul>
     {#each cards as card (card.id)}
         <li>
