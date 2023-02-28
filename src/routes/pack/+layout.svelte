@@ -10,7 +10,9 @@
     $: packs = data.packs;
 </script>
 
-<div class="w-1/3 max-w-[16rem] p-4 float-left overflow-x-hidden shadow flex flex-col gap-3">
+<div
+    class="w-1/3 max-w-[16rem] p-4 float-left overflow-x-hidden shadow flex flex-col gap-3 bg-slate-100"
+>
     <ModalContext let:open let:close>
         <button
             class="rounded bg-indigo-500 text-white hover:bg-indigo-600 text-center w-full py-2 shadow font-semibold"
