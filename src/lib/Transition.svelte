@@ -9,7 +9,7 @@
 </script>
 
 {#key key}
-    <div in:fly={{ x: -10, duration, delay: duration + 10 }} out:fly={{ duration }} class={clazz}>
+    <div in:fly={{ x: -10, duration, delay: duration + 50 }} out:fly={{ duration }} class={clazz}>
         <slot />
     </div>
 {/key}
