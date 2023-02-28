@@ -18,5 +18,4 @@
 <form on:submit|preventDefault={submit}>
     <input type="text" bind:value={title} />
     <button type="submit">+</button>
-    <button type="button" on:click={() => dispatch('close')}>cancel</button>
 </form>

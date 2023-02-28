@@ -26,5 +26,4 @@
 <form on:submit|preventDefault={submit}>
     <input type="text" bind:value={newTitle} />
     <button type="submit" disabled={!canSave}>save</button>
-    <button type="button" on:click={() => dispatch('close')}>cancel</button>
 </form>

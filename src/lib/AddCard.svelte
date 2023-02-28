@@ -26,5 +26,3 @@
 
     <button type="submit">add</button>
 </form>
-
-<button on:click={() => dispatch('close')}>Cancel</button>
