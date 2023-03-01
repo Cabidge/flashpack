@@ -23,7 +23,7 @@
     };
 
     $: linkClass = conditionalClass(selected, {
-        base: 'relative w-full font-semibold py-1 px-4 rounded',
+        base: 'relative w-full font-semibold text-ellipsis overflow-hidden py-1 px-4 hover:pr-8 rounded',
         on: 'bg-indigo-500 hover:bg-indigo-600 shadow text-white',
         off: 'hover:bg-slate-200'
     });
