@@ -1,7 +1,7 @@
 <script lang="ts">
     import AddCard from '$lib/AddCard.svelte';
     import CardView from '$lib/CardView.svelte';
-    import ModalContext from '$lib/ModalContext.svelte';
+    import ModalController from '$lib/ModalController.svelte';
     import RenamePack from '$lib/RenamePack.svelte';
     import type { PageData } from './$types';
 
@@ -11,25 +11,25 @@
     $: cards = data.cards;
 </script>
 
-<ModalContext let:open let:close>
+<ModalController let:open let:close>
     <h1>{pack.title} <button on:click={open}>rename</button></h1>
 
     <RenamePack slot="modal" on:close={close} {pack} />
-</ModalContext>
+</ModalController>
 
-<ModalContext let:open let:close>
+<ModalController let:open let:close>
     <h2>Cards ({cards.length}) <button on:click={open}>+</button></h2>
 
     <AddCard slot="modal" id={pack.id} on:close={close} />
-</ModalContext>
+</ModalController>
 
 <ul>
     {#each cards as card (card.id)}
         <li>
-            <ModalContext let:open>
+            <ModalController let:open>
                 <button on:click={open}>{card.front}</button>
                 <CardView slot="modal" {card} />
-            </ModalContext>
+            </ModalController>
         </li>
     {/each}
 </ul>
