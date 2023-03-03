@@ -1,17 +1,15 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
     import { addCard } from '$lib/commands';
-    import { createEventDispatcher } from 'svelte';
-
-    const dispatch = createEventDispatcher<{ close: undefined }>();
 
     export let id: string;
+    export let close = () => {};
 
     let front = '';
     let back = '';
 
     const submit = async () => {
-        dispatch('close');
+        close();
 
         const card = { pack_id: id, front, back };
 

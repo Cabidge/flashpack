@@ -1,14 +1,13 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
-    import { createEventDispatcher } from 'svelte';
     import { createPack } from './commands';
 
-    const dispatch = createEventDispatcher<{ close: undefined }>();
+    export let close = () => {};
 
     let title = '';
 
     const submit = async () => {
-        dispatch('close');
+        close();
 
         await createPack({ title });
         await invalidateAll();

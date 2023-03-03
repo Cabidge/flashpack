@@ -21,7 +21,7 @@
             Create Pack
         </button>
 
-        <CreatePack slot="modal" on:close={close} />
+        <CreatePack slot="modal" {close} />
     </ModalController>
 
     <div class="border-b-2" />

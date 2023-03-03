@@ -14,13 +14,13 @@
 <ModalController let:open let:close>
     <h1>{pack.title} <button on:click={open}>rename</button></h1>
 
-    <RenamePack slot="modal" on:close={close} {pack} />
+    <RenamePack slot="modal" {close} {pack} />
 </ModalController>
 
 <ModalController let:open let:close>
     <h2>Cards ({cards.length}) <button on:click={open}>+</button></h2>
 
-    <AddCard slot="modal" id={pack.id} on:close={close} />
+    <AddCard slot="modal" id={pack.id} {close} />
 </ModalController>
 
 <ul>

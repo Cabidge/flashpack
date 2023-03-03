@@ -1,20 +1,18 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
     import type { Pack } from '@bindings/Pack';
-    import { createEventDispatcher } from 'svelte';
     import { updatePack } from './commands';
 
     export let pack: Pack;
+    export let close = () => {};
 
     $: title = pack.title;
     $: id = pack.id;
 
     $: newTitle = title;
 
-    const dispatch = createEventDispatcher<{ close: undefined }>();
-
     const submit = async () => {
-        dispatch('close');
+        close();
 
         if (canSave) {
             await updatePack({ id, title: newTitle });
