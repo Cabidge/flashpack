@@ -7,7 +7,12 @@
 
     export let data: LayoutData;
 
+    let search = "";
+    $: query = search.toLowerCase();
+
     $: packs = data.packs;
+
+    $: filteredPacks = search === "" ? packs : packs.filter((pack) => pack.title.toLowerCase().includes(query))
 </script>
 
 <div
@@ -24,9 +29,11 @@
         <CreatePack slot="modal" {close} />
     </ModalController>
 
+    <input bind:value={search} placeholder="Search..." />
+
     <div class="border-b-2" />
 
-    <PackSelector {packs} />
+    <PackSelector packs={filteredPacks} />
 </div>
 
 <main class="p-2">
