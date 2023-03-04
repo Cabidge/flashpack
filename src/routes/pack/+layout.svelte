@@ -7,29 +7,32 @@
 
     export let data: LayoutData;
 
-    let search = "";
+    let search = '';
     $: query = search.toLowerCase();
 
     $: packs = data.packs;
 
-    $: filteredPacks = search === "" ? packs : packs.filter((pack) => pack.title.toLowerCase().includes(query))
+    $: filteredPacks =
+        search === '' ? packs : packs.filter((pack) => pack.title.toLowerCase().includes(query));
 </script>
 
 <div
     class="float-left flex w-1/3 max-w-[16rem] flex-col gap-3 overflow-x-hidden bg-slate-100 p-4 shadow"
 >
-    <ModalController let:open let:close>
-        <button
-            class="w-full rounded bg-indigo-500 py-2 text-center font-semibold text-white shadow hover:bg-indigo-600"
-            on:click={open}
-        >
-            Create Pack
-        </button>
+    <div class="flex gap-2">
+        <input class="min-w-0 rounded pl-2 shadow" bind:value={search} placeholder="Search..." />
 
-        <CreatePack slot="modal" {close} />
-    </ModalController>
+        <ModalController let:open let:close>
+            <button
+                class="aspect-square w-9 flex-none rounded bg-indigo-500 text-center text-xl font-semibold text-white shadow hover:bg-indigo-600"
+                on:click={open}
+            >
+                +
+            </button>
 
-    <input bind:value={search} placeholder="Search..." />
+            <CreatePack slot="modal" {close} />
+        </ModalController>
+    </div>
 
     <div class="border-b-2" />
 
