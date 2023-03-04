@@ -4,6 +4,8 @@
     import type { Pack } from '@bindings/Pack';
     import { deletePack } from '$lib/commands';
     import { conditionalClass } from '$lib/styling';
+    import ModalController from '$lib/ModalController.svelte';
+    import RenamePack from './RenamePack.svelte';
 
     export let pack: Pack;
 
@@ -23,25 +25,26 @@
     };
 
     $: linkClass = conditionalClass(selected, {
-        base: 'relative w-full font-semibold text-ellipsis overflow-hidden py-1 px-4 hover:pr-8 rounded',
+        base: 'relative w-full font-semibold text-ellipsis overflow-hidden py-1 px-4 hover:pr-8 rounded cursor-default',
         on: 'bg-indigo-500 hover:bg-indigo-600 shadow text-white',
         off: 'hover:bg-slate-200'
     });
 </script>
 
-<a
-    {href}
-    class={linkClass}
-    on:mouseenter={() => (hovering = true)}
-    on:mouseleave={() => (hovering = false)}
->
-    {pack.title}
-    {#if hovering}
-        <button
-            class="absolute right-2 top-1 bottom-1 aspect-square rounded-full hover:bg-black hover:bg-opacity-20"
-            on:click|preventDefault={remove}
-        >
-            X
-        </button>
-    {/if}
-</a>
+<ModalController let:active let:open let:close>
+    <a
+        {href}
+        class={linkClass}
+        on:mouseenter={() => (hovering = true)}
+        on:mouseleave={() => (hovering = false)}
+    >
+        {pack.title}
+        {#if hovering || selected || active}
+            <button class="absolute right-2" on:click|preventDefault={open}>
+                <i class="fa-solid fa-pen text-sm" />
+            </button>
+        {/if}
+    </a>
+
+    <RenamePack {close} {pack} slot="modal" />
+</ModalController>
