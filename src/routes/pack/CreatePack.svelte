@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
-    import { createPack } from './commands';
+    import { createPack } from '$lib/commands';
 
     export let close = () => {};
 

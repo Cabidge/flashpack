@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
     import type { Pack } from '@bindings/Pack';
-    import { updatePack } from './commands';
+    import { updatePack } from '$lib/commands';
 
     export let pack: Pack;
     export let close = () => {};

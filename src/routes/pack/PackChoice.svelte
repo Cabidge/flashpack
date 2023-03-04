@@ -2,8 +2,8 @@
     import { goto, invalidateAll } from '$app/navigation';
     import { page } from '$app/stores';
     import type { Pack } from '@bindings/Pack';
-    import { deletePack } from './commands';
-    import { conditionalClass } from './styling';
+    import { deletePack } from '$lib/commands';
+    import { conditionalClass } from '$lib/styling';
 
     export let pack: Pack;
 

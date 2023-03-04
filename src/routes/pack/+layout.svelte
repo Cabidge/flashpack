@@ -1,7 +1,7 @@
 <script lang="ts">
-    import CreatePack from '$lib/CreatePack.svelte';
+    import CreatePack from './CreatePack.svelte';
     import ModalController from '$lib/ModalController.svelte';
-    import PackSelector from '$lib/PackSelector.svelte';
+    import PackSelector from './PackSelector.svelte';
     import Transition from '$lib/Transition.svelte';
     import type { LayoutData } from './$types';
 
