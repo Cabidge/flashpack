@@ -59,7 +59,9 @@
         "height": 600,
         "resizable": true,
         "title": "Flashpack",
-        "width": 800
+        "width": 800,
+        "minWidth": 600,
+        "minHeight": 400
       }
     ]
   }
