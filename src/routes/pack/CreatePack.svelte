@@ -15,6 +15,6 @@
 </script>
 
 <form on:submit|preventDefault={submit}>
-    <input type="text" bind:value={title} />
+    <input type="text" bind:value={title} required />
     <button type="submit">+</button>
 </form>
