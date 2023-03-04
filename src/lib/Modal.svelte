@@ -8,18 +8,18 @@
 {#if active}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div
-        on:click={() => (active = false)}
+        on:click|preventDefault={() => (active = false)}
         transition:fade={{ duration: 100 }}
         class="fixed left-0 top-0 z-10 flex h-screen w-screen items-center justify-center overflow-auto bg-black bg-opacity-50"
     >
         <div
-            on:click|stopPropagation
+            on:click|stopPropagation|preventDefault
             transition:fly={{ y: 50, duration: 380, easing: expoOut }}
             class="relative rounded bg-white p-6 shadow-lg"
         >
             <button
                 class="absolute top-0 right-2 hover:font-bold"
-                on:click={() => (active = false)}
+                on:click|preventDefault={() => (active = false)}
             >
                 x
             </button>
