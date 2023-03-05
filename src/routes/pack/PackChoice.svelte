@@ -38,7 +38,7 @@
         on:mouseenter={() => (hovering = true)}
         on:mouseleave={() => (hovering = false)}
     >
-        <span class="text-ellipsis overflow-hidden flex-grow">
+        <span class="flex-grow overflow-hidden text-ellipsis">
             {pack.title}
         </span>
         {#if hovering || selected || active}
