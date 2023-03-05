@@ -25,7 +25,7 @@
     };
 
     $: linkClass = conditionalClass(selected, {
-        base: 'relative w-full font-semibold text-ellipsis overflow-hidden py-1 px-4 hover:pr-8 rounded cursor-default',
+        base: 'w-full flex gap-2 font-semibold py-1 px-3 rounded cursor-default',
         on: 'bg-indigo-500 hover:bg-indigo-600 shadow text-white',
         off: 'hover:bg-slate-200'
     });
@@ -38,9 +38,11 @@
         on:mouseenter={() => (hovering = true)}
         on:mouseleave={() => (hovering = false)}
     >
-        {pack.title}
+        <span class="text-ellipsis overflow-hidden flex-grow">
+            {pack.title}
+        </span>
         {#if hovering || selected || active}
-            <button class="absolute right-2" on:click|preventDefault={open}>
+            <button class="flex-none" on:click|preventDefault={open}>
                 <i class="fa-solid fa-pen text-sm" />
             </button>
         {/if}
