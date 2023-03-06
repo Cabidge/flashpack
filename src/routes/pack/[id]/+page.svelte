@@ -3,6 +3,7 @@
     import CardView from '$lib/CardView.svelte';
     import ModalController from '$lib/ModalController.svelte';
     import type { PageData } from './$types';
+    import CardButton from './CardButton.svelte';
 
     export let data: PageData;
 
@@ -34,20 +35,7 @@
         class="grid w-full grid-cols-2 gap-4 rounded bg-slate-100 p-4 shadow-inner md:grid-cols-3 lg:grid-cols-4"
     >
         {#each cards as card (card.id)}
-            <ModalController let:open>
-                <button
-                    class="h-32 rounded border-2 border-transparent bg-white text-lg shadow transition hover:-translate-y-1 hover:border-indigo-400 hover:shadow-md"
-                    on:click={open}
-                >
-                    {card.front}
-                    <br />
-                    {#each ['test', 'hello', 'definition'] as tag}
-                        <span class="m-1 rounded-full bg-slate-100 hover:bg-slate-200 px-2 text-sm">{tag}</span>
-                    {/each}
-                </button>
-
-                <CardView slot="modal" {card} />
-            </ModalController>
+            <CardButton {card} />
         {/each}
     </div>
 {/if}
