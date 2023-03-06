@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { menuStatus } from '$lib/context_menu';
     import SmartLink from '$lib/SmartLink.svelte';
     import Transition from '$lib/Transition.svelte';
     import '../app.postcss';
@@ -35,3 +36,5 @@
         <slot />
     </Transition>
 </div>
+
+<svelte:body on:click={() => { menuStatus.close(); }} />

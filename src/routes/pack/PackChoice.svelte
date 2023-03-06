@@ -6,6 +6,8 @@
     import { conditionalClass } from '$lib/styling';
     import ModalController from '$lib/ModalController.svelte';
     import RenamePack from './RenamePack.svelte';
+    import ContextMenu from '$lib/ContextMenu.svelte';
+    import MenuButton from '$lib/MenuButton.svelte';
 
     export let pack: Pack;
 
@@ -29,6 +31,8 @@
         on: 'bg-indigo-500 hover:bg-indigo-600 shadow text-white',
         off: 'hover:bg-slate-200'
     });
+
+    let menu: ContextMenu;
 </script>
 
 <ModalController let:active let:open let:close>
@@ -37,6 +41,7 @@
         class={linkClass}
         on:mouseenter={() => (hovering = true)}
         on:mouseleave={() => (hovering = false)}
+        on:contextmenu|preventDefault={(e)=>{menu.select(e.clientX, e.clientY)}}
     >
         <span class="flex-grow overflow-hidden text-ellipsis">
             {pack.title}
@@ -50,3 +55,8 @@
 
     <RenamePack {close} {pack} slot="modal" />
 </ModalController>
+
+<ContextMenu bind:this={menu}>
+    <MenuButton label="Quick Study" icon="book" />
+    <MenuButton label="Delete" danger icon="trash" />
+</ContextMenu>
