@@ -39,7 +39,7 @@
     <PackSelector packs={filteredPacks} />
 </div>
 
-<main class="px-6 py-4">
+<main class="w-full px-6 py-4">
     <Transition key={data.href}>
         <slot />
     </Transition>
