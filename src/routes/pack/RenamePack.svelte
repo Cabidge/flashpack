@@ -15,7 +15,7 @@
         close();
 
         if (canSave) {
-            await invoke('updatePack', { update: { id, title: newTitle } });
+            await invoke('update_pack', { update: { id, title: newTitle } });
             await invalidateAll();
         }
     };

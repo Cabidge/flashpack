@@ -6,8 +6,8 @@ export const load: PageLoad = async ({ params }) => {
     const id = params.id;
 
     try {
-        const pack = await invoke('getPack', { id });
-        const cards = await invoke('listCards', { id });
+        const pack = await invoke('get_pack', { id });
+        const cards = await invoke('list_cards', { id });
 
         return {
             pack,

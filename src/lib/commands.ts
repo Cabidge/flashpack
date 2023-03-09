@@ -5,27 +5,27 @@ import type { PackCreate } from '@bindings/PackCreate';
 import type { PackUpdate } from '@bindings/PackUpdate';
 
 type Commands = {
-    createPack: {
+    create_pack: {
         pack: PackCreate;
     };
-    listPacks: {
+    list_packs: {
         $output: Pack[];
     };
-    getPack: {
+    get_pack: {
         id: string;
         $output: Pack;
     };
-    deletePack: {
+    delete_pack: {
         id: string;
     };
-    updatePack: {
+    update_pack: {
         update: PackUpdate;
     };
-    listCards: {
+    list_cards: {
         id: string;
         $output: Card[];
     };
-    addCard: {
+    add_card: {
         card: CardAdd;
     };
 };
