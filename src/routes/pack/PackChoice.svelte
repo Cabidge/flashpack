@@ -8,6 +8,7 @@
     import RenamePack from './RenamePack.svelte';
     import ContextMenu from '$lib/ContextMenu.svelte';
     import MenuButton from '$lib/MenuButton.svelte';
+    import Modal from '$lib/Modal.svelte';
 
     export let pack: Pack;
 
@@ -16,16 +17,6 @@
     $: href = `/pack/${pack.id}`;
     $: selected = $page.url.pathname.startsWith(href);
 
-    const remove = async () => {
-        if (selected) {
-            await goto('/pack');
-        }
-
-        await deletePack(pack.id);
-
-        await invalidateAll();
-    };
-
     $: linkClass = conditionalClass(selected, {
         base: 'w-full flex gap-2 font-semibold py-1 px-3 rounded cursor-default',
         on: 'bg-indigo-500 hover:bg-indigo-600 shadow text-white',
@@ -33,6 +24,18 @@
     });
 
     let menu: ContextMenu;
+    let deleteModal: Modal;
+
+    const remove = async () => {
+        deleteModal.close();
+
+        if (selected) {
+            await goto('/pack');
+        }
+
+        await deletePack(pack.id);
+        await invalidateAll();
+    };
 </script>
 
 <ModalController let:active let:open let:close>
@@ -62,3 +65,9 @@
     <MenuButton label="Quick Study" icon="book" />
     <MenuButton label="Delete" danger icon="trash" />
 </ContextMenu>
+
+<Modal bind:this={deleteModal}>
+    <span>Delete {pack.title}?</span>
+    <button on:click={remove}>yes</button>
+    <button on:click={deleteModal.close}>no</button>
+</Modal>
