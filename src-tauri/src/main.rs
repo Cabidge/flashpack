@@ -5,7 +5,10 @@
 
 mod db;
 mod error;
+mod fleeting;
 mod prelude;
+
+use std::sync::Mutex;
 
 use crate::prelude::*;
 
@@ -17,27 +20,27 @@ use ts_rs::TS;
 
 #[derive(TS, Serialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
-struct Pack {
+pub struct Pack {
     id: String,
     title: String,
 }
 
 #[derive(TS, Deserialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
-struct PackCreate {
+pub struct PackCreate {
     title: String,
 }
 
 #[derive(TS, Deserialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
-struct PackUpdate {
+pub struct PackUpdate {
     id: String,
     title: String,
 }
 
 #[derive(TS, Serialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
-struct Card {
+pub struct Card {
     id: String,
     front: String,
     back: String,
@@ -45,11 +48,53 @@ struct Card {
 
 #[derive(TS, Deserialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
-struct CardAdd {
+pub struct CardAdd {
     pack_id: String,
     front: String,
     back: String,
 }
+
+#[derive(TS, Serialize, Debug)]
+#[ts(export, export_to = "../src/bindings/")]
+pub struct QuizSummary {
+    id: QuizQuery,
+    name: String,
+}
+
+type SessionList = Vec<QuizSummary>;
+
+#[derive(TS, Serialize, Debug)]
+#[ts(export, export_to = "../src/bindings/")]
+pub struct Quiz {
+    id: String,
+    name: String,
+    questions: Vec<Question>,
+}
+
+#[derive(TS, Serialize, Debug)]
+#[ts(export, export_to = "../src/bindings/")]
+pub enum QuizQuery {
+    Fleeting(u32),
+    Concrete(String),
+}
+
+#[derive(TS, Serialize, Debug)]
+#[ts(export, export_to = "../src/bindings/")]
+pub struct Question {
+    question: String,
+    answer: String,
+    status: Completeness,
+}
+
+#[derive(TS, Serialize, Debug)]
+#[ts(export, export_to = "../src/bindings/")]
+pub enum Completeness {
+    Correct,
+    Incorrect,
+    Incomplete,
+}
+
+type Sessions = Mutex<fleeting::Sessions>;
 
 #[macro_export]
 macro_rules! bail {
@@ -134,8 +179,11 @@ async fn main() -> Result<()> {
             update_pack,
             list_cards,
             add_card,
+            list_sessions,
+            begin_fleeting,
         ])
         .manage(db)
+        .manage(Sessions::default())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 
@@ -268,4 +316,23 @@ async fn add_card(db: State<'_, Db>, card: CardAdd) -> Result<()> {
     .await?;
 
     Ok(())
+}
+
+#[tauri::command]
+fn list_sessions(sessions: State<'_, Sessions>) -> SessionList {
+    sessions.lock().unwrap().summarize()
+}
+
+#[tauri::command]
+async fn begin_fleeting(
+    db: State<'_, Db>,
+    sessions: State<'_, Sessions>,
+    id: String,
+) -> Result<u32> {
+    let pack = get_pack(db.clone(), id.clone()).await?;
+    let cards = list_cards(db.clone(), id.clone()).await?;
+
+    let mut sessions = sessions.lock().unwrap();
+
+    Ok(sessions.create(format!("{} session", pack.title), &cards))
 }
