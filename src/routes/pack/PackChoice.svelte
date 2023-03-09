@@ -36,6 +36,11 @@
         await invoke('delete_pack', { id: pack.id });
         await invalidateAll();
     };
+
+    const quickStudy = async () => {
+        await invoke('begin_fleeting', { id: pack.id });
+        await goto('/study');
+    };
 </script>
 
 <ModalController let:active let:open let:close>
@@ -62,7 +67,7 @@
 </ModalController>
 
 <ContextMenu bind:this={menu}>
-    <MenuButton label="Quick Study" icon="book" />
+    <MenuButton on:click={quickStudy} label="Quick Study" icon="book" />
     <MenuButton on:click={deleteModal.open} label="Delete" danger icon="trash" />
 </ContextMenu>
 
