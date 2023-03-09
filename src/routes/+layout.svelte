@@ -37,4 +37,8 @@
     </Transition>
 </div>
 
-<svelte:body on:click={() => { menuStatus.close(); }} />
+<svelte:body
+    on:click={() => {
+        menuStatus.close();
+    }}
+/>
