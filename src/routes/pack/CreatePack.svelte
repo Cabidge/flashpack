@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
-    import { createPack } from '$lib/commands';
+    import { invoke } from '$lib/commands';
 
     export let close = () => {};
 
@@ -9,7 +9,7 @@
     const submit = async () => {
         close();
 
-        await createPack({ title });
+        await invoke('createPack', { pack: { title } });
         await invalidateAll();
     };
 </script>

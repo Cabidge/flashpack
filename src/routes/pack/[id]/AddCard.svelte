@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
-    import { addCard } from '$lib/commands';
+    import { invoke } from '$lib/commands';
 
     export let id: string;
     export let close = () => {};
@@ -13,7 +13,7 @@
 
         const card = { pack_id: id, front, back };
 
-        await addCard(card);
+        await invoke('addCard', { card });
         await invalidateAll();
     };
 </script>

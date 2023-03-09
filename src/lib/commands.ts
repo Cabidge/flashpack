@@ -3,43 +3,49 @@ import type { CardAdd } from '@bindings/CardAdd';
 import type { Pack } from '@bindings/Pack';
 import type { PackCreate } from '@bindings/PackCreate';
 import type { PackUpdate } from '@bindings/PackUpdate';
-import type { invoke as invoke_ } from '@tauri-apps/api';
 
-type Window = {
-    __TAURI__: {
-        invoke: typeof invoke_;
+type Commands = {
+    createPack: {
+        pack: PackCreate;
+    };
+    listPacks: {
+        $output: Pack[];
+    };
+    getPack: {
+        id: string;
+        $output: Pack;
+    };
+    deletePack: {
+        id: string;
+    };
+    updatePack: {
+        update: PackUpdate;
+    };
+    listCards: {
+        id: string;
+        $output: Card[];
+    };
+    addCard: {
+        card: CardAdd;
     };
 };
 
-const invoke: typeof invoke_ = async (cmd, args) => {
+type HasOutput = {
+    $output: unknown;
+};
+
+type Invoke = <T extends keyof Commands>(
+    cmd: T,
+    args?: Omit<Commands[T], '$output'>
+) => Promise<Commands[T] extends HasOutput ? Commands[T]['$output'] : void>;
+
+type Window = {
+    __TAURI__: {
+        invoke: Invoke;
+    };
+};
+
+export const invoke: Invoke = async (cmd, args) => {
     const invoke = (window as unknown as Window).__TAURI__.invoke;
     return await invoke(cmd, args);
-};
-
-export const createPack = (pack: PackCreate) => {
-    return invoke<void>('create_pack', { pack });
-};
-
-export const listPacks = () => {
-    return invoke<Pack[]>('list_packs');
-};
-
-export const getPack = (id: string) => {
-    return invoke<Pack>('get_pack', { id });
-};
-
-export const deletePack = (id: string) => {
-    return invoke<void>('delete_pack', { id });
-};
-
-export const updatePack = (update: PackUpdate) => {
-    return invoke<void>('update_pack', { update });
-};
-
-export const listCards = (id: string) => {
-    return invoke<Card[]>('list_cards', { id });
-};
-
-export const addCard = (card: CardAdd) => {
-    return invoke<void>('add_card', { card });
 };

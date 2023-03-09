@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
     import type { Pack } from '@bindings/Pack';
-    import { updatePack } from '$lib/commands';
+    import { invoke } from '$lib/commands';
 
     export let pack: Pack;
     export let close = () => {};
@@ -15,7 +15,7 @@
         close();
 
         if (canSave) {
-            await updatePack({ id, title: newTitle });
+            await invoke('updatePack', { update: { id, title: newTitle } });
             await invalidateAll();
         }
     };

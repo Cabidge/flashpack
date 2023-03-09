@@ -2,13 +2,13 @@
     import { goto, invalidateAll } from '$app/navigation';
     import { page } from '$app/stores';
     import type { Pack } from '@bindings/Pack';
-    import { deletePack } from '$lib/commands';
     import { conditionalClass } from '$lib/styling';
     import ModalController from '$lib/ModalController.svelte';
     import RenamePack from './RenamePack.svelte';
     import ContextMenu from '$lib/ContextMenu.svelte';
     import MenuButton from '$lib/MenuButton.svelte';
     import Modal from '$lib/Modal.svelte';
+    import { invoke } from '$lib/commands';
 
     export let pack: Pack;
 
@@ -33,7 +33,7 @@
             await goto('/pack');
         }
 
-        await deletePack(pack.id);
+        await invoke('deletePack', { id: pack.id });
         await invalidateAll();
     };
 </script>
