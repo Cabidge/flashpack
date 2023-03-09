@@ -41,7 +41,9 @@
         class={linkClass}
         on:mouseenter={() => (hovering = true)}
         on:mouseleave={() => (hovering = false)}
-        on:contextmenu|preventDefault={(e)=>{menu.select(e.clientX, e.clientY)}}
+        on:contextmenu|preventDefault={(e) => {
+            menu.select(e.clientX, e.clientY);
+        }}
     >
         <span class="flex-grow overflow-hidden text-ellipsis">
             {pack.title}
