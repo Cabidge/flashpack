@@ -3,6 +3,7 @@ import type { CardAdd } from '@bindings/CardAdd';
 import type { Pack } from '@bindings/Pack';
 import type { PackCreate } from '@bindings/PackCreate';
 import type { PackUpdate } from '@bindings/PackUpdate';
+import type { QuizSummary } from '@bindings/QuizSummary';
 
 type Commands = {
     create_pack: (args: { pack: PackCreate }) => void;
@@ -12,6 +13,8 @@ type Commands = {
     update_pack: (args: { update: PackUpdate }) => void;
     list_cards: (args: { id: string }) => Card[];
     add_card: (args: { card: CardAdd }) => void;
+    list_sessions: () => QuizSummary[];
+    begin_fleeting: (args: { id: string }) => number;
 };
 
 type Invoke = <T extends keyof Commands>(
