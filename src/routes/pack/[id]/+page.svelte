@@ -1,6 +1,5 @@
 <script lang="ts">
     import AddCard from './AddCard.svelte';
-    import CardView from '$lib/CardView.svelte';
     import ModalController from '$lib/ModalController.svelte';
     import type { PageData } from './$types';
     import CardButton from './CardButton.svelte';
