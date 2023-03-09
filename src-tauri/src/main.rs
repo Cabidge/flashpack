@@ -9,7 +9,7 @@ mod prelude;
 
 use crate::prelude::*;
 
-use db::{Db, TryFromObject};
+use db::{Db, ParseObject};
 use serde::{Deserialize, Serialize};
 use surrealdb::sql::{Object, Thing, Value};
 use tauri::State;
@@ -79,8 +79,8 @@ macro_rules! vars {
     }
 }
 
-impl TryFromObject for Pack {
-    fn try_from_object(mut value: Object) -> Result<Self> {
+impl ParseObject for Pack {
+    fn parse_obj(mut value: Object) -> Result<Self> {
         let title = value
             .remove("title")
             .map(Value::as_string)
@@ -97,8 +97,8 @@ impl TryFromObject for Pack {
     }
 }
 
-impl TryFromObject for Card {
-    fn try_from_object(mut value: Object) -> Result<Self> {
+impl ParseObject for Card {
+    fn parse_obj(mut value: Object) -> Result<Self> {
         let front = value
             .remove("front")
             .map(Value::as_string)

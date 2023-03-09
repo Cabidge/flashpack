@@ -17,12 +17,12 @@ pub struct Db {
 
 type Variables = Option<BTreeMap<String, Value>>;
 
-pub trait TryFromObject: Sized {
-    fn try_from_object(object: Object) -> Result<Self>;
+pub trait ParseObject: Sized {
+    fn parse_obj(object: Object) -> Result<Self>;
 }
 
-impl TryFromObject for Thing {
-    fn try_from_object(mut object: Object) -> Result<Self> {
+impl ParseObject for Thing {
+    fn parse_obj(mut object: Object) -> Result<Self> {
         let Some(Value::Thing(th)) = object.remove("id") else {
             bail!("Failed to get id.");
         };
@@ -31,14 +31,14 @@ impl TryFromObject for Thing {
     }
 }
 
-impl TryFromObject for Id {
-    fn try_from_object(object: Object) -> Result<Self> {
-        Ok(Thing::try_from_object(object)?.id)
+impl ParseObject for Id {
+    fn parse_obj(object: Object) -> Result<Self> {
+        Ok(Thing::parse_obj(object)?.id)
     }
 }
 
-impl TryFromObject for Object {
-    fn try_from_object(object: Object) -> Result<Self> {
+impl ParseObject for Object {
+    fn parse_obj(object: Object) -> Result<Self> {
         Ok(object)
     }
 }
@@ -71,7 +71,7 @@ impl Db {
         self.process(query, vars).await
     }
 
-    pub async fn get<T: TryFromObject>(&self, query: &str, vars: Variables) -> Result<T> {
+    pub async fn get<T: ParseObject>(&self, query: &str, vars: Variables) -> Result<T> {
         let ress = self.execute(query, vars).await?;
 
         let Some(res) = into_iter_of::<T>(ress)?.next().transpose()? else {
@@ -81,7 +81,7 @@ impl Db {
         Ok(res)
     }
 
-    pub async fn list<T: TryFromObject>(&self, query: &str, vars: Variables) -> Result<Vec<T>> {
+    pub async fn list<T: ParseObject>(&self, query: &str, vars: Variables) -> Result<Vec<T>> {
         let ress = self.execute(query, vars).await?;
         into_iter_of::<T>(ress)?.collect()
     }
@@ -103,8 +103,8 @@ pub fn into_iter_objects(ress: Vec<Response>) -> Result<impl Iterator<Item = Res
     }
 }
 
-pub fn into_iter_of<T: TryFromObject>(
+pub fn into_iter_of<T: ParseObject>(
     ress: Vec<Response>,
 ) -> Result<impl Iterator<Item = Result<T>>> {
-    Ok(into_iter_objects(ress)?.map(|res| res.and_then(T::try_from_object)))
+    Ok(into_iter_objects(ress)?.map(|res| res.and_then(T::parse_obj)))
 }
