@@ -5,39 +5,19 @@ import type { PackCreate } from '@bindings/PackCreate';
 import type { PackUpdate } from '@bindings/PackUpdate';
 
 type Commands = {
-    create_pack: {
-        pack: PackCreate;
-    };
-    list_packs: {
-        $output: Pack[];
-    };
-    get_pack: {
-        id: string;
-        $output: Pack;
-    };
-    delete_pack: {
-        id: string;
-    };
-    update_pack: {
-        update: PackUpdate;
-    };
-    list_cards: {
-        id: string;
-        $output: Card[];
-    };
-    add_card: {
-        card: CardAdd;
-    };
-};
-
-type HasOutput = {
-    $output: unknown;
+    create_pack: (args: { pack: PackCreate }) => void;
+    list_packs: () => Pack[];
+    get_pack: (args: { id: string }) => Pack;
+    delete_pack: (args: { id: string }) => void;
+    update_pack: (args: { update: PackUpdate }) => void;
+    list_cards: (args: { id: string }) => Card[];
+    add_card: (args: { card: CardAdd }) => void;
 };
 
 type Invoke = <T extends keyof Commands>(
     cmd: T,
-    args?: Omit<Commands[T], '$output'>
-) => Promise<Commands[T] extends HasOutput ? Commands[T]['$output'] : void>;
+    ...args: Parameters<Commands[T]>
+) => Promise<ReturnType<Commands[T]>>;
 
 type Window = {
     __TAURI__: {
@@ -45,7 +25,7 @@ type Window = {
     };
 };
 
-export const invoke: Invoke = async (cmd, args) => {
+export const invoke: Invoke = async (cmd, ...args) => {
     const invoke = (window as unknown as Window).__TAURI__.invoke;
-    return await invoke(cmd, args);
+    return await invoke(cmd, ...args);
 };
