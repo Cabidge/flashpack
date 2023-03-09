@@ -63,11 +63,11 @@
 
 <ContextMenu bind:this={menu}>
     <MenuButton label="Quick Study" icon="book" />
-    <MenuButton label="Delete" danger icon="trash" />
+    <MenuButton on:click={deleteModal.open} label="Delete" danger icon="trash" />
 </ContextMenu>
 
 <Modal bind:this={deleteModal}>
     <span>Delete {pack.title}?</span>
     <button on:click={remove}>yes</button>
-    <button on:click={deleteModal.close}>no</button>
+    <button on:click={deleteModal.close}>cancel</button>
 </Modal>
