@@ -2,7 +2,7 @@
     import { invalidateAll } from '$app/navigation';
     import { invoke } from '$lib/commands';
 
-    export let close = () => {};
+    export let close: () => void;
 
     let title = '';
 

@@ -3,7 +3,7 @@
     import { invoke } from '$lib/commands';
 
     export let id: string;
-    export let close = () => {};
+    export let close: () => void;
 
     let front = '';
     let back = '';

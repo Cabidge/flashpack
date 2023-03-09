@@ -4,7 +4,7 @@
     import { invoke } from '$lib/commands';
 
     export let pack: Pack;
-    export let close = () => {};
+    export let close: () => void;
 
     $: title = pack.title;
     $: id = pack.id;
