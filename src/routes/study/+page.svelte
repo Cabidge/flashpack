@@ -13,13 +13,16 @@
             return id.Concrete;
         }
     };
+
+    const sessionLink = (id: QuizQuery) =>
+        'Fleeting' in id ? `/study/fleeting/${id.Fleeting}` : `/study/concrete/${id.Concrete}`;
 </script>
 
 <div class="p-8">
     <ul>
         {#each sessions as session (sessionId(session.id))}
             <li>
-                {session.name}
+                <a href={sessionLink(session.id)}>{session.name}</a>
             </li>
         {/each}
     </ul>
