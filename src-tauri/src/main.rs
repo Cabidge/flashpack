@@ -63,7 +63,7 @@ pub struct QuizSummary {
 
 type SessionList = Vec<QuizSummary>;
 
-#[derive(TS, Serialize, Debug)]
+#[derive(TS, Serialize, Debug, Clone)]
 #[ts(export, export_to = "../src/bindings/")]
 pub struct Quiz {
     id: String,
@@ -71,14 +71,14 @@ pub struct Quiz {
     questions: Vec<Question>,
 }
 
-#[derive(TS, Serialize, Debug)]
+#[derive(TS, Serialize, Deserialize, Debug, Clone)]
 #[ts(export, export_to = "../src/bindings/")]
 pub enum QuizQuery {
     Fleeting(u32),
     Concrete(String),
 }
 
-#[derive(TS, Serialize, Debug)]
+#[derive(TS, Serialize, Debug, Clone)]
 #[ts(export, export_to = "../src/bindings/")]
 pub struct Question {
     question: String,
@@ -86,7 +86,7 @@ pub struct Question {
     status: Completeness,
 }
 
-#[derive(TS, Serialize, Debug)]
+#[derive(TS, Serialize, Deserialize, Debug, Clone, Copy)]
 #[ts(export, export_to = "../src/bindings/")]
 pub enum Completeness {
     Correct,
@@ -181,6 +181,8 @@ async fn main() -> Result<()> {
             add_card,
             list_sessions,
             begin_fleeting,
+            get_session,
+            mark_question,
         ])
         .manage(db)
         .manage(Sessions::default())
@@ -335,4 +337,46 @@ async fn begin_fleeting(
     let mut sessions = sessions.lock().unwrap();
 
     Ok(sessions.create(format!("{} session", pack.title), &cards))
+}
+
+#[tauri::command]
+fn get_session(_db: State<'_, Db>, sessions: State<'_, Sessions>, id: QuizQuery) -> Result<Quiz> {
+    match id {
+        QuizQuery::Fleeting(id) => {
+            let sessions = sessions.lock().unwrap();
+
+            sessions
+                .get(id)
+                .cloned()
+                .ok_or_else(|| Error::from(anyhow::anyhow!("Session not found")))
+        }
+        QuizQuery::Concrete(_id) => todo!("Does not exist...yet"),
+    }
+}
+
+#[tauri::command]
+fn mark_question(
+    _db: State<'_, Db>,
+    sessions: State<'_, Sessions>,
+    id: QuizQuery,
+    question_index: usize,
+    status: Completeness,
+) -> Result<()> {
+    match id {
+        QuizQuery::Fleeting(id) => {
+            let mut sessions = sessions.lock().unwrap();
+
+            let mut question = sessions
+                .get_mut(id)
+                .ok_or_else(|| Error::from(anyhow::anyhow!("Session not found")))?
+                .questions
+                .get_mut(question_index)
+                .ok_or_else(|| Error::from(anyhow::anyhow!("Question not found")))?;
+
+            question.status = status;
+
+            Ok(())
+        }
+        QuizQuery::Concrete(_id) => todo!("Does not exist...yet"),
+    }
 }

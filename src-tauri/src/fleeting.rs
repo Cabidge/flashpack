@@ -35,6 +35,10 @@ impl Sessions {
         quiz_id
     }
 
+    pub fn get(&self, id: u32) -> Option<&Quiz> {
+        self.sessions.get(&id)
+    }
+
     pub fn get_mut(&mut self, id: u32) -> Option<&mut Quiz> {
         self.sessions.get_mut(&id)
     }
