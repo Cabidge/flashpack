@@ -2,8 +2,6 @@ use serde::Serialize;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("[surreal] {0}")]
-    Surreal(#[from] surrealdb::Error),
     #[error("[sqlx] {0}")]
     Sqlx(#[from] sqlx::Error),
     #[error("[migrate] {0}")]
