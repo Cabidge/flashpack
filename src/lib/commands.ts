@@ -8,13 +8,13 @@ import type { QuizSummary } from '@bindings/QuizSummary';
 type Commands = {
     create_pack: (args: { pack: PackCreate }) => void;
     list_packs: () => Pack[];
-    get_pack: (args: { id: string }) => Pack;
-    delete_pack: (args: { id: string }) => void;
+    get_pack: (args: { id: number }) => Pack;
+    delete_pack: (args: { id: number }) => void;
     update_pack: (args: { update: PackUpdate }) => void;
-    list_cards: (args: { id: string }) => Card[];
+    list_cards: (args: { id: number }) => Card[];
     add_card: (args: { card: CardAdd }) => void;
     list_sessions: () => QuizSummary[];
-    begin_fleeting: (args: { id: string }) => number;
+    begin_fleeting: (args: { id: number }) => number;
 };
 
 type Invoke = <T extends keyof Commands>(

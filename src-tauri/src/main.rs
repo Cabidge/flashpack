@@ -3,7 +3,6 @@
     windows_subsystem = "windows"
 )]
 
-mod db;
 mod error;
 mod fleeting;
 mod prelude;
@@ -12,16 +11,15 @@ use std::sync::Mutex;
 
 use crate::prelude::*;
 
-use db::{Db, ParseObject};
 use serde::{Deserialize, Serialize};
-use surrealdb::sql::{Object, Thing, Value};
+use sqlx::{FromRow, SqlitePool};
 use tauri::State;
 use ts_rs::TS;
 
-#[derive(TS, Serialize, Debug)]
+#[derive(FromRow, TS, Serialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
 pub struct Pack {
-    id: String,
+    id: i32,
     title: String,
 }
 
@@ -34,14 +32,14 @@ pub struct PackCreate {
 #[derive(TS, Deserialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
 pub struct PackUpdate {
-    id: String,
+    id: i32,
     title: String,
 }
 
-#[derive(TS, Serialize, Debug)]
+#[derive(FromRow, TS, Serialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
 pub struct Card {
-    id: String,
+    id: i32,
     front: String,
     back: String,
 }
@@ -49,7 +47,7 @@ pub struct Card {
 #[derive(TS, Deserialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
 pub struct CardAdd {
-    pack_id: String,
+    pack_id: i32,
     front: String,
     back: String,
 }
@@ -124,51 +122,11 @@ macro_rules! vars {
     }
 }
 
-impl ParseObject for Pack {
-    fn parse_obj(mut value: Object) -> Result<Self> {
-        let title = value
-            .remove("title")
-            .map(Value::as_string)
-            .unwrap_or_else(|| String::from("untitled"));
-
-        let Some(Value::Thing(th)) = value.get("id") else {
-            bail!("Failed to get id.");
-        };
-
-        Ok(Pack {
-            id: th.id.to_string(),
-            title,
-        })
-    }
-}
-
-impl ParseObject for Card {
-    fn parse_obj(mut value: Object) -> Result<Self> {
-        let front = value
-            .remove("front")
-            .map(Value::as_string)
-            .unwrap_or_else(String::new);
-
-        let back = value
-            .remove("back")
-            .map(Value::as_string)
-            .unwrap_or_else(String::new);
-
-        let Some(Value::Thing(th)) = value.get("id") else {
-            bail!("Failed to get id.");
-        };
-
-        Ok(Card {
-            id: th.id.to_string(),
-            front,
-            back,
-        })
-    }
-}
-
 #[tokio::main]
 async fn main() -> Result<()> {
-    let db = Db::new("memory", "flashpack", "db").await?;
+    let pool = SqlitePool::connect("sqlite::memory:").await?;
+
+    sqlx::migrate!().run(&pool).await?;
 
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
@@ -184,7 +142,7 @@ async fn main() -> Result<()> {
             get_session,
             mark_question,
         ])
-        .manage(db)
+        .manage(pool)
         .manage(Sessions::default())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -193,128 +151,108 @@ async fn main() -> Result<()> {
 }
 
 #[tauri::command]
-async fn list_packs(db: State<'_, Db>) -> Result<Vec<Pack>> {
-    db.list(
+async fn list_packs(pool: State<'_, SqlitePool>) -> Result<Vec<Pack>> {
+    sqlx::query_as::<_, Pack>(
         "
-        SELECT id, title, created,
-            string::lowercase(title) as lower_title
-        FROM pack
-        ORDER BY lower_title ASC, created ASC
+        SELECT *
+        FROM packs
+        ORDER BY LOWER(title) ASC, id ASC
         ",
-        None,
     )
+    .fetch_all(pool.inner())
     .await
+    .map_err(Error::from)
 }
 
 #[tauri::command]
-async fn create_pack(db: State<'_, Db>, pack: PackCreate) -> Result<()> {
-    let vars = vars! {
-        "title" => pack.title,
-    };
-
-    db.execute(
-        "CREATE pack SET title = $title, created = time::now()",
-        Some(vars),
+async fn create_pack(pool: State<'_, SqlitePool>, pack: PackCreate) -> Result<()> {
+    sqlx::query(
+        "
+        INSERT INTO packs (title)
+        VALUES (?)
+        ",
     )
+    .bind(pack.title)
+    .execute(pool.inner())
     .await?;
 
     Ok(())
 }
 
 #[tauri::command]
-async fn get_pack(db: State<'_, Db>, id: String) -> Result<Pack> {
-    let th = Thing {
-        id: id.into(),
-        tb: String::from("pack"),
-    };
-
-    let vars = vars! {
-        "th" => th,
-    };
-
-    db.get("SELECT id, title FROM $th", Some(vars)).await
-}
-
-#[tauri::command]
-async fn delete_pack(db: State<'_, Db>, id: String) -> Result<()> {
-    let th = Thing {
-        id: id.into(),
-        tb: String::from("pack"),
-    };
-
-    let vars = vars! {
-        "th" => th,
-    };
-
-    db.execute("DELETE $th", Some(vars)).await?;
-
-    Ok(())
-}
-
-#[tauri::command]
-async fn update_pack(db: State<'_, Db>, update: PackUpdate) -> Result<()> {
-    let th = Thing {
-        id: update.id.into(),
-        tb: String::from("pack"),
-    };
-
-    let vars = vars! {
-        "th" => th,
-        "title" => update.title,
-    };
-
-    db.execute("UPDATE $th SET title = $title", Some(vars))
-        .await?;
-
-    Ok(())
-}
-
-#[tauri::command]
-async fn list_cards(db: State<'_, Db>, id: String) -> Result<Vec<Card>> {
-    let th = Thing {
-        id: id.into(),
-        tb: String::from("pack"),
-    };
-
-    let vars = vars! {
-        "pack" => th,
-    };
-
-    db.list(
+async fn get_pack(pool: State<'_, SqlitePool>, id: i32) -> Result<Pack> {
+    sqlx::query_as::<_, Pack>(
         "
-        SELECT id, front, back, created
-        FROM card
-        WHERE pack = $pack
-        ORDER BY created ASC
+        SELECT *
+        FROM packs
+        WHERE id = ?
         ",
-        Some(vars),
     )
+    .bind(id)
+    .fetch_one(pool.inner())
     .await
+    .map_err(Error::from)
 }
 
 #[tauri::command]
-async fn add_card(db: State<'_, Db>, card: CardAdd) -> Result<()> {
-    let pack_th = Thing {
-        id: card.pack_id.into(),
-        tb: String::from("pack"),
-    };
-
-    let vars = vars! {
-        "front" => card.front,
-        "back" => card.back,
-        "pack" => pack_th,
-    };
-
-    db.execute(
+async fn delete_pack(pool: State<'_, SqlitePool>, id: i32) -> Result<()> {
+    sqlx::query(
         "
-        CREATE card
-        SET front = $front,
-            back = $back,
-            pack = $pack,
-            created = time::now()
+        DELETE FROM packs
+        WHERE id = ?
         ",
-        Some(vars),
     )
+    .bind(id)
+    .execute(pool.inner())
+    .await?;
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn update_pack(pool: State<'_, SqlitePool>, update: PackUpdate) -> Result<()> {
+    sqlx::query(
+        "
+        UPDATE packs
+        SET title = ?
+        WHERE id = ?
+        ",
+    )
+    .bind(update.title)
+    .bind(update.id)
+    .execute(pool.inner())
+    .await?;
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn list_cards(pool: State<'_, SqlitePool>, id: i32) -> Result<Vec<Card>> {
+    sqlx::query_as::<_, Card>(
+        "
+        SELECT id, front, back
+        FROM cards
+        WHERE pack_id = ?
+        ",
+    )
+    .bind(id)
+    .fetch_all(pool.inner())
+    .await
+    .map_err(Error::from)
+}
+
+#[tauri::command]
+async fn add_card(pool: State<'_, SqlitePool>, card: CardAdd) -> Result<()> {
+    sqlx::query(
+        "
+        INSERT INTO cards (front, back, pack_id)
+        VALUES (?, ?, ?)
+        ",
+    )
+    .bind(card.front)
+    .bind(card.back)
+    .bind(card.pack_id)
+    .execute(pool.inner())
     .await?;
 
     Ok(())
@@ -327,12 +265,12 @@ fn list_sessions(sessions: State<'_, Sessions>) -> SessionList {
 
 #[tauri::command]
 async fn begin_fleeting(
-    db: State<'_, Db>,
+    pool: State<'_, SqlitePool>,
     sessions: State<'_, Sessions>,
-    id: String,
+    id: i32,
 ) -> Result<u32> {
-    let pack = get_pack(db.clone(), id.clone()).await?;
-    let cards = list_cards(db.clone(), id.clone()).await?;
+    let pack = get_pack(pool.clone(), id).await?;
+    let cards = list_cards(pool, id).await?;
 
     let mut sessions = sessions.lock().unwrap();
 
@@ -340,7 +278,7 @@ async fn begin_fleeting(
 }
 
 #[tauri::command]
-fn get_session(_db: State<'_, Db>, sessions: State<'_, Sessions>, id: QuizQuery) -> Result<Quiz> {
+fn get_session(sessions: State<'_, Sessions>, id: QuizQuery) -> Result<Quiz> {
     match id {
         QuizQuery::Fleeting(id) => {
             let sessions = sessions.lock().unwrap();
@@ -356,7 +294,6 @@ fn get_session(_db: State<'_, Db>, sessions: State<'_, Sessions>, id: QuizQuery)
 
 #[tauri::command]
 fn mark_question(
-    _db: State<'_, Db>,
     sessions: State<'_, Sessions>,
     id: QuizQuery,
     question_index: usize,
