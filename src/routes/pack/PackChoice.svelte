@@ -69,6 +69,7 @@
     <MenuButton on:click={deleteModal.open} label="Delete" danger icon="trash" />
 </ContextMenu>
 
+<!-- TODO: Fix delete transition acting funky when this Modal is transitioning out -->
 <Modal bind:this={deleteModal}>
     <span>Delete {pack.title}?</span>
     <button on:click={remove}>yes</button>
