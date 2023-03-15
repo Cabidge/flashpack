@@ -4,10 +4,7 @@
 )]
 
 mod error;
-mod fleeting;
 mod prelude;
-
-use std::sync::Mutex;
 
 use crate::prelude::*;
 
@@ -52,47 +49,6 @@ pub struct CardAdd {
     back: String,
 }
 
-#[derive(TS, Serialize, Debug)]
-#[ts(export, export_to = "../src/bindings/")]
-pub struct QuizSummary {
-    id: QuizQuery,
-    name: String,
-}
-
-type SessionList = Vec<QuizSummary>;
-
-#[derive(TS, Serialize, Debug, Clone)]
-#[ts(export, export_to = "../src/bindings/")]
-pub struct Quiz {
-    id: String,
-    name: String,
-    questions: Vec<Question>,
-}
-
-#[derive(TS, Serialize, Deserialize, Debug, Clone)]
-#[ts(export, export_to = "../src/bindings/")]
-pub enum QuizQuery {
-    Fleeting(u32),
-    Concrete(String),
-}
-
-#[derive(TS, Serialize, Debug, Clone)]
-#[ts(export, export_to = "../src/bindings/")]
-pub struct Question {
-    question: String,
-    answer: String,
-    status: Completeness,
-}
-
-#[derive(TS, Serialize, Deserialize, Debug, Clone, Copy)]
-#[ts(export, export_to = "../src/bindings/")]
-pub enum Completeness {
-    Correct,
-    Incorrect,
-    Incomplete,
-}
-
-type Sessions = Mutex<fleeting::Sessions>;
 
 #[macro_export]
 macro_rules! bail {
@@ -137,13 +93,8 @@ async fn main() -> Result<()> {
             update_pack,
             list_cards,
             add_card,
-            list_sessions,
-            begin_fleeting,
-            get_session,
-            mark_question,
         ])
         .manage(pool)
-        .manage(Sessions::default())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 
@@ -256,64 +207,4 @@ async fn add_card(pool: State<'_, SqlitePool>, card: CardAdd) -> Result<()> {
     .await?;
 
     Ok(())
-}
-
-#[tauri::command]
-fn list_sessions(sessions: State<'_, Sessions>) -> SessionList {
-    sessions.lock().unwrap().summarize()
-}
-
-#[tauri::command]
-async fn begin_fleeting(
-    pool: State<'_, SqlitePool>,
-    sessions: State<'_, Sessions>,
-    id: i32,
-) -> Result<u32> {
-    let pack = get_pack(pool.clone(), id).await?;
-    let cards = list_cards(pool, id).await?;
-
-    let mut sessions = sessions.lock().unwrap();
-
-    Ok(sessions.create(format!("{} session", pack.title), &cards))
-}
-
-#[tauri::command]
-fn get_session(sessions: State<'_, Sessions>, id: QuizQuery) -> Result<Quiz> {
-    match id {
-        QuizQuery::Fleeting(id) => {
-            let sessions = sessions.lock().unwrap();
-
-            sessions
-                .get(id)
-                .cloned()
-                .ok_or_else(|| Error::from(anyhow::anyhow!("Session not found")))
-        }
-        QuizQuery::Concrete(_id) => todo!("Does not exist...yet"),
-    }
-}
-
-#[tauri::command]
-fn mark_question(
-    sessions: State<'_, Sessions>,
-    id: QuizQuery,
-    question_index: usize,
-    status: Completeness,
-) -> Result<()> {
-    match id {
-        QuizQuery::Fleeting(id) => {
-            let mut sessions = sessions.lock().unwrap();
-
-            let mut question = sessions
-                .get_mut(id)
-                .ok_or_else(|| Error::from(anyhow::anyhow!("Session not found")))?
-                .questions
-                .get_mut(question_index)
-                .ok_or_else(|| Error::from(anyhow::anyhow!("Question not found")))?;
-
-            question.status = status;
-
-            Ok(())
-        }
-        QuizQuery::Concrete(_id) => todo!("Does not exist...yet"),
-    }
 }
