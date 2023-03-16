@@ -5,6 +5,7 @@
 
 mod error;
 mod prelude;
+mod query;
 
 use crate::prelude::*;
 
@@ -48,7 +49,6 @@ pub struct CardAdd {
     front: String,
     back: String,
 }
-
 
 #[macro_export]
 macro_rules! bail {
