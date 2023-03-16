@@ -3,7 +3,7 @@ use sqlx::SqlitePool;
 use tauri::State;
 use ts_rs::TS;
 
-use crate::{prelude::*, pack::{PackSummary, Pack}, card::CardSummary};
+use crate::{prelude::*, pack::{PackSummary, Pack}, card::CardSummary, db};
 
 #[derive(TS, Deserialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
@@ -42,16 +42,7 @@ pub async fn list_packs(pool: State<'_, SqlitePool>) -> Result<Vec<PackSummary>>
 
 #[tauri::command]
 pub async fn create_pack(pool: State<'_, SqlitePool>, pack: PackCreate) -> Result<()> {
-    sqlx::query(
-        "
-        INSERT INTO packs (title)
-        VALUES (?)
-        ",
-    )
-    .bind(pack.title)
-    .execute(pool.inner())
-    .await?;
-
+    db::create_pack(pool.inner(), &pack.title).await?;
     Ok(())
 }
 
@@ -119,17 +110,6 @@ pub async fn update_pack(pool: State<'_, SqlitePool>, update: PackUpdate) -> Res
 
 #[tauri::command]
 pub async fn add_card(pool: State<'_, SqlitePool>, card: CardAdd) -> Result<()> {
-    sqlx::query(
-        "
-        INSERT INTO cards (front, back, pack_id)
-        VALUES (?, ?, ?)
-        ",
-    )
-    .bind(card.front)
-    .bind(card.back)
-    .bind(card.pack_id)
-    .execute(pool.inner())
-    .await?;
-
+    db::add_card(pool.inner(), card.pack_id, &card.front, &card.back).await?;
     Ok(())
 }

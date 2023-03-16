@@ -4,6 +4,7 @@
 )]
 
 mod card;
+mod db;
 mod error;
 mod pack;
 mod query;
