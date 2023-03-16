@@ -1,10 +1,10 @@
 <script lang="ts">
-    import type { Pack } from '@bindings/Pack';
+    import type { PackSummary } from '@bindings/PackSummary';
     import { flip } from 'svelte/animate';
     import { fade, fly } from 'svelte/transition';
     import PackChoice from './PackChoice.svelte';
 
-    export let packs: Pack[];
+    export let packs: PackSummary[];
 </script>
 
 {#if packs.length == 0}

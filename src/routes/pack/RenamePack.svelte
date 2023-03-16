@@ -1,9 +1,9 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
-    import type { Pack } from '@bindings/Pack';
     import { invoke } from '$lib/commands';
+    import type { PackSummary } from '@bindings/PackSummary';
 
-    export let pack: Pack;
+    export let pack: PackSummary;
     export let close: () => void;
 
     $: title = pack.title;

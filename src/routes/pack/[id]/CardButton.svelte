@@ -1,9 +1,9 @@
 <script lang="ts">
     import CardView from '$lib/CardView.svelte';
     import ModalController from '$lib/ModalController.svelte';
-    import type { Card } from '@bindings/Card';
+    import type { CardSummary } from '@bindings/CardSummary';
 
-    export let card: Card;
+    export let card: CardSummary;
 
     export let tags: string[] = [];
 </script>

@@ -1,7 +1,6 @@
 <script lang="ts">
     import { goto, invalidateAll } from '$app/navigation';
     import { page } from '$app/stores';
-    import type { Pack } from '@bindings/Pack';
     import { conditionalClass } from '$lib/styling';
     import ModalController from '$lib/ModalController.svelte';
     import RenamePack from './RenamePack.svelte';
@@ -9,8 +8,9 @@
     import MenuButton from '$lib/MenuButton.svelte';
     import Modal from '$lib/Modal.svelte';
     import { invoke } from '$lib/commands';
+    import type { PackSummary } from '@bindings/PackSummary';
 
-    export let pack: Pack;
+    export let pack: PackSummary;
 
     let hovering = false;
 
@@ -38,9 +38,9 @@
     };
 
     const quickStudy = async () => {
-        await invoke('begin_fleeting', { id: pack.id });
-        await goto('/study');
-    };
+        // TODO
+        console.log("Study not ready...");
+     };
 </script>
 
 <ModalController let:active let:open let:close>

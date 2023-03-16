@@ -6,8 +6,9 @@
 
     export let data: PageData;
 
+    $: id = data.id;
     $: pack = data.pack;
-    $: cards = data.cards;
+    $: cards = pack.cards;
 </script>
 
 <h1 class="text-2xl font-semibold">
@@ -22,7 +23,7 @@
         <button on:click={open}>+</button>
     </h2>
 
-    <AddCard slot="modal" id={pack.id} {close} />
+    <AddCard slot="modal" {id} {close} />
 </ModalController>
 
 <div class="mb-2 border-b-2" />
