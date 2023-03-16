@@ -14,7 +14,7 @@ CREATE TABLE cards (
 
 CREATE TABLE tags (
     id INTEGER PRIMARY KEY,
-    label TEXT NOT NULL
+    label TEXT NOT NULL UNIQUE COLLATE NOCASE
 );
 
 CREATE TABLE card_tags (
