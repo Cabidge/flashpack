@@ -2,7 +2,7 @@
     import { invalidateAll } from '$app/navigation';
     import { invoke } from '$lib/commands';
 
-    export let id: string;
+    export let id: number;
     export let close: () => void;
 
     let front = '';
