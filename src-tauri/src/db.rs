@@ -27,6 +27,7 @@ pub async fn add_card(pool: &SqlitePool, pack_id: PackId, front: &str, back: &st
         "
         INSERT INTO cards (front, back, pack_id)
         VALUES (?, ?, ?)
+        RETURNING id
         ",
     )
     .bind(front)
