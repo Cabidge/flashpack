@@ -31,11 +31,15 @@
 {#if cards.length === 0}
     <p>No cards found...</p>
 {:else}
-    <div
-        class="grid w-full grid-cols-2 gap-4 rounded bg-slate-100 p-4 shadow-inner md:grid-cols-3 lg:grid-cols-4"
-    >
+    <div class="card-grid grid w-full gap-4 rounded bg-slate-100 p-4 shadow-inner">
         {#each cards as card (card.id)}
             <CardButton {card} />
         {/each}
     </div>
 {/if}
+
+<style>
+    .card-grid {
+        grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+    }
+</style>
