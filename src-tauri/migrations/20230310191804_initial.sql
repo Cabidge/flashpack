@@ -25,4 +25,4 @@ CREATE TABLE card_tags (
         ON DELETE CASCADE
         ON UPDATE CASCADE,
     PRIMARY KEY (card_id, tag_id)
-);
+) WITHOUT ROWID;
