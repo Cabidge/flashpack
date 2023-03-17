@@ -17,7 +17,7 @@
 
 <br />
 
-<ModalController let:open let:close>
+<ModalController title="Add a Card" let:open let:close>
     <h2 class="text-lg">
         Cards
         <button on:click={open}>+</button>

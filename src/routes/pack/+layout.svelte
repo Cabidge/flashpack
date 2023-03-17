@@ -22,7 +22,7 @@
     <div class="flex gap-2">
         <input class="min-w-0 rounded pl-2 shadow" bind:value={search} placeholder="Search..." />
 
-        <ModalController let:open let:close>
+        <ModalController title="Create a Pack" let:open let:close>
             <button
                 class="aspect-square w-9 flex-none rounded bg-indigo-500 text-center text-xl font-semibold text-white shadow hover:bg-indigo-600"
                 on:click={open}

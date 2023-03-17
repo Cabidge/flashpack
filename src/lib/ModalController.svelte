@@ -2,6 +2,7 @@
     import Modal from './Modal.svelte';
 
     let active = false;
+    export let title: string;
 
     const open = () => (active = true);
     const close = () => (active = false);
@@ -9,6 +10,6 @@
 
 <slot {active} {open} {close} />
 
-<Modal bind:active>
+<Modal {title} bind:active>
     <slot name="modal" />
 </Modal>

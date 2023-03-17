@@ -8,7 +8,7 @@
     export let tags: string[] = [];
 </script>
 
-<ModalController let:open>
+<ModalController title="View a Card" let:open>
     <button
         class="flex h-40 flex-col items-center gap-2 rounded border-2 border-transparent bg-white p-3 text-lg shadow transition hover:-translate-y-1 hover:border-indigo-400 hover:shadow-md"
         on:click={open}

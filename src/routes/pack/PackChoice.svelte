@@ -43,7 +43,7 @@
      };
 </script>
 
-<ModalController let:active let:open let:close>
+<ModalController title="Rename Pack" let:active let:open let:close>
     <a
         {href}
         class={linkClass}
@@ -70,8 +70,7 @@
 </ContextMenu>
 
 <!-- TODO: Fix delete transition acting funky when this Modal is transitioning out -->
-<Modal bind:this={deleteModal}>
-    <span>Delete {pack.title}?</span>
+<Modal title="Delete {pack.title}?" bind:this={deleteModal}>
     <button on:click={remove}>yes</button>
     <button on:click={deleteModal.close}>cancel</button>
 </Modal>
