@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use rand::{distributions::WeightedIndex, prelude::Distribution};
 use serde::Serialize;
 use sqlx::FromRow;
