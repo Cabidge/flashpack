@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use rand::{distributions::WeightedIndex, prelude::Distribution};
 use serde::Serialize;
 use sqlx::FromRow;
@@ -21,18 +23,14 @@ pub enum CardQuery {
 }
 
 struct Filter {
-    pack: Option<PackFilter>,
-    tags: Vec<TagFilter>
+    pack_id: i64,
+    tags: BTreeMap<i64, Inclusion>,
 }
 
-enum PackFilter {
-    Include(i64),
-    Exclude(Vec<i64>),
-}
-
-struct TagFilter {
-    id: i64,
-    negate: bool,
+#[derive(Clone, Copy)]
+enum Inclusion {
+    Include,
+    Exclude,
 }
 
 struct WeightedQuery {
