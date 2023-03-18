@@ -22,8 +22,8 @@ pub enum CardQuery {
 
 pub struct Filter {
     pub pack_id: i64,
-    pub included_tags: Vec<i64>,
-    pub excluded_tags: Vec<i64>,
+    pub included_tags: Vec<String>,
+    pub excluded_tags: Vec<String>,
 }
 
 pub struct WeightedQuery {
@@ -105,18 +105,18 @@ pub async fn try_query(mut query: &CardQuery, pool: &sqlx::SqlitePool) -> Result
     }
 }
 
-fn push_tag_matches(sql: &mut sqlx::QueryBuilder<'_, sqlx::Sqlite>, tag_ids: &[i64]) {
+fn push_tag_matches<'a>(sql: &mut sqlx::QueryBuilder<'a, sqlx::Sqlite>, tags: &'a [String]) {
     sql.push(
         "
         SELECT card_id
         FROM card_tags
-        WHERE tag_id IN (
+        WHERE tag IN (
         ",
     );
 
     let mut sql_tags = sql.separated(", ");
-    for tag_id in tag_ids.iter() {
-        sql_tags.push_bind(*tag_id);
+    for tag in tags {
+        sql_tags.push_bind(tag);
     }
 
     sql.push(")");

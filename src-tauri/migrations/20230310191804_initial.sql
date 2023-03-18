@@ -12,17 +12,10 @@ CREATE TABLE cards (
         ON UPDATE CASCADE
 );
 
-CREATE TABLE tags (
-    id INTEGER NOT NULL PRIMARY KEY,
-    label TEXT NOT NULL UNIQUE COLLATE NOCASE
-);
-
 CREATE TABLE card_tags (
     card_id INTEGER NOT NULL REFERENCES cards(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    tag_id INTEGER NOT NULL REFERENCES tags(id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    PRIMARY KEY (card_id, tag_id)
+    tag TEXT NOT NULL,
+    PRIMARY KEY (card_id, tag)
 ) WITHOUT ROWID;

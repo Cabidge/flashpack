@@ -1,10 +1,9 @@
 use crate::prelude::*;
 
-use sqlx::{FromRow, Row, SqlitePool};
+use sqlx::{FromRow, SqlitePool};
 
 pub type PackId = i64;
 pub type CardId = i64;
-pub type TagId = i64;
 
 #[derive(FromRow)]
 struct Id {
@@ -50,30 +49,14 @@ pub async fn add_card(
     Ok(row.id)
 }
 
-pub async fn create_tag(pool: &SqlitePool, label: &str) -> Result<TagId> {
-    let row = sqlx::query_as!(
-        Id,
-        "
-        INSERT INTO tags (label)
-        VALUES (?)
-        RETURNING id
-        ",
-        label,
-    )
-    .fetch_one(pool)
-    .await?;
-
-    Ok(row.id)
-}
-
-pub async fn add_tag(pool: &SqlitePool, card_id: CardId, tag_id: TagId) -> Result<()> {
+pub async fn add_tag(pool: &SqlitePool, card_id: CardId, tag: &str) -> Result<()> {
     sqlx::query!(
         "
-        INSERT INTO card_tags (card_id, tag_id)
+        INSERT INTO card_tags (card_id, tag)
         VALUES (?, ?)
         ",
         card_id,
-        tag_id,
+        tag,
     )
     .execute(pool)
     .await?;
