@@ -22,13 +22,13 @@ pub enum CardQuery {
     Branch(Vec<WeightedQuery>),
 }
 
-struct Filter {
-    pack_id: i64,
-    tags: BTreeMap<i64, Inclusion>,
+pub struct Filter {
+    pub pack_id: i64,
+    pub tags: BTreeMap<i64, Inclusion>,
 }
 
 #[derive(Clone, Copy)]
-enum Inclusion {
+pub enum Inclusion {
     Include,
     Exclude,
 }
@@ -93,14 +93,15 @@ pub async fn try_query(mut query: &CardQuery, pool: &sqlx::SqlitePool) -> Result
                         ",
                     )
                     .push_bind(filter.tags.len() as i64)
-                    .push(
-                        "
-                        )
-                        SORT BY RANDOM()
-                        LIMIT 1
-                        "
-                    );
+                    .push(")");
                 }
+
+                sql.push(
+                    "
+                    ORDER BY RANDOM()
+                    LIMIT 1
+                    "
+                );
 
                 return sql.build_query_as::<Prompt>()
                     .fetch_optional(pool).await
