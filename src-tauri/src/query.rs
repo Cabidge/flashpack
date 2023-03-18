@@ -28,7 +28,7 @@ pub struct Filter {
     pub excluded_tags: Vec<i64>,
 }
 
-struct WeightedQuery {
+pub struct WeightedQuery {
     query: CardQuery,
     weight: u32,
 }
