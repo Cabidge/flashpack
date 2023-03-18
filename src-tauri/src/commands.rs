@@ -14,21 +14,22 @@ pub struct PackCreate {
 #[derive(TS, Deserialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
 pub struct PackUpdate {
-    id: i32,
+    id: i64,
     title: String,
 }
 
 #[derive(TS, Deserialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
 pub struct CardAdd {
-    pack_id: i32,
+    pack_id: i64,
     front: String,
     back: String,
 }
 
 #[tauri::command]
 pub async fn list_packs(pool: State<'_, SqlitePool>) -> Result<Vec<PackSummary>> {
-    sqlx::query_as::<_, PackSummary>(
+    sqlx::query_as!(
+        PackSummary,
         "
         SELECT *
         FROM packs
@@ -48,25 +49,27 @@ pub async fn create_pack(pool: State<'_, SqlitePool>, pack: PackCreate) -> Resul
 
 #[tauri::command]
 pub async fn get_pack(pool: State<'_, SqlitePool>, id: i32) -> Result<Pack> {
-    let summary = sqlx::query_as::<_, PackSummary>(
+    let summary = sqlx::query_as!(
+        PackSummary,
         "
         SELECT *
         FROM packs
         WHERE id = ?
         ",
+        id,
     )
-    .bind(id)
     .fetch_one(pool.inner())
     .await?;
 
-    let cards = sqlx::query_as::<_, CardSummary>(
+    let cards = sqlx::query_as!(
+        CardSummary,
         "
         SELECT id, front, back
         FROM cards
         WHERE pack_id = ?
-        "
+        ",
+        summary.id,
     )
-    .bind(summary.id)
     .fetch_all(pool.inner())
     .await?;
 
@@ -78,13 +81,13 @@ pub async fn get_pack(pool: State<'_, SqlitePool>, id: i32) -> Result<Pack> {
 
 #[tauri::command]
 pub async fn delete_pack(pool: State<'_, SqlitePool>, id: i32) -> Result<()> {
-    sqlx::query(
+    sqlx::query!(
         "
         DELETE FROM packs
         WHERE id = ?
         ",
+        id,
     )
-    .bind(id)
     .execute(pool.inner())
     .await?;
 
@@ -93,15 +96,15 @@ pub async fn delete_pack(pool: State<'_, SqlitePool>, id: i32) -> Result<()> {
 
 #[tauri::command]
 pub async fn update_pack(pool: State<'_, SqlitePool>, update: PackUpdate) -> Result<()> {
-    sqlx::query(
+    sqlx::query!(
         "
         UPDATE packs
         SET title = ?
         WHERE id = ?
         ",
+        update.title,
+        update.id,
     )
-    .bind(update.title)
-    .bind(update.id)
     .execute(pool.inner())
     .await?;
 

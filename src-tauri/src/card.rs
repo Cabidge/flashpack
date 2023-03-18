@@ -5,7 +5,7 @@ use ts_rs::TS;
 #[derive(FromRow, TS, Serialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
 pub struct CardSummary {
-    id: i32,
-    front: String,
-    back: String,
+    pub id: i64,
+    pub front: String,
+    pub back: String,
 }
