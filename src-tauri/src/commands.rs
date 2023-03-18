@@ -3,7 +3,12 @@ use sqlx::SqlitePool;
 use tauri::State;
 use ts_rs::TS;
 
-use crate::{prelude::*, pack::{PackSummary, Pack}, card::CardSummary, db};
+use crate::{
+    card::CardSummary,
+    db,
+    pack::{Pack, PackSummary},
+    prelude::*,
+};
 
 #[derive(TS, Deserialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]

@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-use sqlx::{SqlitePool, Row, FromRow};
+use sqlx::{FromRow, Row, SqlitePool};
 
 pub type PackId = i64;
 pub type CardId = i64;
@@ -27,7 +27,12 @@ pub async fn create_pack(pool: &SqlitePool, title: &str) -> Result<PackId> {
     Ok(row.id)
 }
 
-pub async fn add_card(pool: &SqlitePool, pack_id: PackId, front: &str, back: &str) -> Result<CardId> {
+pub async fn add_card(
+    pool: &SqlitePool,
+    pack_id: PackId,
+    front: &str,
+    back: &str,
+) -> Result<CardId> {
     let row = sqlx::query_as!(
         Id,
         "
