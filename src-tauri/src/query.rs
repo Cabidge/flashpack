@@ -7,25 +7,40 @@ use crate::prelude::*;
 
 #[derive(FromRow, TS, Serialize, Debug)]
 pub struct Prompt {
-    question: String,
-    answer: String,
+    pub question: String,
+    pub answer: String,
 }
 
 pub enum Versioned {
-    V1(Query),
+    V1(CardQuery),
 }
 
-pub enum Query {
-    Pack { id: i32, filters: Vec<CardFilter> },
-    Nested(Vec<(Query, u32)>),
+pub enum CardQuery {
+    Root(Filter),
+    Branch(Vec<WeightedQuery>),
 }
 
-enum CardFilter {
-    WithTag(i32),
-    WithoutTag(i32),
+struct Filter {
+    pack: Option<PackFilter>,
+    tags: Vec<TagFilter>
 }
 
-impl From<Versioned> for Query {
+enum PackFilter {
+    Include(i64),
+    Exclude(Vec<i64>),
+}
+
+struct TagFilter {
+    id: i64,
+    negate: bool,
+}
+
+struct WeightedQuery {
+    query: CardQuery,
+    weight: u32,
+}
+
+impl From<Versioned> for CardQuery {
     fn from(value: Versioned) -> Self {
         match value {
             Versioned::V1(query) => query,
@@ -33,37 +48,25 @@ impl From<Versioned> for Query {
     }
 }
 
-impl From<Query> for Versioned {
-    fn from(value: Query) -> Self {
+impl From<CardQuery> for Versioned {
+    fn from(value: CardQuery) -> Self {
         Versioned::V1(value)
     }
 }
 
-pub async fn try_query(mut query: &Query, pool: &sqlx::SqlitePool) -> Result<Option<Prompt>> {
+pub async fn try_query(mut query: &CardQuery, pool: &sqlx::SqlitePool) -> Result<Option<Prompt>> {
     loop {
         match query {
-            Query::Pack { id, .. } => {
-                return sqlx::query_as::<_, Prompt>(
-                    "
-                    SELECT front as question, back as answer
-                    FROM cards
-                    WHERE pack_id = ?
-                    ORDER BY RANDOM()
-                    LIMIT 1
-                    ",
-                )
-                .bind(*id)
-                .fetch_optional(pool)
-                .await
-                .map_err(Error::from);
+            CardQuery::Root(filter) => {
+                todo!()
             }
-            Query::Nested(weighted_queries) => {
-                let weights = weighted_queries.iter().map(|(_, weight)| *weight);
+            CardQuery::Branch(weighted_queries) => {
+                let weights = weighted_queries.iter().map(|query| query.weight);
                 let distribution = WeightedIndex::new(weights).map_err(Error::simple)?;
 
                 let index = distribution.sample(&mut rand::thread_rng());
 
-                query = &weighted_queries[index].0;
+                query = &weighted_queries[index].query;
             }
         }
     }
