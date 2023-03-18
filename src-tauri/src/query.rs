@@ -24,13 +24,8 @@ pub enum CardQuery {
 
 pub struct Filter {
     pub pack_id: i64,
-    pub tags: BTreeMap<i64, Inclusion>,
-}
-
-#[derive(Clone, Copy)]
-pub enum Inclusion {
-    Include,
-    Exclude,
+    pub included_tags: Vec<i64>,
+    pub excluded_tags: Vec<i64>,
 }
 
 struct WeightedQuery {
@@ -65,35 +60,28 @@ pub async fn try_query(mut query: &CardQuery, pool: &sqlx::SqlitePool) -> Result
                 );
                 sql.push_bind(filter.pack_id);
 
-                if !filter.tags.is_empty() {
-                    sql.push(
-                        "
-                        AND id IN (
-                            SELECT card_id
-                            FROM card_tags
-                            WHERE
-                        ",
-                    );
-
-                    let mut sql_tags = sql.separated(" OR ");
-
-                    for (tag_id, inclusion) in filter.tags.iter() {
-                        let sql_str = match inclusion {
-                            Inclusion::Include => "tag_id = ",
-                            Inclusion::Exclude => "tag_id <> ",
-                        };
-
-                        sql_tags.push(sql_str).push_bind_unseparated(tag_id);
-                    }
-
+                if !filter.included_tags.is_empty() {
+                    sql.push("AND id IN (");
+                    push_tag_matches(&mut sql, &filter.included_tags);
                     sql.push(
                         "
                         GROUP BY card_id
                         HAVING COUNT(*) =
-                        ",
+                        "
                     )
-                    .push_bind(filter.tags.len() as i64)
+                    .push_bind(filter.included_tags.len() as i64)
                     .push(")");
+                }
+
+                if !filter.excluded_tags.is_empty() {
+                    sql.push("AND id NOT IN (");
+                    push_tag_matches(&mut sql, &filter.excluded_tags);
+                    sql.push(
+                        "
+                        GROUP BY card_id
+                        )
+                        "
+                    );
                 }
 
                 sql.push(
@@ -117,4 +105,21 @@ pub async fn try_query(mut query: &CardQuery, pool: &sqlx::SqlitePool) -> Result
             }
         }
     }
+}
+
+fn push_tag_matches(sql: &mut sqlx::QueryBuilder<'_, sqlx::Sqlite>, tag_ids: &[i64]) {
+    sql.push(
+        "
+        SELECT card_id
+        FROM card_tags
+        WHERE tag_id IN (
+        ",
+    );
+
+    let mut sql_tags = sql.separated(", ");
+    for tag_id in tag_ids.iter() {
+        sql_tags.push_bind(*tag_id);
+    }
+
+    sql.push(")");
 }
