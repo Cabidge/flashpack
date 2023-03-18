@@ -16,6 +16,8 @@ CREATE TABLE card_tags (
     card_id INTEGER NOT NULL REFERENCES cards(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    tag TEXT NOT NULL,
+    tag TEXT NOT NULL COLLATE NOCASE,
     PRIMARY KEY (card_id, tag)
 ) WITHOUT ROWID;
+
+CREATE INDEX tag_index ON card_tags (tag);
