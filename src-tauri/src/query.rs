@@ -56,7 +56,55 @@ pub async fn try_query(mut query: &CardQuery, pool: &sqlx::SqlitePool) -> Result
     loop {
         match query {
             CardQuery::Root(filter) => {
-                todo!()
+                let mut sql = sqlx::QueryBuilder::new(
+                    "
+                    SELECT front as question, back as answer
+                    FROM cards
+                    WHERE pack_id =
+                    ",
+                );
+                sql.push_bind(filter.pack_id);
+
+                if !filter.tags.is_empty() {
+                    sql.push(
+                        "
+                        AND id IN (
+                            SELECT card_id
+                            FROM card_tags
+                            WHERE
+                        ",
+                    );
+
+                    let mut sql_tags = sql.separated(" OR ");
+
+                    for (tag_id, inclusion) in filter.tags.iter() {
+                        let sql_str = match inclusion {
+                            Inclusion::Include => "tag_id = ",
+                            Inclusion::Exclude => "tag_id <> ",
+                        };
+
+                        sql_tags.push(sql_str).push_bind_unseparated(tag_id);
+                    }
+
+                    sql.push(
+                        "
+                        GROUP BY card_id
+                        HAVING COUNT(*) =
+                        ",
+                    )
+                    .push_bind(filter.tags.len() as i64)
+                    .push(
+                        "
+                        )
+                        SORT BY RANDOM()
+                        LIMIT 1
+                        "
+                    );
+                }
+
+                return sql.build_query_as::<Prompt>()
+                    .fetch_optional(pool).await
+                    .map_err(Error::from);
             }
             CardQuery::Branch(weighted_queries) => {
                 let weights = weighted_queries.iter().map(|query| query.weight);
