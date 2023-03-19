@@ -59,6 +59,8 @@ async fn main() -> Result<()> {
             delete_pack,
             update_pack,
             add_card,
+            add_tag,
+            remove_tag,
         ])
         .manage(pool)
         .run(tauri::generate_context!())

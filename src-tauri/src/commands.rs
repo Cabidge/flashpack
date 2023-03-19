@@ -121,3 +121,26 @@ pub async fn add_card(pool: State<'_, SqlitePool>, card: CardAdd) -> Result<()> 
     db::add_card(pool.inner(), card.pack_id, &card.front, &card.back).await?;
     Ok(())
 }
+
+#[tauri::command]
+pub async fn add_tag(pool: State<'_, SqlitePool>, card_id: i64, tag: String) -> Result<()> {
+    db::add_tag(pool.inner(), card_id, &tag).await?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn remove_tag(pool: State<'_, SqlitePool>, card_id: i64, tag: String) -> Result<()> {
+    sqlx::query!(
+        "
+        DELETE FROM card_tags
+        WHERE card_id = ?
+        AND tag = ?
+        ",
+        card_id,
+        tag,
+    )
+    .execute(pool.inner())
+    .await?;
+
+    Ok(())
+}
