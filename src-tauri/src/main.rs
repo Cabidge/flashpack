@@ -4,8 +4,9 @@
 )]
 
 mod card;
-mod db;
+mod dealer;
 mod error;
+mod filter;
 mod pack;
 mod query;
 
