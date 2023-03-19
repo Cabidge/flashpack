@@ -7,7 +7,13 @@ pub struct Summary {
 
 pub struct Dealer {
     title: String,
-    filters: Vec<filter::DetailedSummary>
+    filters: Vec<DealerFilter>,
+}
+
+pub struct DealerFilter {
+    summary: filter::Summary,
+    pack_title: String,
+    weight: i32,
 }
 
 pub type Id = i64;
