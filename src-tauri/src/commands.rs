@@ -5,8 +5,9 @@ use ts_rs::TS;
 
 use crate::{
     card,
+    filter,
     pack::{self, Pack},
-    prelude::*,
+    prelude::*, dealer,
 };
 
 #[derive(TS, Deserialize, Debug)]
@@ -77,4 +78,31 @@ pub async fn add_tag(pool: State<'_, SqlitePool>, card_id: card::Id, tag: String
 #[tauri::command]
 pub async fn remove_tag(pool: State<'_, SqlitePool>, card_id: card::Id, tag: String) -> Result<()> {
     card::remove_tag(pool.inner(), card_id, &tag).await
+}
+
+#[tauri::command]
+pub async fn create_filter(pool: State<'_, SqlitePool>, pack_id: pack::Id, label: String) -> Result<()> {
+    filter::create(pool.inner(), pack_id, &label).await?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn add_included(pool: State<'_, SqlitePool>, filter_id: filter::Id, tag: String) -> Result<()> {
+    filter::add_included(pool.inner(), filter_id, &tag).await
+}
+
+#[tauri::command]
+pub async fn add_excluded(pool: State<'_, SqlitePool>, filter_id: filter::Id, tag: String) -> Result<()> {
+    filter::add_excluded(pool.inner(), filter_id, &tag).await
+}
+
+#[tauri::command]
+pub async fn create_dealer(pool: State<'_, SqlitePool>, title: String) -> Result<()> {
+    dealer::create(pool.inner(), &title).await?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn add_filter(pool: State<'_, SqlitePool>, dealer_id: dealer::Id, filter_id: filter::Id) -> Result<()> {
+    dealer::add_filter(pool.inner(), dealer_id, filter_id, 1).await
 }

@@ -61,6 +61,11 @@ async fn main() -> Result<()> {
             add_card,
             add_tag,
             remove_tag,
+            create_filter,
+            add_included,
+            add_excluded,
+            create_dealer,
+            add_filter,
         ])
         .manage(pool)
         .run(tauri::generate_context!())
