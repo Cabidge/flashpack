@@ -32,7 +32,7 @@ pub async fn list_by_pack(
     .map_err(Error::from)
 }
 
-pub async fn add_to_pack(
+pub async fn create(
     pool: &SqlitePool,
     pack_id: crate::pack::Id,
     front: &str,

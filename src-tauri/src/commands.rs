@@ -64,7 +64,7 @@ pub async fn update_pack(pool: State<'_, SqlitePool>, update: PackUpdate) -> Res
 
 #[tauri::command]
 pub async fn add_card(pool: State<'_, SqlitePool>, card: CardAdd) -> Result<()> {
-    card::add_to_pack(pool.inner(), card.pack_id, &card.front, &card.back).await?;
+    card::create(pool.inner(), card.pack_id, &card.front, &card.back).await?;
     Ok(())
 }
 
