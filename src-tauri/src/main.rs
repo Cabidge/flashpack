@@ -8,7 +8,6 @@ mod dealer;
 mod error;
 mod filter;
 mod pack;
-mod query;
 
 mod commands;
 use crate::commands::*;
