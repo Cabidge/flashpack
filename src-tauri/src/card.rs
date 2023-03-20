@@ -14,6 +14,24 @@ pub struct Summary {
 
 pub type Id = i64;
 
+pub async fn list_by_pack(
+    pool: &SqlitePool,
+    pack_id: crate::pack::Id,
+) -> Result<Vec<Summary>> {
+    sqlx::query_as!(
+        Summary,
+        "
+        SELECT id, front, back
+        FROM cards
+        WHERE pack_id = ?
+        ",
+        pack_id,
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(Error::from)
+}
+
 pub async fn add_to_pack(
     pool: &SqlitePool,
     pack_id: crate::pack::Id,
@@ -42,13 +60,29 @@ pub async fn add_to_pack(
     Ok(row.id)
 }
 
-pub async fn add_tag(pool: &SqlitePool, card_id: Id, tag: &str) -> Result<()> {
+pub async fn add_tag(pool: &SqlitePool, id: Id, tag: &str) -> Result<()> {
     sqlx::query!(
         "
         INSERT INTO card_tags (card_id, tag)
         VALUES (?, ?)
         ",
-        card_id,
+        id,
+        tag,
+    )
+    .execute(pool)
+    .await?;
+
+    Ok(())
+}
+
+pub async fn remove_tag(pool: &SqlitePool, id: Id, tag: &str) -> Result<()> {
+    sqlx::query!(
+        "
+        DELETE FROM card_tags
+        WHERE card_id = ?
+        AND tag = ?
+        ",
+        id,
         tag,
     )
     .execute(pool)
