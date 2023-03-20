@@ -12,7 +12,7 @@ pub struct Summary {
     pub back: String,
 }
 
-type Id = i64;
+pub type Id = i64;
 
 pub async fn add_to_pack(
     pool: &SqlitePool,
