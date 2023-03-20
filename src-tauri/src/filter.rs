@@ -1,3 +1,6 @@
+use std::collections::BTreeSet;
+
+use futures::{StreamExt, TryStreamExt};
 use sqlx::{FromRow, SqlitePool};
 
 use crate::{prelude::*, card};
@@ -90,46 +93,75 @@ pub async fn select_card(
     filter_id: Id,
 ) -> Result<Option<card::Id>> {
     #[derive(FromRow)]
-    struct QueryResult {
-        id: card::Id,
+    struct TagQueryResult {
+        tag: String,
     }
 
-    let row = sqlx::query_as!(
-        QueryResult,
+    let included: BTreeSet<String> = sqlx::query_as!(
+        TagQueryResult,
         r#"
-        SELECT c.id as "id!"
-        FROM cards c, filters f
-        WHERE c.pack_id = f.pack_id
-        AND f.id = ?
-        AND c.id IN (
-            WITH included AS (
-                SELECT it.tag
-                FROM included_tags it
-                WHERE it.filter_id = f.id
-            )
-            SELECT ct.card_id
-            FROM card_tags ct
-            WHERE ct.tag IN included
-            GROUP BY ct.card_id
-            HAVING COUNT(*) = (SELECT COUNT(*) FROM included)
-        )
-        AND c.id IN (
-            SELECT ct.card_id
-            FROM card_tags ct
-            WHERE ct.tag IN (
-                SELECT et.tag
-                FROM excluded_tags et
-                WHERE et.filter_id = f.id
-            )
-            GROUP BY ct.card_id
-        )
-        ORDER BY RANDOM()
-        LIMIT 1
+        SELECT tag
+        FROM included_tags
+        WHERE filter_id = ?
         "#,
         filter_id,
     )
-    .fetch_optional(pool)
+    .fetch(pool)
+    .map_ok(|row| row.tag)
+    .try_collect()
     .await?;
 
-    Ok(row.map(|card| card.id))
+    let excluded: BTreeSet<String> = sqlx::query_as!(
+        TagQueryResult,
+        r#"
+        SELECT tag
+        FROM excluded_tags
+        WHERE filter_id = ?
+        "#,
+        filter_id,
+    )
+    .fetch(pool)
+    .map_ok(|row| row.tag)
+    .try_collect()
+    .await?;
+
+    #[derive(FromRow)]
+    struct CardQueryResult {
+        id: i64,
+    }
+
+    let mut cards = sqlx::query_as!(
+        CardQueryResult,
+        "
+        SELECT c.id
+        FROM cards c, filters f
+        WHERE c.pack_id = f.pack_id
+        AND f.id = ?
+        ORDER BY RANDOM()
+        ",
+        filter_id,
+    )
+    .fetch(pool);
+
+    while let Some(CardQueryResult { id }) = cards.try_next().await? {
+        let tags: BTreeSet<String> = sqlx::query_as!(
+            TagQueryResult,
+            "
+            SELECT tag
+            FROM card_tags
+            WHERE card_id = ?
+            ",
+            id,
+        )
+        .fetch(pool)
+        .map_ok(|row| row.tag)
+        .try_collect()
+        .await?;
+
+        if included.is_subset(&tags) && excluded.is_disjoint(&tags) {
+            return Ok(Some(id));
+        }
+    }
+
+    Ok(None)
 }

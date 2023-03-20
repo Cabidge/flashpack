@@ -25,6 +25,7 @@ map-macro = "0.2.5"
 ts-rs = "6.2.1"
 sqlx = { version = "0.6", features = ["runtime-tokio-rustls", "sqlite", "migrate"] }
 rand = "0.8.5"
+futures = "0.3.27"
 
 [features]
 # by default Tauri runs in production mode
