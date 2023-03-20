@@ -50,6 +50,24 @@ pub async fn create(
     Ok(row.id)
 }
 
+pub async fn list_by_pack(
+    pool: &SqlitePool,
+    pack_id: crate::pack::Id,
+) -> Result<Vec<Summary>> {
+    sqlx::query_as!(
+        Summary,
+        "
+        SELECT id, label
+        FROM filters
+        WHERE pack_id = ?
+        ",
+        pack_id,
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(Error::from)
+}
+
 pub async fn add_included(
     pool: &SqlitePool,
     filter_id: Id,
