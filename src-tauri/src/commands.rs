@@ -30,6 +30,25 @@ pub struct CardAdd {
     back: String,
 }
 
+pub enum ModifyPack {
+    Rename(String),
+    Delete,
+}
+
+pub enum ModifyCard {
+    AddTag(String),
+    RemoveTag(String),
+}
+
+pub enum ModifyDealer {
+    AddFilter(filter::Id),
+}
+
+pub enum ModifyFilter {
+    AddIncluded(String),
+    AddExcluded(String),
+}
+
 #[tauri::command]
 pub async fn list_packs(pool: State<'_, SqlitePool>) -> Result<Vec<pack::Summary>> {
     pack::list_all(pool.inner()).await
