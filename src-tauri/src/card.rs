@@ -5,7 +5,7 @@ use ts_rs::TS;
 use crate::prelude::*;
 
 #[derive(FromRow, TS, Serialize, Debug)]
-#[ts(export, export_to = "../src/bindings/")]
+#[ts(rename="CardSummary", export, export_to = "../src/bindings/")]
 pub struct Summary {
     pub id: Id,
     pub front: String,
