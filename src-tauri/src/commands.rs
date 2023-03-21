@@ -124,6 +124,11 @@ pub async fn create_dealer(pool: State<'_, SqlitePool>, title: String) -> Result
 }
 
 #[tauri::command]
+pub async fn list_dealers(pool: State<'_, SqlitePool>) -> Result<Vec<dealer::Summary>> {
+    dealer::list_all(pool.inner()).await
+}
+
+#[tauri::command]
 pub async fn modify_dealer(
     pool: State<'_, SqlitePool>,
     id: dealer::Id,

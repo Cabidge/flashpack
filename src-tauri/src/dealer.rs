@@ -1,8 +1,12 @@
 use rand::seq::SliceRandom;
+use serde::Serialize;
 use sqlx::{FromRow, SqlitePool};
+use ts_rs::TS;
 
 use crate::{filter, prelude::*};
 
+#[derive(TS, Serialize, Debug)]
+#[ts(rename = "DealerSummary", export, export_to = "../src/bindings/")]
 pub struct Summary {
     id: Id,
     title: String,
@@ -40,6 +44,19 @@ pub async fn create(pool: &SqlitePool, title: &str) -> Result<Id> {
     .await?;
 
     Ok(row.id)
+}
+
+pub async fn list_all(pool: &SqlitePool) -> Result<Vec<Summary>> {
+    sqlx::query_as!(
+        Summary,
+        r#"
+        SELECT id as "id: Id", title
+        FROM dealers
+        "#
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(Error::from)
 }
 
 pub async fn add_filter(
