@@ -13,21 +13,6 @@ pub struct Summary {
 
 pub type Id = u32;
 
-pub async fn list_by_pack(pool: &SqlitePool, pack_id: crate::pack::Id) -> Result<Vec<Summary>> {
-    sqlx::query_as!(
-        Summary,
-        r#"
-        SELECT id as "id: Id", front as label
-        FROM cards
-        WHERE pack_id = ?
-        "#,
-        pack_id,
-    )
-    .fetch_all(pool)
-    .await
-    .map_err(Error::from)
-}
-
 pub async fn create(
     pool: &SqlitePool,
     pack_id: crate::pack::Id,
@@ -54,6 +39,21 @@ pub async fn create(
     .await?;
 
     Ok(row.id)
+}
+
+pub async fn list_by_pack(pool: &SqlitePool, pack_id: crate::pack::Id) -> Result<Vec<Summary>> {
+    sqlx::query_as!(
+        Summary,
+        r#"
+        SELECT id as "id: Id", front as label
+        FROM cards
+        WHERE pack_id = ?
+        "#,
+        pack_id,
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(Error::from)
 }
 
 pub async fn add_tag(pool: &SqlitePool, id: Id, tag: &str) -> Result<()> {
