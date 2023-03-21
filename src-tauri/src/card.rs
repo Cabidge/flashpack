@@ -14,10 +14,7 @@ pub struct Summary {
 
 pub type Id = i64;
 
-pub async fn list_by_pack(
-    pool: &SqlitePool,
-    pack_id: crate::pack::Id,
-) -> Result<Vec<Summary>> {
+pub async fn list_by_pack(pool: &SqlitePool, pack_id: crate::pack::Id) -> Result<Vec<Summary>> {
     sqlx::query_as!(
         Summary,
         "

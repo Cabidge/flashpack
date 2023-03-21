@@ -3,7 +3,7 @@ use std::collections::BTreeSet;
 use futures::{StreamExt, TryStreamExt};
 use sqlx::{FromRow, SqlitePool};
 
-use crate::{prelude::*, card};
+use crate::{card, prelude::*};
 
 pub struct Summary {
     id: Id,
@@ -24,11 +24,7 @@ pub struct Prompt {
 
 pub type Id = i64;
 
-pub async fn create(
-    pool: &SqlitePool,
-    pack_id: crate::pack::Id,
-    label: &str,
-) -> Result<Id> {
+pub async fn create(pool: &SqlitePool, pack_id: crate::pack::Id, label: &str) -> Result<Id> {
     #[derive(FromRow)]
     struct InsertResult {
         id: Id,
@@ -50,10 +46,7 @@ pub async fn create(
     Ok(row.id)
 }
 
-pub async fn list_by_pack(
-    pool: &SqlitePool,
-    pack_id: crate::pack::Id,
-) -> Result<Vec<Summary>> {
+pub async fn list_by_pack(pool: &SqlitePool, pack_id: crate::pack::Id) -> Result<Vec<Summary>> {
     sqlx::query_as!(
         Summary,
         "
@@ -68,11 +61,7 @@ pub async fn list_by_pack(
     .map_err(Error::from)
 }
 
-pub async fn add_included(
-    pool: &SqlitePool,
-    filter_id: Id,
-    tag: &str,
-) -> Result<()> {
+pub async fn add_included(pool: &SqlitePool, filter_id: Id, tag: &str) -> Result<()> {
     sqlx::query!(
         "
         INSERT INTO included_tags (filter_id, tag)
@@ -87,11 +76,7 @@ pub async fn add_included(
     Ok(())
 }
 
-pub async fn add_excluded(
-    pool: &SqlitePool,
-    filter_id: Id,
-    tag: &str,
-) -> Result<()> {
+pub async fn add_excluded(pool: &SqlitePool, filter_id: Id, tag: &str) -> Result<()> {
     sqlx::query!(
         "
         INSERT INTO excluded_tags (filter_id, tag)
@@ -106,10 +91,7 @@ pub async fn add_excluded(
     Ok(())
 }
 
-pub async fn select_card(
-    pool: &SqlitePool,
-    filter_id: Id,
-) -> Result<Option<card::Id>> {
+pub async fn select_card(pool: &SqlitePool, filter_id: Id) -> Result<Option<card::Id>> {
     #[derive(FromRow)]
     struct TagQueryResult {
         tag: String,

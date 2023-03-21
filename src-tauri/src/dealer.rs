@@ -1,5 +1,5 @@
 use rand::seq::SliceRandom;
-use sqlx::{SqlitePool, FromRow};
+use sqlx::{FromRow, SqlitePool};
 
 use crate::{filter, prelude::*};
 
@@ -21,10 +21,7 @@ pub struct DealerFilter {
 
 pub type Id = i64;
 
-pub async fn create(
-    pool: &SqlitePool,
-    title: &str,
-) -> Result<Id> {
+pub async fn create(pool: &SqlitePool, title: &str) -> Result<Id> {
     #[derive(FromRow)]
     struct InsertResult {
         id: Id,
@@ -45,7 +42,12 @@ pub async fn create(
     Ok(row.id)
 }
 
-pub async fn add_filter(pool: &SqlitePool, dealer_id: Id, filter_id: filter::Id, weight: i32) -> Result<()> {
+pub async fn add_filter(
+    pool: &SqlitePool,
+    dealer_id: Id,
+    filter_id: filter::Id,
+    weight: i32,
+) -> Result<()> {
     sqlx::query!(
         "
         INSERT INTO dealer_filters (dealer_id, filter_id, strength)
@@ -81,7 +83,8 @@ pub async fn select_filter(pool: &SqlitePool, dealer_id: Id) -> Result<Option<fi
     .fetch_all(pool)
     .await?;
 
-    let id = rows.choose_weighted(&mut rand::thread_rng(), |row| row.weight)
+    let id = rows
+        .choose_weighted(&mut rand::thread_rng(), |row| row.weight)
         .ok()
         .map(|row| row.id);
 
