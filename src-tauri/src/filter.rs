@@ -12,8 +12,12 @@ pub struct Summary {
 
 pub struct Filter {
     label: String,
-    included_tags: Vec<String>,
-    excluded_tags: Vec<String>,
+    tags: Vec<Tag>,
+}
+
+pub struct Tag {
+    tag: String,
+    exclude: bool,
 }
 
 #[derive(FromRow)]
@@ -76,7 +80,12 @@ pub async fn add_tag(pool: &SqlitePool, filter_id: Id, tag: &str) -> Result<()> 
     Ok(())
 }
 
-pub async fn set_excluded(pool: &SqlitePool, filter_id: Id, tag: &str, exclude: bool) -> Result<()> {
+pub async fn set_excluded(
+    pool: &SqlitePool,
+    filter_id: Id,
+    tag: &str,
+    exclude: bool,
+) -> Result<()> {
     sqlx::query!(
         "
         UPDATE filter_tags
