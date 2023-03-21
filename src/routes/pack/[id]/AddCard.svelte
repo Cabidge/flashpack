@@ -13,7 +13,7 @@
 
         const card = { pack_id: id, front, back };
 
-        await invoke('add_card', { card });
+        await invoke('create_card', card);
         await invalidateAll();
     };
 </script>

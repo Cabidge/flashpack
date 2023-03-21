@@ -9,7 +9,7 @@
     const submit = async () => {
         close();
 
-        await invoke('create_pack', { pack: { title } });
+        await invoke('create_pack', { title });
         await invalidateAll();
     };
 </script>

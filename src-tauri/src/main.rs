@@ -53,18 +53,20 @@ async fn main() -> Result<()> {
 
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
-            list_packs,
+            // pack
             create_pack,
+            list_packs,
             get_pack,
-            delete_pack,
-            update_pack,
-            add_card,
-            add_tag,
-            remove_tag,
-            create_filter,
-            add_filter_tag,
+            modify_pack,
+            // card
+            create_card,
+            modify_card,
+            // dealer
             create_dealer,
-            add_filter,
+            modify_dealer,
+            // filter
+            create_filter,
+            modify_filter,
         ])
         .manage(pool)
         .run(tauri::generate_context!())

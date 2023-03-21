@@ -33,7 +33,7 @@
             await goto('/pack');
         }
 
-        await invoke('delete_pack', { id: pack.id });
+        await invoke('modify_pack', { id: pack.id, action: "Delete" });
         await invalidateAll();
     };
 
