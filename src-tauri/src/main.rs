@@ -62,8 +62,7 @@ async fn main() -> Result<()> {
             add_tag,
             remove_tag,
             create_filter,
-            add_included,
-            add_excluded,
+            add_filter_tag,
             create_dealer,
             add_filter,
         ])

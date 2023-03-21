@@ -1,6 +1,6 @@
 use std::collections::BTreeSet;
 
-use futures::{StreamExt, TryStreamExt};
+use futures::TryStreamExt;
 use sqlx::{FromRow, SqlitePool};
 
 use crate::{card, prelude::*};
@@ -61,10 +61,10 @@ pub async fn list_by_pack(pool: &SqlitePool, pack_id: crate::pack::Id) -> Result
     .map_err(Error::from)
 }
 
-pub async fn add_included(pool: &SqlitePool, filter_id: Id, tag: &str) -> Result<()> {
+pub async fn add_tag(pool: &SqlitePool, filter_id: Id, tag: &str) -> Result<()> {
     sqlx::query!(
         "
-        INSERT INTO included_tags (filter_id, tag)
+        INSERT INTO filter_tags (filter_id, tag)
         VALUES (?, ?)
         ",
         filter_id,
@@ -76,14 +76,17 @@ pub async fn add_included(pool: &SqlitePool, filter_id: Id, tag: &str) -> Result
     Ok(())
 }
 
-pub async fn add_excluded(pool: &SqlitePool, filter_id: Id, tag: &str) -> Result<()> {
+pub async fn set_excluded(pool: &SqlitePool, filter_id: Id, tag: &str, exclude: bool) -> Result<()> {
     sqlx::query!(
         "
-        INSERT INTO excluded_tags (filter_id, tag)
-        VALUES (?, ?)
+        UPDATE filter_tags
+        SET exclude = ?
+        WHERE filter_id = ?
+        AND tag = ?
         ",
         filter_id,
         tag,
+        exclude,
     )
     .execute(pool)
     .await?;
@@ -93,45 +96,39 @@ pub async fn add_excluded(pool: &SqlitePool, filter_id: Id, tag: &str) -> Result
 
 pub async fn select_card(pool: &SqlitePool, filter_id: Id) -> Result<Option<card::Id>> {
     #[derive(FromRow)]
-    struct TagQueryResult {
+    struct FilterTagRow {
         tag: String,
+        exclude: bool,
     }
 
-    let included: BTreeSet<String> = sqlx::query_as!(
-        TagQueryResult,
-        r#"
-        SELECT tag
-        FROM included_tags
+    let mut rows = sqlx::query_as!(
+        FilterTagRow,
+        "
+        SELECT tag, exclude
+        FROM filter_tags
         WHERE filter_id = ?
-        "#,
+        ",
         filter_id,
     )
-    .fetch(pool)
-    .map_ok(|row| row.tag)
-    .try_collect()
-    .await?;
+    .fetch(pool);
 
-    let excluded: BTreeSet<String> = sqlx::query_as!(
-        TagQueryResult,
-        r#"
-        SELECT tag
-        FROM excluded_tags
-        WHERE filter_id = ?
-        "#,
-        filter_id,
-    )
-    .fetch(pool)
-    .map_ok(|row| row.tag)
-    .try_collect()
-    .await?;
+    let mut included = BTreeSet::new();
+    let mut excluded = BTreeSet::new();
+    while let Some(row) = rows.try_next().await? {
+        if row.exclude {
+            excluded.insert(row.tag);
+        } else {
+            included.insert(row.tag);
+        }
+    }
 
     #[derive(FromRow)]
-    struct CardQueryResult {
-        id: i64,
+    struct CardIdRow {
+        id: card::Id,
     }
 
     let mut cards = sqlx::query_as!(
-        CardQueryResult,
+        CardIdRow,
         "
         SELECT c.id
         FROM cards c, filters f
@@ -143,9 +140,14 @@ pub async fn select_card(pool: &SqlitePool, filter_id: Id) -> Result<Option<card
     )
     .fetch(pool);
 
-    while let Some(CardQueryResult { id }) = cards.try_next().await? {
+    while let Some(CardIdRow { id }) = cards.try_next().await? {
+        #[derive(FromRow)]
+        struct CardTagRow {
+            tag: String,
+        }
+
         let tags: BTreeSet<String> = sqlx::query_as!(
-            TagQueryResult,
+            CardTagRow,
             "
             SELECT tag
             FROM card_tags

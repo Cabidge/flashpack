@@ -70,23 +70,20 @@ pub async fn select_filter(pool: &SqlitePool, dealer_id: Id) -> Result<Option<fi
         weight: i64,
     }
 
-    let rows = sqlx::query_as!(
+    let id = sqlx::query_as!(
         QueryResult,
-        r#"
-        SELECT filter_id as "id!", strength as weight
+        "
+        SELECT filter_id as id, strength as weight
         FROM dealer_filters
         WHERE dealer_id = ?
-        AND filter_id IS NOT NULL
-        "#,
+        ",
         dealer_id,
     )
     .fetch_all(pool)
-    .await?;
-
-    let id = rows
-        .choose_weighted(&mut rand::thread_rng(), |row| row.weight)
-        .ok()
-        .map(|row| row.id);
+    .await?
+    .choose_weighted(&mut rand::thread_rng(), |row| row.weight)
+    .ok()
+    .map(|row| row.id);
 
     Ok(id)
 }

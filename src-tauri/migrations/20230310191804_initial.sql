@@ -35,20 +35,12 @@ CREATE TABLE filters (
         ON UPDATE CASCADE
 );
 
-CREATE TABLE included_tags (
+CREATE TABLE filter_tags (
     filter_id INTEGER NOT NULL REFERENCES filters(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
     tag TEXT NOT NULL COLLATE NOCASE,
-    PRIMARY KEY (filter_id, tag)
-) WITHOUT ROWID;
-
-
-CREATE TABLE excluded_tags (
-    filter_id INTEGER NOT NULL REFERENCES filters(id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    tag TEXT NOT NULL COLLATE NOCASE,
+    exclude BOOLEAN DEFAULT FALSE NOT NULL,
     PRIMARY KEY (filter_id, tag)
 ) WITHOUT ROWID;
 
@@ -56,8 +48,8 @@ CREATE TABLE dealer_filters (
     dealer_id INTEGER NOT NULL REFERENCES dealers(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    filter_id INTEGER REFERENCES filters(id)
-        ON DELETE SET NULL
+    filter_id INTEGER NOT NULL REFERENCES filters(id)
+        ON DELETE CASCADE
         ON UPDATE CASCADE,
     strength INTEGER NOT NULL,
     PRIMARY KEY (dealer_id, filter_id)

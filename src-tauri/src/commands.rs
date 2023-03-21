@@ -109,21 +109,12 @@ pub async fn create_filter(
 }
 
 #[tauri::command]
-pub async fn add_included(
+pub async fn add_filter_tag(
     pool: State<'_, SqlitePool>,
     filter_id: filter::Id,
     tag: String,
 ) -> Result<()> {
-    filter::add_included(pool.inner(), filter_id, &tag).await
-}
-
-#[tauri::command]
-pub async fn add_excluded(
-    pool: State<'_, SqlitePool>,
-    filter_id: filter::Id,
-    tag: String,
-) -> Result<()> {
-    filter::add_excluded(pool.inner(), filter_id, &tag).await
+    filter::add_tag(pool.inner(), filter_id, &tag).await
 }
 
 #[tauri::command]
