@@ -8,8 +8,7 @@ use crate::prelude::*;
 #[ts(rename="CardSummary", export, export_to = "../src/bindings/")]
 pub struct Summary {
     pub id: Id,
-    pub front: String,
-    pub back: String,
+    pub label: String,
 }
 
 pub type Id = u32;
@@ -18,7 +17,7 @@ pub async fn list_by_pack(pool: &SqlitePool, pack_id: crate::pack::Id) -> Result
     sqlx::query_as!(
         Summary,
         r#"
-        SELECT id as "id: Id", front, back
+        SELECT id as "id: Id", front as label
         FROM cards
         WHERE pack_id = ?
         "#,

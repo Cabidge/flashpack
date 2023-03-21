@@ -33,7 +33,7 @@
 {:else}
     <div class="card-grid grid w-full gap-4 rounded bg-slate-100 p-4 shadow-inner">
         {#each cards as card (card.id)}
-            <CardButton {card} />
+            <CardButton label={card.label} />
         {/each}
     </div>
 {/if}
