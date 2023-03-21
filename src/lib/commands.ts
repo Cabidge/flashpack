@@ -15,13 +15,13 @@ type Commands = {
     get_pack: (args: { id: number }) => Pack;
     modify_pack: (args: { id: number, action: ModifyPack }) => void;
     // card
-    create_card: (args: { pack_id: number, front: string, back: string }) => void;
+    create_card: (args: { packId: number, front: string, back: string }) => void;
     modify_card: (args: { id: number, action: ModifyCard }) => void;
     // dealer
     create_dealer: (args: { title: string }) => void;
     modify_dealer: (args: { id: number, action: ModifyDealer }) => void;
     // filter
-    create_filter: (args: { label: string }) => void;
+    create_filter: (args: { packId: number, label: string }) => void;
     modify_filter: (args: { id: number, action: ModifyFilter }) => void;
 };
 

@@ -11,9 +11,7 @@
     const submit = async () => {
         close();
 
-        const card = { pack_id: id, front, back };
-
-        await invoke('create_card', card);
+        await invoke('create_card', { packId: id, front, back });
         await invalidateAll();
     };
 </script>
