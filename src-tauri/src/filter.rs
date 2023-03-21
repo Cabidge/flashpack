@@ -1,10 +1,14 @@
 use std::collections::BTreeSet;
 
 use futures::TryStreamExt;
+use serde::Serialize;
 use sqlx::{FromRow, SqlitePool};
+use ts_rs::TS;
 
 use crate::{card, prelude::*};
 
+#[derive(TS, Serialize, Debug)]
+#[ts(rename = "FilterSummary", export, export_to = "../src/bindings/")]
 pub struct Summary {
     id: Id,
     label: String,

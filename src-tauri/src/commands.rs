@@ -4,7 +4,8 @@ use tauri::State;
 use ts_rs::TS;
 
 use crate::{
-    card::{self, Card}, dealer, filter,
+    card::{self, Card},
+    dealer, filter,
     pack::{self, Pack},
     prelude::*,
 };
@@ -52,16 +53,22 @@ pub async fn list_packs(pool: State<'_, SqlitePool>) -> Result<Vec<pack::Summary
 #[tauri::command]
 pub async fn get_pack(pool: State<'_, SqlitePool>, id: pack::Id) -> Result<Pack> {
     let summary = pack::with_id(pool.inner(), id).await?;
-    let cards = card::list_by_pack(pool.inner(), summary.id).await?;
+    let cards = card::list_by_pack(pool.inner(), id).await?;
+    let filters = filter::list_by_pack(pool.inner(), id).await?;
 
     Ok(Pack {
         title: summary.title,
         cards,
+        filters,
     })
 }
 
 #[tauri::command]
-pub async fn modify_pack(pool: State<'_, SqlitePool>, id: pack::Id, action: ModifyPack) -> Result<()> {
+pub async fn modify_pack(
+    pool: State<'_, SqlitePool>,
+    id: pack::Id,
+    action: ModifyPack,
+) -> Result<()> {
     match action {
         ModifyPack::Rename(new_title) => pack::rename(pool.inner(), id, &new_title).await,
         ModifyPack::Delete => pack::delete(pool.inner(), id).await,
@@ -71,7 +78,12 @@ pub async fn modify_pack(pool: State<'_, SqlitePool>, id: pack::Id, action: Modi
 // -- card
 
 #[tauri::command]
-pub async fn create_card(pool: State<'_, SqlitePool>, pack_id: pack::Id, front: String, back: String) -> Result<()> {
+pub async fn create_card(
+    pool: State<'_, SqlitePool>,
+    pack_id: pack::Id,
+    front: String,
+    back: String,
+) -> Result<()> {
     card::create(pool.inner(), pack_id, &front, &back).await?;
     Ok(())
 }
@@ -81,14 +93,15 @@ pub async fn get_card(pool: State<'_, SqlitePool>, id: card::Id) -> Result<Card>
     let details = card::with_id(pool.inner(), id).await?;
     let tags = card::list_tags(pool.inner(), id).await?;
 
-    Ok(Card {
-        details,
-        tags,
-    })
+    Ok(Card { details, tags })
 }
 
 #[tauri::command]
-pub async fn modify_card(pool: State<'_, SqlitePool>, id: card::Id, action: ModifyCard) -> Result<()> {
+pub async fn modify_card(
+    pool: State<'_, SqlitePool>,
+    id: card::Id,
+    action: ModifyCard,
+) -> Result<()> {
     match action {
         ModifyCard::AddTag(tag) => card::add_tag(pool.inner(), id, &tag).await,
         ModifyCard::RemoveTag(tag) => card::remove_tag(pool.inner(), id, &tag).await,
@@ -110,7 +123,9 @@ pub async fn modify_dealer(
     action: ModifyDealer,
 ) -> Result<()> {
     match action {
-        ModifyDealer::AddFilter(filter_id) => dealer::add_filter(pool.inner(), id, filter_id, 1).await,
+        ModifyDealer::AddFilter(filter_id) => {
+            dealer::add_filter(pool.inner(), id, filter_id, 1).await
+        }
     }
 }
 
@@ -134,6 +149,8 @@ pub async fn modify_filter(
 ) -> Result<()> {
     match action {
         ModifyFilter::AddTag(tag) => filter::add_tag(pool.inner(), id, &tag).await,
-        ModifyFilter::SetExclusion(tag, exclude) => filter::set_excluded(pool.inner(), id, &tag, exclude).await,
+        ModifyFilter::SetExclusion(tag, exclude) => {
+            filter::set_excluded(pool.inner(), id, &tag, exclude).await
+        }
     }
 }
