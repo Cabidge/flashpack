@@ -1,3 +1,5 @@
+import type { Card } from '@bindings/Card';
+
 import type { ModifyCard } from '@bindings/ModifyCard';
 import type { ModifyDealer } from '@bindings/ModifyDealer';
 import type { ModifyFilter } from '@bindings/ModifyFilter';
@@ -7,22 +9,22 @@ import type { Pack } from '@bindings/Pack';
 
 import type { PackSummary } from '@bindings/PackSummary';
 
-
 type Commands = {
     // pack
     create_pack: (args: { title: string }) => void;
     list_packs: () => PackSummary[];
     get_pack: (args: { id: number }) => Pack;
-    modify_pack: (args: { id: number, action: ModifyPack }) => void;
+    modify_pack: (args: { id: number; action: ModifyPack }) => void;
     // card
-    create_card: (args: { packId: number, front: string, back: string }) => void;
-    modify_card: (args: { id: number, action: ModifyCard }) => void;
+    create_card: (args: { packId: number; front: string; back: string }) => void;
+    get_card: (args: { id: number }) => Card;
+    modify_card: (args: { id: number; action: ModifyCard }) => void;
     // dealer
     create_dealer: (args: { title: string }) => void;
-    modify_dealer: (args: { id: number, action: ModifyDealer }) => void;
+    modify_dealer: (args: { id: number; action: ModifyDealer }) => void;
     // filter
-    create_filter: (args: { packId: number, label: string }) => void;
-    modify_filter: (args: { id: number, action: ModifyFilter }) => void;
+    create_filter: (args: { packId: number; label: string }) => void;
+    modify_filter: (args: { id: number; action: ModifyFilter }) => void;
 };
 
 type Invoke = <T extends keyof Commands>(

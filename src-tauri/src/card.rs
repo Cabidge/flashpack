@@ -11,6 +11,20 @@ pub struct Summary {
     pub label: String,
 }
 
+#[derive(FromRow, TS, Serialize, Debug)]
+pub struct Details {
+    pub front: String,
+    pub back: String,
+}
+
+#[derive(TS, Serialize, Debug)]
+#[ts(export, export_to = "../src/bindings/")]
+pub struct Card {
+    #[serde(flatten)]
+    pub details: Details,
+    pub tags: Vec<String>,
+}
+
 pub type Id = u32;
 
 pub async fn create(
@@ -51,6 +65,42 @@ pub async fn list_by_pack(pool: &SqlitePool, pack_id: crate::pack::Id) -> Result
         "#,
         pack_id,
     )
+    .fetch_all(pool)
+    .await
+    .map_err(Error::from)
+}
+
+pub async fn with_id(pool: &SqlitePool, id: Id) -> Result<Details> {
+    sqlx::query_as!(
+        Details,
+        "
+        SELECT front, back
+        FROM cards
+        WHERE id = ?
+        ",
+        id,
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(Error::from)
+}
+
+pub async fn list_tags(pool: &SqlitePool, id: Id) -> Result<Vec<String>> {
+    #[derive(FromRow)]
+    struct QueryResult {
+        tag: String,
+    }
+
+    sqlx::query_as!(
+        QueryResult,
+        "
+        SELECT tag
+        FROM card_tags
+        WHERE card_id = ?
+        ",
+        id,
+    )
+    .map(|row| row.tag)
     .fetch_all(pool)
     .await
     .map_err(Error::from)

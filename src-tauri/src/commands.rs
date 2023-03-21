@@ -4,7 +4,7 @@ use tauri::State;
 use ts_rs::TS;
 
 use crate::{
-    card, dealer, filter,
+    card::{self, Card}, dealer, filter,
     pack::{self, Pack},
     prelude::*,
 };
@@ -74,6 +74,17 @@ pub async fn modify_pack(pool: State<'_, SqlitePool>, id: pack::Id, action: Modi
 pub async fn create_card(pool: State<'_, SqlitePool>, pack_id: pack::Id, front: String, back: String) -> Result<()> {
     card::create(pool.inner(), pack_id, &front, &back).await?;
     Ok(())
+}
+
+#[tauri::command]
+pub async fn get_card(pool: State<'_, SqlitePool>, id: card::Id) -> Result<Card> {
+    let details = card::with_id(pool.inner(), id).await?;
+    let tags = card::list_tags(pool.inner(), id).await?;
+
+    Ok(Card {
+        details,
+        tags,
+    })
 }
 
 #[tauri::command]
