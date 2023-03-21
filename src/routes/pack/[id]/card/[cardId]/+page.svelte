@@ -1,6 +1,7 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
     import { invoke } from '$lib/commands';
+    import type { ModifyCard } from '@bindings/ModifyCard';
     import type { PageData } from './$types';
 
     export let data: PageData;
@@ -8,28 +9,73 @@
     $: id = data.id;
     $: card = data.card;
 
+    $: front = card.front;
+    $: back = card.back;
+    $: tags = card.tags;
+
+    $: frontInput = front;
+    $: backInput = back;
+
+    let modifications: ModifyCard[] = [];
+
     let tagInput = '';
 
-    const addTag = async () => {
+    $: canSave =
+        frontInput !== '' &&
+        backInput !== '' &&
+        (front !== frontInput || back !== backInput || modifications.length > 0);
+
+    const addTag = () => {
         if (tagInput === '') {
             return;
         }
 
-        await invoke('modify_card', { id, action: { AddTag: tagInput } });
-        await invalidateAll();
+        const tag = tagInput;
 
         tagInput = '';
+
+        if (tags.includes(tag)) {
+            return;
+        }
+
+        tags = [...tags, tag].sort();
+        modifications = [...modifications, { AddTag: tag }];
+    };
+
+    const saveChanges = async () => {
+        if (!canSave) {
+            return;
+        }
+
+        for (const action of modifications) {
+            try {
+                await invoke('modify_card', { id, action });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        modifications = [];
+
+        await invalidateAll();
     };
 </script>
+
+<input placeholder="front" bind:value={frontInput} />
+<input placeholder="back" bind:value={backInput} />
 
 <form on:submit|preventDefault={addTag}>
     <input placeholder="add a tag..." bind:value={tagInput} />
 </form>
 
 <ul>
-    {#each card.tags as tag (tag)}
+    {#each tags as tag (tag)}
         <li>
             {tag}
         </li>
     {/each}
 </ul>
+
+{#if canSave}
+    <button on:click={saveChanges}>Save</button>
+{/if}
