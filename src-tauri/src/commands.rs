@@ -129,6 +129,14 @@ pub async fn list_dealers(pool: State<'_, SqlitePool>) -> Result<Vec<dealer::Sum
 }
 
 #[tauri::command]
+pub async fn get_dealer(pool: State<'_, SqlitePool>, id: dealer::Id) -> Result<dealer::Dealer> {
+    let title = dealer::get_title(pool.inner(), id).await?;
+    let filters = dealer::list_filters(pool.inner(), id).await?;
+
+    Ok(dealer::Dealer { title, filters })
+}
+
+#[tauri::command]
 pub async fn modify_dealer(
     pool: State<'_, SqlitePool>,
     id: dealer::Id,

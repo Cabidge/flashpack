@@ -65,6 +65,7 @@ async fn main() -> Result<()> {
             // dealer
             create_dealer,
             list_dealers,
+            get_dealer,
             modify_dealer,
             // filter
             create_filter,

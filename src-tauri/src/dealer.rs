@@ -12,15 +12,20 @@ pub struct Summary {
     title: String,
 }
 
+#[derive(TS, Serialize, Debug)]
+#[ts(export, export_to = "../src/bindings/")]
 pub struct Dealer {
-    title: String,
-    filters: Vec<DealerFilter>,
+    pub title: String,
+    pub filters: Vec<DealerFilter>,
 }
 
+#[derive(TS, Serialize, Debug)]
+#[ts(export, export_to = "../src/bindings/")]
 pub struct DealerFilter {
-    summary: filter::Summary,
+    id: filter::Id,
+    label: String,
     pack_title: String,
-    weight: i32,
+    weight: u32,
 }
 
 pub type Id = u32;
@@ -53,6 +58,46 @@ pub async fn list_all(pool: &SqlitePool) -> Result<Vec<Summary>> {
         SELECT id as "id: Id", title
         FROM dealers
         "#
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(Error::from)
+}
+
+pub async fn get_title(pool: &SqlitePool, id: Id) -> Result<String> {
+    struct QueryResult {
+        title: String,
+    }
+
+    sqlx::query_as!(
+        QueryResult,
+        "
+        SELECT title
+        FROM dealers
+        WHERE id = ?
+        ",
+        id,
+    )
+    .map(|row| row.title)
+    .fetch_one(pool)
+    .await
+    .map_err(Error::from)
+}
+
+pub async fn list_filters(pool: &SqlitePool, id: Id) -> Result<Vec<DealerFilter>> {
+    sqlx::query_as!(
+        DealerFilter,
+        r#"
+        SELECT f.id as "id: filter::Id",
+            f.label,
+            p.title as pack_title,
+            df.strength as "weight: u32"
+        FROM dealer_filters df, filters f, packs p
+        WHERE df.filter_id = f.id
+        AND f.pack_id = p.id
+        AND df.dealer_id = ?
+        "#,
+        id,
     )
     .fetch_all(pool)
     .await
