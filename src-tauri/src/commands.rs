@@ -22,6 +22,10 @@ pub enum ModifyPack {
 pub enum ModifyCard {
     AddTag(String),
     RemoveTag(String),
+    Rename {
+        front: Option<String>,
+        back: Option<String>,
+    },
 }
 
 #[derive(TS, Deserialize, Debug)]
@@ -105,6 +109,9 @@ pub async fn modify_card(
     match action {
         ModifyCard::AddTag(tag) => card::add_tag(pool.inner(), id, &tag).await,
         ModifyCard::RemoveTag(tag) => card::remove_tag(pool.inner(), id, &tag).await,
+        ModifyCard::Rename { front, back } => {
+            card::rename(pool.inner(), id, front.as_deref(), back.as_deref()).await
+        }
     }
 }
 

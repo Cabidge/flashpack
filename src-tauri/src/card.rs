@@ -136,3 +136,26 @@ pub async fn remove_tag(pool: &SqlitePool, id: Id, tag: &str) -> Result<()> {
 
     Ok(())
 }
+
+pub async fn rename(
+    pool: &SqlitePool,
+    id: Id,
+    front: Option<&str>,
+    back: Option<&str>,
+) -> Result<()> {
+    sqlx::query!(
+        "
+        UPDATE cards
+        SET front = IFNULL(?, front),
+            back = IFNULL(?, back)
+        WHERE id = ?
+        ",
+        front,
+        back,
+        id,
+    )
+    .execute(pool)
+    .await?;
+
+    Ok(())
+}
