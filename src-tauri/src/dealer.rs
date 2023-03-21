@@ -125,7 +125,7 @@ pub async fn add_filter(
     Ok(())
 }
 
-pub async fn select_filter(pool: &SqlitePool, dealer_id: Id) -> Result<Option<filter::Id>> {
+pub async fn next_filter(pool: &SqlitePool, dealer_id: Id) -> Result<Option<filter::Id>> {
     #[derive(FromRow)]
     struct QueryResult {
         id: filter::Id,

@@ -107,7 +107,7 @@ pub async fn set_excluded(
     Ok(())
 }
 
-pub async fn select_card(pool: &SqlitePool, filter_id: Id) -> Result<Option<card::Id>> {
+pub async fn next_card(pool: &SqlitePool, filter_id: Id) -> Result<Option<card::Id>> {
     #[derive(FromRow)]
     struct FilterTagRow {
         tag: String,
