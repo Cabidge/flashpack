@@ -16,14 +16,27 @@
     $: frontInput = front;
     $: backInput = back;
 
-    let modifications: ModifyCard[] = [];
+    let tagModifications: ModifyCard[] = [];
+
+    let modifications: ModifyCard[];
+
+    $: {
+        let fullModifications = tagModifications;
+
+        if (front !== frontInput) {
+            // TODO push rename front
+        }
+
+        if (back !== backInput) {
+            // TODO push rename back
+        }
+
+        modifications = fullModifications;
+    }
 
     let tagInput = '';
 
-    $: canSave =
-        frontInput !== '' &&
-        backInput !== '' &&
-        (front !== frontInput || back !== backInput || modifications.length > 0);
+    $: canSave = frontInput !== '' && backInput !== '' && modifications.length > 0;
 
     const addTag = () => {
         if (tagInput === '') {
@@ -39,7 +52,7 @@
         }
 
         tags = [...tags, tag].sort();
-        modifications = [...modifications, { AddTag: tag }];
+        tagModifications = [...tagModifications, { AddTag: tag }];
     };
 
     const saveChanges = async () => {
@@ -47,15 +60,11 @@
             return;
         }
 
-        for (const action of modifications) {
-            try {
-                await invoke('modify_card', { id, action });
-            } catch (err) {
-                console.error(err);
-            }
+        for (const action of tagModifications) {
+            await invoke('modify_card', { id, action });
         }
 
-        modifications = [];
+        tagModifications = [];
 
         await invalidateAll();
     };
