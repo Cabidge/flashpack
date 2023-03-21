@@ -22,7 +22,7 @@ pub struct Prompt {
     pub answer: String,
 }
 
-pub type Id = i64;
+pub type Id = u32;
 
 pub async fn create(pool: &SqlitePool, pack_id: crate::pack::Id, label: &str) -> Result<Id> {
     #[derive(FromRow)]
@@ -32,11 +32,11 @@ pub async fn create(pool: &SqlitePool, pack_id: crate::pack::Id, label: &str) ->
 
     let row = sqlx::query_as!(
         InsertResult,
-        "
+        r#"
         INSERT INTO filters (label, pack_id)
         VALUES (?, ?)
-        RETURNING id
-        ",
+        RETURNING id as "id: Id"
+        "#,
         label,
         pack_id,
     )
@@ -49,11 +49,11 @@ pub async fn create(pool: &SqlitePool, pack_id: crate::pack::Id, label: &str) ->
 pub async fn list_by_pack(pool: &SqlitePool, pack_id: crate::pack::Id) -> Result<Vec<Summary>> {
     sqlx::query_as!(
         Summary,
-        "
-        SELECT id, label
+        r#"
+        SELECT id as "id: Id", label
         FROM filters
         WHERE pack_id = ?
-        ",
+        "#,
         pack_id,
     )
     .fetch_all(pool)
@@ -129,13 +129,13 @@ pub async fn select_card(pool: &SqlitePool, filter_id: Id) -> Result<Option<card
 
     let mut cards = sqlx::query_as!(
         CardIdRow,
-        "
-        SELECT c.id
+        r#"
+        SELECT c.id as "id: card::Id"
         FROM cards c, filters f
         WHERE c.pack_id = f.pack_id
         AND f.id = ?
         ORDER BY RANDOM()
-        ",
+        "#,
         filter_id,
     )
     .fetch(pool);

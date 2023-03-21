@@ -12,16 +12,16 @@ pub struct Summary {
     pub back: String,
 }
 
-pub type Id = i64;
+pub type Id = u32;
 
 pub async fn list_by_pack(pool: &SqlitePool, pack_id: crate::pack::Id) -> Result<Vec<Summary>> {
     sqlx::query_as!(
         Summary,
-        "
-        SELECT id, front, back
+        r#"
+        SELECT id as "id: Id", front, back
         FROM cards
         WHERE pack_id = ?
-        ",
+        "#,
         pack_id,
     )
     .fetch_all(pool)
@@ -42,11 +42,11 @@ pub async fn create(
 
     let row = sqlx::query_as!(
         InsertResult,
-        "
+        r#"
         INSERT INTO cards (front, back, pack_id)
         VALUES (?, ?, ?)
-        RETURNING id
-        ",
+        RETURNING id as "id: Id"
+        "#,
         front,
         back,
         pack_id,

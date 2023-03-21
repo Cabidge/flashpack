@@ -18,14 +18,14 @@ pub struct PackCreate {
 #[derive(TS, Deserialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
 pub struct PackUpdate {
-    id: i64,
+    id: pack::Id,
     title: String,
 }
 
 #[derive(TS, Deserialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
 pub struct CardAdd {
-    pack_id: i64,
+    pack_id: pack::Id,
     front: String,
     back: String,
 }

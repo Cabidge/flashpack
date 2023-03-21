@@ -18,7 +18,7 @@ pub struct Pack {
     pub cards: Vec<card::Summary>,
 }
 
-pub type Id = i64;
+pub type Id = u32;
 
 pub async fn create(pool: &SqlitePool, title: &str) -> Result<Id> {
     struct InsertResult {
@@ -27,11 +27,11 @@ pub async fn create(pool: &SqlitePool, title: &str) -> Result<Id> {
 
     let row = sqlx::query_as!(
         InsertResult,
-        "
+        r#"
         INSERT INTO packs (title)
         VALUES (?)
-        RETURNING id
-        ",
+        RETURNING id as "id: Id"
+        "#,
         title,
     )
     .fetch_one(pool)
@@ -43,11 +43,11 @@ pub async fn create(pool: &SqlitePool, title: &str) -> Result<Id> {
 pub async fn list_all(pool: &SqlitePool) -> Result<Vec<Summary>> {
     sqlx::query_as!(
         Summary,
-        "
-        SELECT *
+        r#"
+        SELECT id as "id: Id", title
         FROM packs
         ORDER BY LOWER(title) ASC, id ASC
-        ",
+        "#,
     )
     .fetch_all(pool)
     .await
@@ -57,11 +57,11 @@ pub async fn list_all(pool: &SqlitePool) -> Result<Vec<Summary>> {
 pub async fn with_id(pool: &SqlitePool, id: Id) -> Result<Summary> {
     sqlx::query_as!(
         Summary,
-        "
-        SELECT *
+        r#"
+        SELECT id as "id: Id", title
         FROM packs
         WHERE id = ?
-        ",
+        "#,
         id,
     )
     .fetch_one(pool)

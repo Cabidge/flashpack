@@ -19,7 +19,7 @@ pub struct DealerFilter {
     weight: i32,
 }
 
-pub type Id = i64;
+pub type Id = u32;
 
 pub async fn create(pool: &SqlitePool, title: &str) -> Result<Id> {
     #[derive(FromRow)]
@@ -29,11 +29,11 @@ pub async fn create(pool: &SqlitePool, title: &str) -> Result<Id> {
 
     let row = sqlx::query_as!(
         InsertResult,
-        "
+        r#"
         INSERT INTO dealers (title)
         VALUES (?)
-        RETURNING id
-        ",
+        RETURNING id as "id: Id"
+        "#,
         title,
     )
     .fetch_one(pool)
@@ -72,11 +72,11 @@ pub async fn select_filter(pool: &SqlitePool, dealer_id: Id) -> Result<Option<fi
 
     let id = sqlx::query_as!(
         QueryResult,
-        "
-        SELECT filter_id as id, strength as weight
+        r#"
+        SELECT filter_id as "id: filter::Id", strength as weight
         FROM dealer_filters
         WHERE dealer_id = ?
-        ",
+        "#,
         dealer_id,
     )
     .fetch_all(pool)
