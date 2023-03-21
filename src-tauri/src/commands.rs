@@ -45,8 +45,8 @@ pub enum ModifyDealer {
 }
 
 pub enum ModifyFilter {
-    AddIncluded(String),
-    AddExcluded(String),
+    AddTag(String),
+    SetExclusion(String, bool),
 }
 
 #[tauri::command]
