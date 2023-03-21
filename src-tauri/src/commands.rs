@@ -101,6 +101,15 @@ pub async fn get_card(pool: State<'_, SqlitePool>, id: card::Id) -> Result<Card>
 }
 
 #[tauri::command]
+pub async fn deal_card(
+    pool: State<'_, SqlitePool>,
+    dealer_id: dealer::Id,
+) -> Result<Option<card::Id>> {
+    let Some(filter_id) = dealer::next_filter(pool.inner(), dealer_id).await? else { return Ok(None) };
+    filter::next_card(pool.inner(), filter_id).await
+}
+
+#[tauri::command]
 pub async fn modify_card(
     pool: State<'_, SqlitePool>,
     id: card::Id,

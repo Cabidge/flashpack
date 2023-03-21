@@ -61,6 +61,7 @@ async fn main() -> Result<()> {
             // card
             create_card,
             get_card,
+            deal_card,
             modify_card,
             // dealer
             create_dealer,
