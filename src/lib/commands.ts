@@ -2,6 +2,7 @@ import type { Card } from '@bindings/Card';
 import type { Dealer } from '@bindings/Dealer';
 import type { DealerSummary } from '@bindings/DealerSummary';
 import type { Filter } from '@bindings/Filter';
+import type { FilterSummary } from '@bindings/FilterSummary';
 
 import type { ModifyCard } from '@bindings/ModifyCard';
 import type { ModifyDealer } from '@bindings/ModifyDealer';
@@ -30,6 +31,7 @@ type Commands = {
     modify_dealer: (args: { id: number; action: ModifyDealer }) => void;
     // filter
     create_filter: (args: { packId: number; label: string }) => void;
+    list_filters: () => FilterSummary[];
     get_filter: (args: { id: number }) => Filter;
     modify_filter: (args: { id: number; action: ModifyFilter }) => void;
 };
