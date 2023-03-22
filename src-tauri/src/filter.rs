@@ -10,8 +10,8 @@ use crate::{card, prelude::*};
 #[derive(TS, Serialize, Debug)]
 #[ts(rename = "FilterSummary", export, export_to = "../src/bindings/")]
 pub struct Summary {
-    id: Id,
-    label: String,
+    pub id: Id,
+    pub label: String,
 }
 
 #[derive(TS, Serialize, Debug)]
@@ -49,6 +49,19 @@ pub async fn create(pool: &SqlitePool, pack_id: crate::pack::Id, label: &str) ->
     .await?;
 
     Ok(row.id)
+}
+
+pub async fn list_all(pool: &SqlitePool) -> Result<Vec<Summary>> {
+    sqlx::query_as!(
+        Summary,
+        r#"
+        SELECT id as "id: Id", label
+        FROM filters
+        "#,
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(Error::from)
 }
 
 pub async fn list_by_pack(pool: &SqlitePool, pack_id: crate::pack::Id) -> Result<Vec<Summary>> {

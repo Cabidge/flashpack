@@ -171,6 +171,11 @@ pub async fn create_filter(
 }
 
 #[tauri::command]
+pub async fn list_filters(pool: State<'_, SqlitePool>) -> Result<Vec<filter::Summary>> {
+    filter::list_all(pool.inner()).await
+}
+
+#[tauri::command]
 pub async fn get_filter(pool: State<'_, SqlitePool>, id: filter::Id) -> Result<filter::Filter> {
     let label = filter::get_label(pool.inner(), id).await?;
     let tags = filter::list_tags(pool.inner(), id).await?;

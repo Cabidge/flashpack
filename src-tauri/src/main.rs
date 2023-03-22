@@ -70,6 +70,7 @@ async fn main() -> Result<()> {
             modify_dealer,
             // filter
             create_filter,
+            list_filters,
             get_filter,
             modify_filter,
         ])
