@@ -1,6 +1,6 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
-use sqlx::{FromRow, SqlitePool};
+use sqlx::SqlitePool;
 use ts_rs::TS;
 
 use crate::{filter, prelude::*};
@@ -31,13 +31,7 @@ pub struct DealerFilter {
 pub type Id = u32;
 
 pub async fn create(pool: &SqlitePool, title: &str) -> Result<Id> {
-    #[derive(FromRow)]
-    struct InsertResult {
-        id: Id,
-    }
-
-    let row = sqlx::query_as!(
-        InsertResult,
+    let row = sqlx::query!(
         r#"
         INSERT INTO dealers (title)
         VALUES (?)
@@ -65,12 +59,7 @@ pub async fn list_all(pool: &SqlitePool) -> Result<Vec<Summary>> {
 }
 
 pub async fn get_title(pool: &SqlitePool, id: Id) -> Result<String> {
-    struct QueryResult {
-        title: String,
-    }
-
-    sqlx::query_as!(
-        QueryResult,
+    let row = sqlx::query!(
         "
         SELECT title
         FROM dealers
@@ -78,10 +67,10 @@ pub async fn get_title(pool: &SqlitePool, id: Id) -> Result<String> {
         ",
         id,
     )
-    .map(|row| row.title)
     .fetch_one(pool)
-    .await
-    .map_err(Error::from)
+    .await?;
+
+    Ok(row.title)
 }
 
 pub async fn list_filters(pool: &SqlitePool, id: Id) -> Result<Vec<DealerFilter>> {
@@ -126,14 +115,7 @@ pub async fn add_filter(
 }
 
 pub async fn next_filter(pool: &SqlitePool, dealer_id: Id) -> Result<Option<filter::Id>> {
-    #[derive(FromRow)]
-    struct QueryResult {
-        id: filter::Id,
-        weight: i64,
-    }
-
-    let id = sqlx::query_as!(
-        QueryResult,
+    let id = sqlx::query!(
         r#"
         SELECT filter_id as "id: filter::Id", strength as weight
         FROM dealer_filters

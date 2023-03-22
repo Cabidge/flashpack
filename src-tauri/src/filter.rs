@@ -2,7 +2,7 @@ use std::collections::BTreeSet;
 
 use futures::TryStreamExt;
 use serde::Serialize;
-use sqlx::{FromRow, SqlitePool};
+use sqlx::SqlitePool;
 use ts_rs::TS;
 
 use crate::{card, prelude::*};
@@ -28,7 +28,6 @@ pub struct Tag {
     exclude: bool,
 }
 
-#[derive(FromRow)]
 pub struct Prompt {
     pub question: String,
     pub answer: String,
@@ -37,13 +36,7 @@ pub struct Prompt {
 pub type Id = u32;
 
 pub async fn create(pool: &SqlitePool, pack_id: crate::pack::Id, label: &str) -> Result<Id> {
-    #[derive(FromRow)]
-    struct InsertResult {
-        id: Id,
-    }
-
-    let row = sqlx::query_as!(
-        InsertResult,
+    let row = sqlx::query!(
         r#"
         INSERT INTO filters (label, pack_id)
         VALUES (?, ?)
@@ -142,14 +135,7 @@ pub async fn set_excluded(
 }
 
 pub async fn next_card(pool: &SqlitePool, filter_id: Id) -> Result<Option<card::Id>> {
-    #[derive(FromRow)]
-    struct FilterTagRow {
-        tag: String,
-        exclude: bool,
-    }
-
-    let mut rows = sqlx::query_as!(
-        FilterTagRow,
+    let mut rows = sqlx::query!(
         "
         SELECT tag, exclude
         FROM filter_tags
@@ -169,13 +155,7 @@ pub async fn next_card(pool: &SqlitePool, filter_id: Id) -> Result<Option<card::
         }
     }
 
-    #[derive(FromRow)]
-    struct CardIdRow {
-        id: card::Id,
-    }
-
-    let mut cards = sqlx::query_as!(
-        CardIdRow,
+    let mut cards = sqlx::query!(
         r#"
         SELECT c.id as "id: card::Id"
         FROM cards c, filters f
@@ -187,14 +167,10 @@ pub async fn next_card(pool: &SqlitePool, filter_id: Id) -> Result<Option<card::
     )
     .fetch(pool);
 
-    while let Some(CardIdRow { id }) = cards.try_next().await? {
-        #[derive(FromRow)]
-        struct CardTagRow {
-            tag: String,
-        }
+    while let Some(row) = cards.try_next().await? {
+        let id = row.id;
 
-        let tags: BTreeSet<String> = sqlx::query_as!(
-            CardTagRow,
+        let tags: BTreeSet<String> = sqlx::query!(
             "
             SELECT tag
             FROM card_tags

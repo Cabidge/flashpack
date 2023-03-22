@@ -1,10 +1,10 @@
 use serde::Serialize;
-use sqlx::{FromRow, SqlitePool};
+use sqlx::SqlitePool;
 use ts_rs::TS;
 
 use crate::{card, filter, prelude::*};
 
-#[derive(FromRow, TS, Serialize, Debug)]
+#[derive(TS, Serialize, Debug)]
 #[ts(rename = "PackSummary", export, export_to = "../src/bindings/")]
 pub struct Summary {
     pub id: Id,

@@ -1,17 +1,17 @@
 use serde::Serialize;
-use sqlx::{FromRow, SqlitePool};
+use sqlx::SqlitePool;
 use ts_rs::TS;
 
 use crate::prelude::*;
 
-#[derive(FromRow, TS, Serialize, Debug)]
+#[derive(TS, Serialize, Debug)]
 #[ts(rename = "CardSummary", export, export_to = "../src/bindings/")]
 pub struct Summary {
     pub id: Id,
     pub label: String,
 }
 
-#[derive(FromRow, TS, Serialize, Debug)]
+#[derive(TS, Serialize, Debug)]
 pub struct Details {
     pub front: String,
     pub back: String,
@@ -33,13 +33,7 @@ pub async fn create(
     front: &str,
     back: &str,
 ) -> Result<Id> {
-    #[derive(FromRow)]
-    struct InsertResult {
-        id: Id,
-    }
-
-    let row = sqlx::query_as!(
-        InsertResult,
+    let row = sqlx::query!(
         r#"
         INSERT INTO cards (front, back, pack_id)
         VALUES (?, ?, ?)
@@ -86,13 +80,7 @@ pub async fn with_id(pool: &SqlitePool, id: Id) -> Result<Details> {
 }
 
 pub async fn list_tags(pool: &SqlitePool, id: Id) -> Result<Vec<String>> {
-    #[derive(FromRow)]
-    struct QueryResult {
-        tag: String,
-    }
-
-    sqlx::query_as!(
-        QueryResult,
+    sqlx::query!(
         "
         SELECT tag
         FROM card_tags
