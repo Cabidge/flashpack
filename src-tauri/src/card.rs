@@ -64,7 +64,7 @@ pub async fn list_by_pack(pool: &SqlitePool, pack_id: crate::pack::Id) -> Result
     .map_err(Error::from)
 }
 
-pub async fn with_id(pool: &SqlitePool, id: Id) -> Result<Details> {
+pub async fn get_details(pool: &SqlitePool, id: Id) -> Result<Details> {
     sqlx::query_as!(
         Details,
         "

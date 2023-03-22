@@ -94,7 +94,7 @@ pub async fn create_card(
 
 #[tauri::command]
 pub async fn get_card(pool: State<'_, SqlitePool>, id: card::Id) -> Result<Card> {
-    let details = card::with_id(pool.inner(), id).await?;
+    let details = card::get_details(pool.inner(), id).await?;
     let tags = card::list_tags(pool.inner(), id).await?;
 
     Ok(Card { details, tags })
