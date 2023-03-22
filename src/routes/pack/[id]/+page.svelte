@@ -4,12 +4,12 @@
     import type { PageData } from './$types';
     import CardButton from './CardButton.svelte';
     import { goto } from '$app/navigation';
+    import AddFilter from './AddFilter.svelte';
 
     export let data: PageData;
 
     $: ({ id, pack } = data);
-
-    $: cards = pack.cards;
+    $: ({ cards, filters } = pack);
 </script>
 
 <h1 class="text-2xl font-semibold">
@@ -37,6 +37,29 @@
             <CardButton label={card.label} on:click={() => goto(`/pack/${id}/card/${card.id}`)} />
         {/each}
     </div>
+{/if}
+
+<br>
+
+<ModalController title="Add a Filter" let:open let:close>
+    <h2 class="text-lg">
+        Filters
+        <button on:click={open}>+</button>
+    </h2>
+
+    <AddFilter slot="modal" {id} {close} />
+</ModalController>
+
+<div class="mb-2 border-b-2" />
+
+{#if filters.length === 0}
+    <p>No filters created...</p>
+{:else}
+    <ul>
+        {#each filters as filter (filter.id)}
+            <li>{filter.label}</li>
+        {/each}
+    </ul>
 {/if}
 
 <style>
