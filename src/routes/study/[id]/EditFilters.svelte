@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { invoke } from "$lib/commands";
-    import type { DealerFilter } from "@bindings/DealerFilter";
-    import type { FilterSummary } from "@bindings/FilterSummary";
-    import type { ModifyDealer } from "@bindings/ModifyDealer";
-    import { createEventDispatcher, onMount } from "svelte";
+    import { invoke } from '$lib/commands';
+    import type { DealerFilter } from '@bindings/DealerFilter';
+    import type { FilterSummary } from '@bindings/FilterSummary';
+    import type { ModifyDealer } from '@bindings/ModifyDealer';
+    import { createEventDispatcher, onMount } from 'svelte';
 
     export let dealerFilters: DealerFilter[];
 
@@ -13,7 +13,7 @@
     let filters: FilterSummary[] = [];
 
     onMount(async () => {
-        filters = await invoke("list_filters");
+        filters = await invoke('list_filters');
         selection = filters.filter(({ id }) => oldFilterIds.has(id));
     });
 
@@ -28,12 +28,12 @@
             if (oldHas && !newHas) {
                 // TODO RemoveFilter
             } else if (newHas && !oldHas) {
-                modifications.push({ AddFilter: id })
+                modifications.push({ AddFilter: id });
             }
 
             return modifications;
         }, []);
-    }
+    };
 
     const dispatch = createEventDispatcher<{ save: ModifyDealer[] }>();
 </script>
@@ -44,4 +44,4 @@
     {/each}
 </select>
 
-<button on:click={() => dispatch("save", diffChanges())}>save</button>
+<button on:click={() => dispatch('save', diffChanges())}>save</button>

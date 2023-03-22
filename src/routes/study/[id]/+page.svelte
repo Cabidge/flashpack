@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { invalidateAll } from "$app/navigation";
-    import { invoke } from "$lib/commands";
-    import ModalController from "$lib/ModalController.svelte";
-import type { PageData } from "./$types";
-    import EditFilters from "./EditFilters.svelte";
+    import { invalidateAll } from '$app/navigation';
+    import { invoke } from '$lib/commands';
+    import ModalController from '$lib/ModalController.svelte';
+    import type { PageData } from './$types';
+    import EditFilters from './EditFilters.svelte';
 
     export let data: PageData;
 
@@ -15,15 +15,19 @@ import type { PageData } from "./$types";
 <ModalController title="Select Filters" let:open let:close>
     <button on:click={open}>Add Filter</button>
 
-    <EditFilters on:save={async (e) => {
-        close();
+    <EditFilters
+        on:save={async (e) => {
+            close();
 
-        for (const action of e.detail) {
-            await invoke("modify_dealer", { id, action });
-        }
+            for (const action of e.detail) {
+                await invoke('modify_dealer', { id, action });
+            }
 
-        await invalidateAll();
-    }} dealerFilters={dealer.filters} slot="modal" />
+            await invalidateAll();
+        }}
+        dealerFilters={dealer.filters}
+        slot="modal"
+    />
 </ModalController>
 
 <ul>

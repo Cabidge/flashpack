@@ -33,14 +33,14 @@
             await goto('/pack');
         }
 
-        await invoke('modify_pack', { id: pack.id, action: "Delete" });
+        await invoke('modify_pack', { id: pack.id, action: 'Delete' });
         await invalidateAll();
     };
 
     const quickStudy = async () => {
         // TODO
-        console.log("Study not ready...");
-     };
+        console.log('Study not ready...');
+    };
 </script>
 
 <ModalController title="Rename Pack" let:active let:open let:close>

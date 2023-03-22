@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Card } from "@bindings/Card";
+    import type { Card } from '@bindings/Card';
 
     export let card: Card;
 

@@ -19,11 +19,16 @@
         <div
             on:click|stopPropagation
             transition:fly={{ y: 50, duration: 380, easing: expoOut }}
-            class="rounded bg-white shadow-lg overflow-hidden"
+            class="overflow-hidden rounded bg-white shadow-lg"
         >
-            <div class="relative p-1 font-semibold bg-slate-200 text-lg text-center w-full">
+            <div class="relative w-full bg-slate-200 p-1 text-center text-lg font-semibold">
                 {title}
-                <button class="absolute top-0 bottom-0 right-2 text-slate-400 hover:text-black" on:click={close}> x </button>
+                <button
+                    class="absolute top-0 bottom-0 right-2 text-slate-400 hover:text-black"
+                    on:click={close}
+                >
+                    x
+                </button>
             </div>
 
             <div class="p-4">

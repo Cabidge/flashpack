@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ params }) => {
 
         return {
             id,
-            pack,
+            pack
         };
     } catch {
         throw error(404, 'Not found');

@@ -39,7 +39,7 @@
     </div>
 {/if}
 
-<br>
+<br />
 
 <ModalController title="Add a Filter" let:open let:close>
     <h2 class="text-lg">
