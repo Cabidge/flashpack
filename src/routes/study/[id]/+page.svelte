@@ -12,10 +12,12 @@ import type { PageData } from "./$types";
 
 <h1>{dealer.title}</h1>
 
-<ModalController title="Select Filters" let:open>
+<ModalController title="Select Filters" let:open let:close>
     <button on:click={open}>Add Filter</button>
 
     <EditFilters on:save={async (e) => {
+        close();
+
         for (const action of e.detail) {
             await invoke("modify_dealer", { id, action });
         }

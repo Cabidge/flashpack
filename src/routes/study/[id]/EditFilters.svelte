@@ -7,14 +7,14 @@
 
     export let dealerFilters: DealerFilter[];
 
+    $: oldFilterIds = new Set(dealerFilters.map((filter) => filter.id));
+
     let selection: FilterSummary[];
-
-    $: selection = dealerFilters.map((filter) => ({ id: filter.id, label: filter.label }));
-
     let filters: FilterSummary[] = [];
 
     onMount(async () => {
         filters = await invoke("list_filters");
+        selection = filters.filter(({ id }) => oldFilterIds.has(id));
     });
 
     const diffChanges = () => {
