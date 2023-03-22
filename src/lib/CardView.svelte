@@ -1,7 +1,7 @@
 <script lang="ts">
-    import type { CardSummary } from '@bindings/CardSummary';
+    import type { Card } from "@bindings/Card";
 
-    export let card: CardSummary;
+    export let card: Card;
 
     let showAnswer = false;
 </script>
