@@ -1,4 +1,7 @@
 import type { Card } from '@bindings/Card';
+import type { Dealer } from '@bindings/Dealer';
+import type { DealerSummary } from '@bindings/DealerSummary';
+import type { Filter } from '@bindings/Filter';
 
 import type { ModifyCard } from '@bindings/ModifyCard';
 import type { ModifyDealer } from '@bindings/ModifyDealer';
@@ -18,12 +21,16 @@ type Commands = {
     // card
     create_card: (args: { packId: number; front: string; back: string }) => void;
     get_card: (args: { id: number }) => Card;
+    deal_card: (args: { dealerId: number }) => number | undefined;
     modify_card: (args: { id: number; action: ModifyCard }) => void;
     // dealer
     create_dealer: (args: { title: string }) => void;
+    list_dealers: () => DealerSummary[];
+    get_dealer: (args: { id: number }) => Dealer;
     modify_dealer: (args: { id: number; action: ModifyDealer }) => void;
     // filter
     create_filter: (args: { packId: number; label: string }) => void;
+    get_filter: (args: { id: number }) => Filter;
     modify_filter: (args: { id: number; action: ModifyFilter }) => void;
 };
 
