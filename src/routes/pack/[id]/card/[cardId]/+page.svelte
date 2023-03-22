@@ -6,12 +6,9 @@
 
     export let data: PageData;
 
-    $: id = data.id;
-    $: card = data.card;
+    $: ({ id, card } = data);
 
-    $: front = card.front;
-    $: back = card.back;
-    $: tags = card.tags;
+    $: ({ front, back, tags } = card);
 
     $: frontInput = front;
     $: backInput = back;

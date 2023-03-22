@@ -7,8 +7,8 @@
 
     export let data: PageData;
 
-    $: id = data.id;
-    $: pack = data.pack;
+    $: ({ id, pack } = data);
+
     $: cards = pack.cards;
 </script>
 
