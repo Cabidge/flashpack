@@ -55,19 +55,19 @@ pub async fn list_all(pool: &SqlitePool) -> Result<Vec<Summary>> {
     .map_err(Error::from)
 }
 
-pub async fn with_id(pool: &SqlitePool, id: Id) -> Result<Summary> {
-    sqlx::query_as!(
-        Summary,
+pub async fn get_title(pool: &SqlitePool, id: Id) -> Result<String> {
+    let row = sqlx::query!(
         r#"
-        SELECT id as "id: Id", title
+        SELECT title
         FROM packs
         WHERE id = ?
         "#,
         id,
     )
     .fetch_one(pool)
-    .await
-    .map_err(Error::from)
+    .await?;
+
+    Ok(row.title)
 }
 
 pub async fn delete(pool: &SqlitePool, id: Id) -> Result<()> {

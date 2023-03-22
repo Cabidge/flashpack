@@ -56,12 +56,12 @@ pub async fn list_packs(pool: State<'_, SqlitePool>) -> Result<Vec<pack::Summary
 
 #[tauri::command]
 pub async fn get_pack(pool: State<'_, SqlitePool>, id: pack::Id) -> Result<Pack> {
-    let summary = pack::with_id(pool.inner(), id).await?;
+    let title = pack::get_title(pool.inner(), id).await?;
     let cards = card::list_by_pack(pool.inner(), id).await?;
     let filters = filter::list_by_pack(pool.inner(), id).await?;
 
     Ok(Pack {
-        title: summary.title,
+        title,
         cards,
         filters,
     })
