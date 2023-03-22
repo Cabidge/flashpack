@@ -70,6 +70,7 @@ async fn main() -> Result<()> {
             modify_dealer,
             // filter
             create_filter,
+            get_filter,
             modify_filter,
         ])
         .manage(pool)

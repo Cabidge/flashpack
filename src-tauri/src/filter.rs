@@ -14,11 +14,15 @@ pub struct Summary {
     label: String,
 }
 
+#[derive(TS, Serialize, Debug)]
+#[ts(export, export_to = "../src/bindings/")]
 pub struct Filter {
-    label: String,
-    tags: Vec<Tag>,
+    pub label: String,
+    pub tags: Vec<Tag>,
 }
 
+#[derive(TS, Serialize, Debug)]
+#[ts(export, export_to = "../src/bindings/")]
 pub struct Tag {
     tag: String,
     exclude: bool,
@@ -63,6 +67,36 @@ pub async fn list_by_pack(pool: &SqlitePool, pack_id: crate::pack::Id) -> Result
         WHERE pack_id = ?
         "#,
         pack_id,
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(Error::from)
+}
+
+pub async fn get_label(pool: &SqlitePool, id: Id) -> Result<String> {
+    sqlx::query!(
+        "
+        SELECT label
+        FROM filters
+        WHERE id = ?
+        ",
+        id,
+    )
+    .map(|row| row.label)
+    .fetch_one(pool)
+    .await
+    .map_err(Error::from)
+}
+
+pub async fn list_tags(pool: &SqlitePool, id: Id) -> Result<Vec<Tag>> {
+    sqlx::query_as!(
+        Tag,
+        "
+        SELECT tag, exclude
+        FROM filter_tags
+        WHERE filter_id = ?
+        ",
+        id,
     )
     .fetch_all(pool)
     .await

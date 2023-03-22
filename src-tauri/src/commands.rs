@@ -171,6 +171,14 @@ pub async fn create_filter(
 }
 
 #[tauri::command]
+pub async fn get_filter(pool: State<'_, SqlitePool>, id: filter::Id) -> Result<filter::Filter> {
+    let label = filter::get_label(pool.inner(), id).await?;
+    let tags = filter::list_tags(pool.inner(), id).await?;
+
+    Ok(filter::Filter { label, tags })
+}
+
+#[tauri::command]
 pub async fn modify_filter(
     pool: State<'_, SqlitePool>,
     id: filter::Id,
