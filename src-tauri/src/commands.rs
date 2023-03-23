@@ -32,6 +32,7 @@ pub enum ModifyCard {
 #[ts(export, export_to = "../src/bindings/")]
 pub enum ModifyDealer {
     AddFilter(filter::Id),
+    RemoveFilter(filter::Id),
 }
 
 #[derive(TS, Deserialize, Debug)]
@@ -154,6 +155,9 @@ pub async fn modify_dealer(
     match action {
         ModifyDealer::AddFilter(filter_id) => {
             dealer::add_filter(pool.inner(), id, filter_id, 1).await
+        }
+        ModifyDealer::RemoveFilter(filter_id) => {
+            dealer::remove_filter(pool.inner(), id, filter_id).await
         }
     }
 }

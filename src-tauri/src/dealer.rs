@@ -114,6 +114,22 @@ pub async fn add_filter(
     Ok(())
 }
 
+pub async fn remove_filter(pool: &SqlitePool, dealer_id: Id, filter_id: filter::Id) -> Result<()> {
+    sqlx::query!(
+        "
+        DELETE FROM dealer_filters
+        WHERE dealer_id = ?
+        AND filter_id = ?
+        ",
+        dealer_id,
+        filter_id,
+    )
+    .execute(pool)
+    .await?;
+
+    Ok(())
+}
+
 pub async fn next_filter(pool: &SqlitePool, dealer_id: Id) -> Result<Option<filter::Id>> {
     let id = sqlx::query!(
         r#"
