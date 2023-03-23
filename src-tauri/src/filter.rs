@@ -66,6 +66,7 @@ pub async fn list_by_pack(pool: &SqlitePool, pack_id: crate::pack::Id) -> Result
         SELECT id as "id: Id", label
         FROM filters
         WHERE pack_id = ?
+        ORDER BY LOWER(label)
         "#,
         pack_id,
     )
@@ -96,6 +97,7 @@ pub async fn list_tags(pool: &SqlitePool, id: Id) -> Result<Vec<Tag>> {
         SELECT tag, exclude
         FROM filter_tags
         WHERE filter_id = ?
+        ORDER BY LOWER(tag)
         ",
         id,
     )

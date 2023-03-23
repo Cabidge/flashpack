@@ -51,6 +51,7 @@ pub async fn list_all(pool: &SqlitePool) -> Result<Vec<Summary>> {
         r#"
         SELECT id as "id: Id", title
         FROM dealers
+        ORDER BY LOWER(title)
         "#
     )
     .fetch_all(pool)
@@ -85,6 +86,7 @@ pub async fn list_filters(pool: &SqlitePool, id: Id) -> Result<Vec<DealerFilter>
         WHERE df.filter_id = f.id
         AND f.pack_id = p.id
         AND df.dealer_id = ?
+        ORDER BY LOWER(p.title), LOWER(f.label)
         "#,
         id,
     )
