@@ -13,5 +13,5 @@
 </script>
 
 <form on:submit={add}>
-    <input bind:value={title} required />
+    <input bind:value={title} placeholder="Create new study..." required />
 </form>
