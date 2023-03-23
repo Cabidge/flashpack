@@ -28,11 +28,6 @@ pub struct Tag {
     exclude: bool,
 }
 
-pub struct Prompt {
-    pub question: String,
-    pub answer: String,
-}
-
 pub type Id = u32;
 
 pub async fn create(pool: &SqlitePool, pack_id: crate::pack::Id, label: &str) -> Result<Id> {

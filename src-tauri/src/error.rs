@@ -18,9 +18,3 @@ impl Serialize for Error {
         self.to_string().serialize(serializer)
     }
 }
-
-impl Error {
-    pub fn simple(msg: impl ToString) -> Self {
-        Self::Custom(anyhow::Error::msg(msg.to_string()))
-    }
-}
