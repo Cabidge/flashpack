@@ -32,7 +32,7 @@
         {/each}
     </nav>
 
-    <Transition class="w-full h-full" key={root}>
+    <Transition class="w-full h-full overflow-hidden" key={root}>
         <slot />
     </Transition>
 </div>
