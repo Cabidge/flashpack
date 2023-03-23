@@ -13,7 +13,7 @@
 <h1>{dealer.title}</h1>
 
 <ModalController title="Select Filters" let:open let:close>
-    <button on:click={open}>Add Filter</button>
+    <button on:click={open}>Edit Filters</button>
 
     <EditFilters
         on:save={async (e) => {
