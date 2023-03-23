@@ -26,7 +26,7 @@
             const newHas = newFilterIds.has(id);
 
             if (oldHas && !newHas) {
-                // TODO RemoveFilter
+                modifications.push({ RemoveFilter: id });
             } else if (newHas && !oldHas) {
                 modifications.push({ AddFilter: id });
             }
