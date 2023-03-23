@@ -16,11 +16,11 @@
 </script>
 
 <div class="flex h-screen flex-col">
-    <nav class="item-stretch flex gap-2 bg-slate-300 pl-2">
+    <nav class="item-stretch flex gap-1 bg-slate-300 pl-3 py-3">
         {#each routes as route}
             <SmartLink
                 styling={{
-                    base: 'px-4 m-2 rounded-full',
+                    base: 'px-4 rounded-full',
                     unselected: 'hover:bg-slate-200',
                     selected: 'bg-white hover:bg-slate-100'
                 }}
