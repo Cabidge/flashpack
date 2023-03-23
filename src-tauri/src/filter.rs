@@ -137,9 +137,9 @@ pub async fn set_excluded(
         WHERE filter_id = ?
         AND tag = ?
         ",
+        exclude,
         filter_id,
         tag,
-        exclude,
     )
     .execute(pool)
     .await?;
