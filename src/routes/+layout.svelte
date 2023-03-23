@@ -16,7 +16,7 @@
 </script>
 
 <div class="flex h-screen flex-col">
-    <nav class="item-stretch flex gap-1 bg-slate-300 pl-3 py-3">
+    <nav class="item-stretch flex gap-1 bg-slate-300 py-3 pl-3">
         {#each routes as route}
             <SmartLink
                 styling={{
@@ -32,7 +32,7 @@
         {/each}
     </nav>
 
-    <Transition class="w-full h-full overflow-hidden" key={root}>
+    <Transition class="h-full w-full overflow-hidden" key={root}>
         <slot />
     </Transition>
 </div>

@@ -1,33 +1,33 @@
 <script lang="ts">
-    import { invalidateAll } from "$app/navigation";
-    import { invoke } from "$lib/commands";
-    import type { ModifyFilter } from "@bindings/ModifyFilter";
-    import type { PageData } from "./$types";
+    import { invalidateAll } from '$app/navigation';
+    import { invoke } from '$lib/commands';
+    import type { ModifyFilter } from '@bindings/ModifyFilter';
+    import type { PageData } from './$types';
 
     export let data: PageData;
 
     $: ({ id, filter } = data);
     $: ({ tags } = filter);
 
-    const modifyFilter = (action: ModifyFilter) => invoke("modify_filter", { id, action });
+    const modifyFilter = (action: ModifyFilter) => invoke('modify_filter', { id, action });
 
     const excludeTag = async (tag: string, exclusion: boolean) => {
         await modifyFilter({ SetExclusion: [tag, exclusion] });
         await invalidateAll();
-    }
+    };
 
-    let tagInput = "";
+    let tagInput = '';
 
     const addTag = async () => {
-        if (tagInput === "") {
+        if (tagInput === '') {
             return;
         }
 
         await modifyFilter({ AddTag: tagInput });
-        tagInput = "";
+        tagInput = '';
 
         await invalidateAll();
-    }
+    };
 </script>
 
 <h1>{filter.label}</h1>
@@ -39,7 +39,9 @@
 <ul>
     {#each tags as tag (tag.tag)}
         <li>
-            <button on:click={() => excludeTag(tag.tag, !tag.exclude)}>{tag.exclude ? "-" : "+"}</button>
+            <button on:click={() => excludeTag(tag.tag, !tag.exclude)}
+                >{tag.exclude ? '-' : '+'}</button
+            >
             {tag.tag}
         </li>
     {/each}

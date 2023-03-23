@@ -43,11 +43,18 @@
                 {/if}
                 <button on:click={open}>edit weight</button>
 
-                <EditWeight slot="modal" weight={filter.weight} on:save={async (e) => {
-                    close();
-                    await invoke("modify_dealer", { id, action: { SetWeight: [filter.id, e.detail] }});
-                    await invalidateAll();
-                }}></EditWeight>
+                <EditWeight
+                    slot="modal"
+                    weight={filter.weight}
+                    on:save={async (e) => {
+                        close();
+                        await invoke('modify_dealer', {
+                            id,
+                            action: { SetWeight: [filter.id, e.detail] }
+                        });
+                        await invalidateAll();
+                    }}
+                />
             </ModalController>
         </li>
     {/each}
