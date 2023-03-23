@@ -9,7 +9,7 @@
 
     const save = () => {
         const weightClean = Math.max(1, parseInt(newWeight ?? ("" + weight)));
-        () => dispatch("save", weightClean)
+        dispatch("save", weightClean);
     }
 </script>
 
