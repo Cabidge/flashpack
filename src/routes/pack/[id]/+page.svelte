@@ -57,7 +57,11 @@
 {:else}
     <ul>
         {#each filters as filter (filter.id)}
-            <li>{filter.label}</li>
+            <li>
+                <a class="hover:underline" href="/pack/{id}/filter/{filter.id}">
+                    {filter.label}
+                </a>
+            </li>
         {/each}
     </ul>
 {/if}
