@@ -4,10 +4,13 @@
     import ModalController from '$lib/ModalController.svelte';
     import type { PageData } from './$types';
     import EditFilters from './EditFilters.svelte';
+    import EditWeight from './EditWeight.svelte';
 
     export let data: PageData;
 
     $: ({ id, dealer } = data);
+
+    $: showWeight = dealer.filters.reduce((acc, filter) => acc || filter.weight !== 1, false);
 </script>
 
 <h1>{dealer.title}</h1>
@@ -33,7 +36,19 @@
 <ul>
     {#each dealer.filters as filter (filter.id)}
         <li>
-            {filter.pack_title}::{filter.label}
+            <ModalController title="Edit Weight" let:open let:close>
+                {filter.pack_title}::{filter.label}
+                {#if showWeight}
+                    ({filter.weight})
+                {/if}
+                <button on:click={open}>edit weight</button>
+
+                <EditWeight slot="modal" weight={filter.weight} on:save={async (e) => {
+                    close();
+                    await invoke("modify_dealer", { id, action: { SetWeight: [filter.id, e.detail] }});
+                    await invalidateAll();
+                }}></EditWeight>
+            </ModalController>
         </li>
     {/each}
 </ul>

@@ -130,6 +130,24 @@ pub async fn remove_filter(pool: &SqlitePool, dealer_id: Id, filter_id: filter::
     Ok(())
 }
 
+pub async fn set_weight(pool: &SqlitePool, id: Id, filter_id: filter::Id, weight: i32) -> Result<()> {
+    sqlx::query!(
+        "
+        UPDATE dealer_filters
+        SET strength = ?
+        WHERE dealer_id = ?
+        AND filter_id = ?
+        ",
+        weight,
+        id,
+        filter_id,
+    )
+    .execute(pool)
+    .await?;
+
+    Ok(())
+}
+
 pub async fn next_filter(pool: &SqlitePool, dealer_id: Id) -> Result<Option<filter::Id>> {
     let id = sqlx::query!(
         r#"

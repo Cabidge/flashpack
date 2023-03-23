@@ -33,6 +33,7 @@ pub enum ModifyCard {
 pub enum ModifyDealer {
     AddFilter(filter::Id),
     RemoveFilter(filter::Id),
+    SetWeight(filter::Id, i32),
 }
 
 #[derive(TS, Deserialize, Debug)]
@@ -158,6 +159,9 @@ pub async fn modify_dealer(
         }
         ModifyDealer::RemoveFilter(filter_id) => {
             dealer::remove_filter(pool.inner(), id, filter_id).await
+        }
+        ModifyDealer::SetWeight(filter_id, weight) => {
+            dealer::set_weight(pool.inner(), id, filter_id, weight).await
         }
     }
 }
