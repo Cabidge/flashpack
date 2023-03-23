@@ -55,12 +55,7 @@ async fn find_unique_title<'a>(pool: &SqlitePool, desired_title: &'a str) -> Res
 }
 
 pub async fn create(pool: &SqlitePool, title: &str) -> Result<Id> {
-    struct InsertResult {
-        id: Id,
-    }
-
-    let row = sqlx::query_as!(
-        InsertResult,
+    let row = sqlx::query!(
         r#"
         INSERT INTO packs (title)
         VALUES (?)
