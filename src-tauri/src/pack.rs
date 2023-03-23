@@ -1,3 +1,6 @@
+use std::borrow::Cow;
+
+use futures::{TryStreamExt, StreamExt};
 use serde::Serialize;
 use sqlx::SqlitePool;
 use ts_rs::TS;
@@ -20,6 +23,36 @@ pub struct Pack {
 }
 
 pub type Id = u32;
+
+async fn find_unique_title<'a>(pool: &SqlitePool, desired_title: &'a str) -> Result<Cow<'a, str>> {
+    let mut unique_title = Cow::Borrowed(desired_title);
+    let mut unique_lower = desired_title.to_lowercase();
+
+    let mut titles = sqlx::query!(
+        "
+        SELECT title
+        FROM packs
+        ORDER BY LOWER(title) ASC
+        "
+    )
+    .map(|row| row.title.to_lowercase())
+    .fetch(pool);
+
+    let mut i = 0;
+    while let Some(title) = titles.try_next().await? {
+        if title > unique_lower {
+            break;
+        }
+
+        if title == unique_lower {
+            i += 1;
+            unique_title = Cow::Owned(format!("{} ({})", desired_title, i));
+            unique_lower = unique_title.to_lowercase();
+        }
+    }
+
+    Ok(unique_title)
+}
 
 pub async fn create(pool: &SqlitePool, title: &str) -> Result<Id> {
     struct InsertResult {
