@@ -32,7 +32,7 @@
         {/each}
     </nav>
 
-    <Transition class="flex h-full flex-row" key={root}>
+    <Transition class="w-full h-full" key={root}>
         <slot />
     </Transition>
 </div>
