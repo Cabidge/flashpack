@@ -1,6 +1,6 @@
 use std::borrow::Cow;
 
-use futures::{TryStreamExt, StreamExt};
+use futures::TryStreamExt;
 use serde::Serialize;
 use sqlx::SqlitePool;
 use ts_rs::TS;
