@@ -9,8 +9,6 @@
     export let data: PageData;
 
     $: ({ id, dealer } = data);
-
-    $: showWeight = dealer.filters.reduce((acc, filter) => acc || filter.weight !== 1, false);
 </script>
 
 <h1>{dealer.title}</h1>
@@ -38,8 +36,10 @@
         <li>
             <ModalController title="Edit Weight" let:open let:close>
                 {filter.pack_title}::{filter.label}
-                {#if showWeight}
-                    ({filter.weight})
+                {#if filter.weight !== 1}
+                    <span class="text-indigo-600 text-xs">
+                        (x{filter.weight})
+                    </span>
                 {/if}
                 <button on:click={open}>edit weight</button>
 
