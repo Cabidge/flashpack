@@ -38,10 +38,14 @@
     const dispatch = createEventDispatcher<{ save: ModifyDealer[] }>();
 </script>
 
-<select multiple bind:value={selection}>
-    {#each filters as filter (filter.id)}
-        <option value={filter}>{filter.label}</option>
-    {/each}
-</select>
+<div class="w-[80vw] max-w-md">
+    <select class="w-full" multiple bind:value={selection}>
+        {#each filters as filter (filter.id)}
+            <option value={filter}>{filter.label}</option>
+        {/each}
+    </select>
 
-<button on:click={() => dispatch('save', diffChanges())}>save</button>
+    <br/>
+
+    <button on:click={() => dispatch('save', diffChanges())}>save</button>
+</div>
