@@ -57,6 +57,7 @@ async fn main() -> Result<()> {
 
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
+            generate_prompt,
             // pack
             create_pack,
             list_packs,

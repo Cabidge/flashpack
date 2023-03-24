@@ -12,8 +12,10 @@ import type { ModifyPack } from '@bindings/ModifyPack';
 import type { Pack } from '@bindings/Pack';
 
 import type { PackSummary } from '@bindings/PackSummary';
+import type { Prompt } from '@bindings/Prompt';
 
 type Commands = {
+    generate_prompt: (args: { cardId: number }) => Prompt;
     // pack
     create_pack: (args: { title: string }) => void;
     list_packs: () => PackSummary[];

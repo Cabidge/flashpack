@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
 use tauri::State;
 use ts_rs::TS;
@@ -41,6 +41,26 @@ pub enum ModifyDealer {
 pub enum ModifyFilter {
     AddTag(String),
     SetExclusion(String, bool),
+}
+
+#[derive(TS, Serialize, Debug)]
+#[ts(export, export_to = "../src/bindings/")]
+pub struct Prompt {
+    question: String,
+    answer: String,
+    tags: Vec<String>,
+}
+
+#[tauri::command]
+pub async fn generate_prompt(pool: State<'_, SqlitePool>, card_id: card::Id) -> Result<Prompt> {
+    let details = card::get_details(pool.inner(), card_id).await?;
+    let tags = card::list_tags(pool.inner(), card_id).await?;
+
+    Ok(Prompt {
+        question: details.front,
+        answer: details.back,
+        tags,
+    })
 }
 
 // -- pack
