@@ -7,17 +7,55 @@
 
     export let dealerFilters: GroupedWeightedFilters;
 
-    $: oldFilterIds = new Set(Object.values(dealerFilters).flatMap((group) => group).map((filter) => filter.summary.id));
+    $: oldFilterIds = new Set(Object.values(dealerFilters).flat().map((filter) => filter.summary.id));
 
-    let filters: Record<string, FilterSummary[]> = {};
+    type FilterOption = FilterSummary & {
+        selected: boolean,
+        newSelected: boolean,
+    };
+
+    let filters: Record<string, FilterOption[]> = {};
 
     onMount(async () => {
-        filters = await invoke('list_filters');
+        const summaries = await invoke('list_filters');
+
+        for (const [packTitle, filterGroup] of Object.entries(summaries)) {
+            filters[packTitle] = filterGroup.map((filter) => {
+                const selected = oldFilterIds.has(filter.id);
+                return { ...filter, selected, newSelected: selected };
+            })
+        }
     });
 
-    // TODO: recreate filter selection
-
     const dispatch = createEventDispatcher<{ save: ModifyDealer[] }>();
+
+    const save = () => {
+        const modifications: ModifyDealer[] = [];
+
+        for (const { id, selected, newSelected } of Object.values(filters).flat()) {
+            if (selected != newSelected) {
+                modifications.push(newSelected ? { AddFilter: id } : { RemoveFilter: id });
+            }
+        }
+
+        dispatch("save", modifications);
+    }
 </script>
 
-<p>placeholder</p>
+<ul>
+    {#each Object.entries(filters) as [packTitle, filterGroup] (packTitle)}
+        <li>
+            <span class="font-semibold">{packTitle}</span>
+            <ul>
+                {#each filterGroup as filter (filter.id)}
+                    <li>
+                        <input id="filter-{filter.id}" type="checkbox" bind:checked={filter.newSelected}>
+                        <label for="filter-{filter.id}">{filter.label}</label>
+                    </li>
+                {/each}
+            </ul>
+        </li>
+    {/each}
+</ul>
+
+<button on:click={save}>save</button>
