@@ -32,30 +32,37 @@
 </ModalController>
 
 <ul>
-    {#each dealer.filters as filter (filter.id)}
+    {#each Object.entries(dealer.filters) as [packTitle, filterGroup] (packTitle)}
         <li>
-            <ModalController title="Edit Weight" let:open let:close>
-                {filter.pack_title}::{filter.label}
-                {#if filter.weight !== 1}
-                    <span class="text-xs text-indigo-600">
-                        (x{filter.weight})
-                    </span>
-                {/if}
-                <button on:click={open}>edit weight</button>
+            <span class="w-full bg-slate-300">
+                {packTitle}
+            </span>
+            <ul>
+                {#each filterGroup as filter (filter.summary.id)}
+                    <ModalController title="Edit Weight" let:open let:close>
+                        {filter.summary.label}
+                        {#if filter.weight !== 1}
+                            <span class="text-xs text-indigo-600">
+                                (x{filter.weight})
+                            </span>
+                        {/if}
+                        <button on:click={open}>edit weight</button>
 
-                <EditWeight
-                    slot="modal"
-                    weight={filter.weight}
-                    on:save={async (e) => {
-                        close();
-                        await invoke('modify_dealer', {
-                            id,
-                            action: { SetWeight: [filter.id, e.detail] }
-                        });
-                        await invalidateAll();
-                    }}
-                />
-            </ModalController>
+                        <EditWeight
+                            slot="modal"
+                            weight={filter.weight}
+                            on:save={async (e) => {
+                                close();
+                                await invoke('modify_dealer', {
+                                    id,
+                                    action: { SetWeight: [filter.summary.id, e.detail] }
+                                });
+                                await invalidateAll();
+                            }}
+                        />
+                    </ModalController>
+                {/each}
+            </ul>
         </li>
     {/each}
 </ul>

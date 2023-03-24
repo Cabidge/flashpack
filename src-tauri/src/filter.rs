@@ -1,4 +1,4 @@
-use std::collections::BTreeSet;
+use std::collections::{BTreeSet, BTreeMap};
 
 use futures::TryStreamExt;
 use serde::Serialize;
@@ -28,6 +28,8 @@ pub struct Tag {
     exclude: bool,
 }
 
+pub type GroupedFilters = BTreeMap<String, Vec<Summary>>;
+
 pub type Id = u32;
 
 pub async fn create(pool: &SqlitePool, pack_id: crate::pack::Id, label: &str) -> Result<Id> {
@@ -46,17 +48,32 @@ pub async fn create(pool: &SqlitePool, pack_id: crate::pack::Id, label: &str) ->
     Ok(row.id)
 }
 
-pub async fn list_all(pool: &SqlitePool) -> Result<Vec<Summary>> {
-    sqlx::query_as!(
-        Summary,
+pub async fn list_all(pool: &SqlitePool) -> Result<GroupedFilters> {
+    let mut rows = sqlx::query!(
         r#"
-        SELECT id as "id: Id", label
-        FROM filters
+        SELECT f.id as "id: Id",
+            f.label,
+            p.title as pack_title
+        FROM filters f, packs p
+        WHERE f.pack_id = p.id
+        ORDER BY LOWER(f.label)
         "#,
     )
-    .fetch_all(pool)
-    .await
-    .map_err(Error::from)
+    .fetch(pool);
+
+    let mut filters = GroupedFilters::new();
+    while let Some(row) = rows.try_next().await? {
+        let group = filters.entry(row.pack_title).or_default();
+
+        let filter = Summary {
+            id: row.id,
+            label: row.label,
+        };
+
+        group.push(filter);
+    }
+
+    Ok(filters)
 }
 
 pub async fn list_by_pack(pool: &SqlitePool, pack_id: crate::pack::Id) -> Result<Vec<Summary>> {

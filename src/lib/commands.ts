@@ -33,7 +33,7 @@ type Commands = {
     modify_dealer: (args: { id: number; action: ModifyDealer }) => void;
     // filter
     create_filter: (args: { packId: number; label: string }) => void;
-    list_filters: () => FilterSummary[];
+    list_filters: () => Record<string, FilterSummary[]>;
     get_filter: (args: { id: number }) => Filter;
     modify_filter: (args: { id: number; action: ModifyFilter }) => void;
 };

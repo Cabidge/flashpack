@@ -199,7 +199,7 @@ pub async fn create_filter(
 }
 
 #[tauri::command]
-pub async fn list_filters(pool: State<'_, SqlitePool>) -> Result<Vec<filter::Summary>> {
+pub async fn list_filters(pool: State<'_, SqlitePool>) -> Result<filter::GroupedFilters> {
     filter::list_all(pool.inner()).await
 }
 

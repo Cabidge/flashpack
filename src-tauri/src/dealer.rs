@@ -1,3 +1,6 @@
+use std::collections::BTreeMap;
+
+use futures::TryStreamExt;
 use rand::seq::SliceRandom;
 use serde::Serialize;
 use sqlx::SqlitePool;
@@ -16,15 +19,18 @@ pub struct Summary {
 #[ts(export, export_to = "../src/bindings/")]
 pub struct Dealer {
     pub title: String,
-    pub filters: Vec<DealerFilter>,
+    pub filters: GroupedWeightedFilters,
 }
+
+/// Filters grouped by the title of the pack they belong to
+#[derive(TS, Serialize, Debug, Default)]
+#[ts(export, export_to = "../src/bindings/")]
+pub struct GroupedWeightedFilters(BTreeMap<String, Vec<WeightedFilter>>);
 
 #[derive(TS, Serialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
-pub struct DealerFilter {
-    id: filter::Id,
-    label: String,
-    pack_title: String,
+pub struct WeightedFilter {
+    summary: filter::Summary,
     weight: u32,
 }
 
@@ -74,9 +80,8 @@ pub async fn get_title(pool: &SqlitePool, id: Id) -> Result<String> {
     Ok(row.title)
 }
 
-pub async fn list_filters(pool: &SqlitePool, id: Id) -> Result<Vec<DealerFilter>> {
-    sqlx::query_as!(
-        DealerFilter,
+pub async fn list_filters(pool: &SqlitePool, id: Id) -> Result<GroupedWeightedFilters> {
+    let mut rows = sqlx::query!(
         r#"
         SELECT f.id as "id: filter::Id",
             f.label,
@@ -86,13 +91,28 @@ pub async fn list_filters(pool: &SqlitePool, id: Id) -> Result<Vec<DealerFilter>
         WHERE df.filter_id = f.id
         AND f.pack_id = p.id
         AND df.dealer_id = ?
-        ORDER BY LOWER(p.title), LOWER(f.label)
+        ORDER BY LOWER(f.label)
         "#,
         id,
     )
-    .fetch_all(pool)
-    .await
-    .map_err(Error::from)
+    .fetch(pool);
+
+    let mut filters = GroupedWeightedFilters::default();
+    while let Some(row) = rows.try_next().await? {
+        let group = filters.0.entry(row.pack_title).or_default();
+        
+        let filter = WeightedFilter {
+            summary: filter::Summary {
+                id: row.id,
+                label: row.label,
+            },
+            weight: row.weight,
+        };
+
+        group.push(filter);
+    }
+
+    Ok(filters)
 }
 
 pub async fn add_filter(
