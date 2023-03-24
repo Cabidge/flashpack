@@ -113,15 +113,36 @@ async fn seed_database(pool: &SqlitePool) -> Result<()> {
 
         for _ in 0..2 {
             let tag_count = rng.gen_range(0..=tags.len());
-            let filter_tags = tags.choose_multiple(&mut rng, tag_count).copied().collect::<Vec<_>>();
-            let label = filter_tags.join("+");
+            let filter_tags = tags
+                .choose_multiple(&mut rng, tag_count)
+                .map(|&tag| {
+                    let exclude = rng.gen_bool(0.2);
+                    (tag, exclude)
+                })
+                .collect::<Vec<_>>();
+
+            let label = if tag_count == 0 {
+                String::from("all")
+            } else {
+                filter_tags.iter()
+                    .map(|&(tag, exclude)| {
+                        let c = if exclude { '-' } else { '+' };
+                        format!("{c}{tag}")
+                    })
+                    .collect::<Vec<_>>()
+                    .join(",")
+            };
 
             let filter_id = filter::create(pool, pack_id, &label).await?;
 
             filters.push(filter_id);
 
-            for tag in filter_tags {
+            for (tag, exclude) in filter_tags {
                 filter::add_tag(pool, filter_id, tag).await?;
+
+                if exclude {
+                    filter::set_excluded(pool, filter_id, tag, exclude).await?;
+                }
             }
         }
     }
