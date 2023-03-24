@@ -41,13 +41,12 @@
                 {#each filterGroup as filter (filter.summary.id)}
                     <li>
                         <ModalController title="Edit Weight" let:open let:close>
-                            {filter.summary.label}
-                            {#if filter.weight !== 1}
-                                <span class="text-xs text-indigo-600">
+                            <button on:click={open} class="group">
+                                {filter.summary.label}
+                                <span class="text-xs text-indigo-600 {filter.weight === 1 ? "hidden group-hover:inline" : ""}">
                                     (x{filter.weight})
                                 </span>
-                            {/if}
-                            <button on:click={open}>edit weight</button>
+                            </button>
 
                             <EditWeight
                                 slot="modal"
