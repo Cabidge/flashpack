@@ -9,10 +9,14 @@
 
 <CreateDealer />
 
-<ul>
-    {#each dealers as dealer (dealer.id)}
-        <li>
-            <a href="/study/{dealer.id}">{dealer.title}</a>
-        </li>
-    {/each}
-</ul>
+{#if dealers.length === 0}
+    <p>Add a dealer...</p>
+{:else}
+    <ul>
+        {#each dealers as dealer (dealer.id)}
+            <li>
+                <a href="/study/{dealer.id}">{dealer.title}</a>
+            </li>
+        {/each}
+    </ul>
+{/if}
