@@ -34,7 +34,7 @@
 {:else}
     <div class="card-grid grid w-full gap-4 rounded bg-slate-100 p-4 shadow-inner">
         {#each cards as card (card.id)}
-            <CardButton label={card.label} on:click={() => goto(`/pack/${id}/card/${card.id}`)} />
+            <CardButton label={card.label} on:click={() => {}} on:edit={() => goto(`/pack/${id}/card/${card.id}`)} />
         {/each}
     </div>
 {/if}
