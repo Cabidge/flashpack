@@ -15,6 +15,8 @@
 
 <h1>{dealer.title}</h1>
 
+<a href="{data.href}/practice">Begin Study</a>
+
 <ModalController title="Select Filters" let:open let:close>
     <button on:click={open}>Edit Filters</button>
 
@@ -48,7 +50,11 @@
                             <ModalController title="Edit Weight" let:open let:close>
                                 <button on:click={open} class="group">
                                     {filter.summary.label}
-                                    <span class="text-xs text-indigo-600 {filter.weight === 1 ? "hidden group-hover:inline" : ""}">
+                                    <span
+                                        class="text-xs text-indigo-600 {filter.weight === 1
+                                            ? 'hidden group-hover:inline'
+                                            : ''}"
+                                    >
                                         (x{filter.weight})
                                     </span>
                                 </button>
