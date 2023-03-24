@@ -45,7 +45,7 @@
         {/each}
     </select>
 
-    <br/>
+    <br />
 
     <button on:click={() => dispatch('save', diffChanges())}>save</button>
 </div>

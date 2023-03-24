@@ -37,7 +37,7 @@
             <ModalController title="Edit Weight" let:open let:close>
                 {filter.pack_title}::{filter.label}
                 {#if filter.weight !== 1}
-                    <span class="text-indigo-600 text-xs">
+                    <span class="text-xs text-indigo-600">
                         (x{filter.weight})
                     </span>
                 {/if}

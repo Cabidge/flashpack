@@ -15,11 +15,11 @@
     let hovering = false;
 
     $: href = `/pack/${pack.id}`;
-    
+
     let selected: boolean;
     $: {
-        const path = $page.url.pathname.split("/");
-        selected = path[1] === "pack" && path[2] === pack.id.toString();
+        const path = $page.url.pathname.split('/');
+        selected = path[1] === 'pack' && path[2] === pack.id.toString();
     }
 
     $: linkClass = conditionalClass(selected, {
