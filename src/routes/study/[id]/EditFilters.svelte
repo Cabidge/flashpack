@@ -15,6 +15,7 @@
     };
 
     let filters: Record<string, FilterOption[]> = {};
+    $: filterEntries = Object.entries(filters);
 
     onMount(async () => {
         const summaries = await invoke('list_filters');
@@ -42,20 +43,24 @@
     }
 </script>
 
-<ul>
-    {#each Object.entries(filters) as [packTitle, filterGroup] (packTitle)}
-        <li>
-            <span class="font-semibold">{packTitle}</span>
-            <ul>
-                {#each filterGroup as filter (filter.id)}
-                    <li>
-                        <input id="filter-{filter.id}" type="checkbox" bind:checked={filter.newSelected}>
-                        <label for="filter-{filter.id}">{filter.label}</label>
-                    </li>
-                {/each}
-            </ul>
-        </li>
-    {/each}
-</ul>
+{#if filterEntries.length === 0}
+    <p>No pack filters found...</p>
+{:else}
+    <ul class="max-h-[60vh] w-[70vw] max-w-lg overflow-y-auto">
+        {#each filterEntries as [packTitle, filterGroup] (packTitle)}
+            <li>
+                <span class="font-semibold">{packTitle}</span>
+                <ul>
+                    {#each filterGroup as filter (filter.id)}
+                        <li>
+                            <input id="filter-{filter.id}" type="checkbox" bind:checked={filter.newSelected}>
+                            <label for="filter-{filter.id}">{filter.label}</label>
+                        </li>
+                    {/each}
+                </ul>
+            </li>
+        {/each}
+    </ul>
 
-<button on:click={save}>save</button>
+    <button on:click={save}>save</button>
+{/if}
