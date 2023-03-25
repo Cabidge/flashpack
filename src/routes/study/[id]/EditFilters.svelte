@@ -7,11 +7,15 @@
 
     export let dealerFilters: GroupedWeightedFilters;
 
-    $: oldFilterIds = new Set(Object.values(dealerFilters).flat().map((filter) => filter.summary.id));
+    $: oldFilterIds = new Set(
+        Object.values(dealerFilters)
+            .flat()
+            .map((filter) => filter.summary.id)
+    );
 
     type FilterOption = FilterSummary & {
-        selected: boolean,
-        newSelected: boolean,
+        selected: boolean;
+        newSelected: boolean;
     };
 
     let filters: Record<string, FilterOption[]> = {};
@@ -24,7 +28,7 @@
             filters[packTitle] = filterGroup.map((filter) => {
                 const selected = oldFilterIds.has(filter.id);
                 return { ...filter, selected, newSelected: selected };
-            })
+            });
         }
     });
 
@@ -39,8 +43,8 @@
             }
         }
 
-        dispatch("save", modifications);
-    }
+        dispatch('save', modifications);
+    };
 </script>
 
 {#if filterEntries.length === 0}
@@ -53,7 +57,11 @@
                 <ul>
                     {#each filterGroup as filter (filter.id)}
                         <li>
-                            <input id="filter-{filter.id}" type="checkbox" bind:checked={filter.newSelected}>
+                            <input
+                                id="filter-{filter.id}"
+                                type="checkbox"
+                                bind:checked={filter.newSelected}
+                            />
                             <label for="filter-{filter.id}">{filter.label}</label>
                         </li>
                     {/each}
