@@ -9,21 +9,19 @@
 
     $: ({ id, card } = data);
 
-    $: ({ front, back, tags } = card);
+    $: tags = card.tags.map((tag) => ({ tag, removed: false }));
 
-    let frontInput: string | null, backInput: string | null;
+    let front: string | null, back: string | null;
 
     let tagModifications: ModifyCard[] = [];
     let modifications: ModifyCard[];
 
     $: {
-        let fullModifications = tagModifications;
+        modifications = tagModifications;
 
-        if (frontInput !== null || backInput !== null) {
-            fullModifications = [...fullModifications, { Rename: { front: frontInput, back: backInput } }]
+        if (front!== null || back !== null) {
+            modifications = [...modifications, { Rename: { front, back } }]
         }
-
-        modifications = fullModifications;
     }
 
     let tagInput = '';
@@ -35,11 +33,11 @@
             return;
         }
 
-        if (tags.includes(tag)) {
+        if (tags.map(({ tag }) => tag).includes(tag)) {
             return;
         }
 
-        tags = [...tags, tag].sort();
+        tags = [...tags, { tag, removed: false }].sort(({ tag: tagA }, { tag: tagB }) => tagA.localeCompare(tagB));
         tagModifications = [...tagModifications, { AddTag: tag }];
     };
 
@@ -49,7 +47,13 @@
     }
 
     const removeTag = (tag: string) => {
-        tags = tags.filter((t) => t !== tag);
+        let index = tags.findIndex(({ tag: t }) => t == tag);
+
+        if (index === -1 || tags[index].removed) {
+            return;
+        }
+
+        tags[index].removed = true;
         tagModifications = [...tagModifications, { RemoveTag: tag }];
     }
 
@@ -68,17 +72,17 @@
     };
 </script>
 
-<RenameInput placeholder="front" oldValue={front} bind:newValue={frontInput} />
-<RenameInput placeholder="back" oldValue={back} bind:newValue={backInput} />
+<RenameInput placeholder="front" oldValue={card.front} bind:newValue={front} />
+<RenameInput placeholder="back" oldValue={card.back} bind:newValue={back} />
 
 <form on:submit|preventDefault={submitTag}>
     <input placeholder="add a tag..." bind:value={tagInput} />
 </form>
 
 <ul>
-    {#each tags as tag (tag)}
+    {#each tags as { tag, removed } (tag)}
         <li>
-            <button class="hover:line-through" on:click={() => removeTag(tag)}>
+            <button class="hover:line-through" class:line-through={removed} disabled={removed} on:click={() => removeTag(tag)}>
                 {tag}
             </button>
         </li>
