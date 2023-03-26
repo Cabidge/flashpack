@@ -81,27 +81,31 @@
     };
 </script>
 
-<RenameInput placeholder="front" oldValue={card.front} bind:newValue={front} />
-<RenameInput placeholder="back" oldValue={card.back} bind:newValue={back} />
+<div class="h-full flex flex-col gap-2">
+    <div class="flex-grow overflow-auto">
+        <RenameInput placeholder="front" oldValue={card.front} bind:newValue={front} />
+        <RenameInput placeholder="back" oldValue={card.back} bind:newValue={back} />
 
-<form on:submit|preventDefault={submitTag}>
-    <input placeholder="add a tag..." bind:value={tagInput} />
-</form>
+        <form on:submit|preventDefault={submitTag}>
+            <input placeholder="add a tag..." bind:value={tagInput} />
+        </form>
 
-<ul>
-    {#each tags as tag (tag)}
-        <li>
-            <button
-                class="hover:line-through"
-                class:line-through={removals.has(tag)}
-                on:click={() => toggleTag(tag)}
-            >
-                {tag}
-            </button>
-        </li>
-    {/each}
-</ul>
+        <ul>
+            {#each tags as tag (tag)}
+                <li>
+                    <button
+                        class="hover:line-through"
+                        class:line-through={removals.has(tag)}
+                        on:click={() => toggleTag(tag)}
+                    >
+                        {tag}
+                    </button>
+                </li>
+            {/each}
+        </ul>
+    </div>
 
-{#if canSave}
-    <button on:click={saveChanges}>Save</button>
-{/if}
+    {#if canSave}
+        <button class="rounded bg-indigo-500 text-white font-semibold shadow-md py-2" on:click={saveChanges}>Save</button>
+    {/if}
+</div>
