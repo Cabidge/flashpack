@@ -3,6 +3,7 @@
     import { invoke } from '$lib/commands';
     import type { ModifyCard } from '@bindings/ModifyCard';
     import type { PageData } from './$types';
+    import RenameInput from './RenameInput.svelte';
 
     export let data: PageData;
 
@@ -10,22 +11,16 @@
 
     $: ({ front, back, tags } = card);
 
-    $: frontInput = front;
-    $: backInput = back;
+    let frontInput: string | null, backInput: string | null;
 
     let tagModifications: ModifyCard[] = [];
-
     let modifications: ModifyCard[];
 
     $: {
         let fullModifications = tagModifications;
 
-        if (front !== frontInput) {
-            // TODO push rename front
-        }
-
-        if (back !== backInput) {
-            // TODO push rename back
+        if (frontInput !== null || backInput !== null) {
+            fullModifications = [...fullModifications, { Rename: { front: frontInput, back: backInput } }]
         }
 
         modifications = fullModifications;
@@ -33,7 +28,7 @@
 
     let tagInput = '';
 
-    $: canSave = frontInput !== '' && backInput !== '' && modifications.length > 0;
+    $: canSave = modifications.length > 0;
 
     const addTag = (tag: string) => {
         if (tag === '') {
@@ -63,7 +58,7 @@
             return;
         }
 
-        for (const action of tagModifications) {
+        for (const action of modifications) {
             await invoke('modify_card', { id, action });
         }
 
@@ -73,8 +68,8 @@
     };
 </script>
 
-<input placeholder="front" bind:value={frontInput} />
-<input placeholder="back" bind:value={backInput} />
+<RenameInput placeholder="front" oldValue={front} bind:newValue={frontInput} />
+<RenameInput placeholder="back" oldValue={back} bind:newValue={backInput} />
 
 <form on:submit|preventDefault={submitTag}>
     <input placeholder="add a tag..." bind:value={tagInput} />
