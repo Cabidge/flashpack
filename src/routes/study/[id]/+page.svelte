@@ -11,11 +11,17 @@
     $: ({ id, dealer } = data);
 
     $: filterEntries = Object.entries(dealer.filters);
+
+    $: canPractice = dealer.invalid_filters.length == 0 && filterEntries.length > 0;
 </script>
 
 <h1>{dealer.title}</h1>
 
-<a href="{data.href}/practice">Begin Study</a>
+{#if dealer.invalid_filters.length > 0}
+    <p>There are one or more invalid filters selected which prevents practice...</p>
+{:else if filterEntries.length > 0}
+    <a href="{data.href}/practice">Begin Study</a>
+{/if}
 
 <ModalController title="Select Filters" let:open let:close>
     <button on:click={open}>Edit Filters</button>
