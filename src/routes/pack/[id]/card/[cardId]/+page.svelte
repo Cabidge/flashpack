@@ -35,14 +35,10 @@
 
     $: canSave = frontInput !== '' && backInput !== '' && modifications.length > 0;
 
-    const addTag = () => {
-        if (tagInput === '') {
+    const addTag = (tag: string) => {
+        if (tag === '') {
             return;
         }
-
-        const tag = tagInput;
-
-        tagInput = '';
 
         if (tags.includes(tag)) {
             return;
@@ -51,6 +47,16 @@
         tags = [...tags, tag].sort();
         tagModifications = [...tagModifications, { AddTag: tag }];
     };
+
+    const submitTag = () => {
+        addTag(tagInput);
+        tagInput = "";
+    }
+
+    const removeTag = (tag: string) => {
+        tags = tags.filter((t) => t !== tag);
+        tagModifications = [...tagModifications, { RemoveTag: tag }];
+    }
 
     const saveChanges = async () => {
         if (!canSave) {
@@ -70,14 +76,16 @@
 <input placeholder="front" bind:value={frontInput} />
 <input placeholder="back" bind:value={backInput} />
 
-<form on:submit|preventDefault={addTag}>
+<form on:submit|preventDefault={submitTag}>
     <input placeholder="add a tag..." bind:value={tagInput} />
 </form>
 
 <ul>
     {#each tags as tag (tag)}
         <li>
-            {tag}
+            <button class="hover:line-through" on:click={() => removeTag(tag)}>
+                {tag}
+            </button>
         </li>
     {/each}
 </ul>
