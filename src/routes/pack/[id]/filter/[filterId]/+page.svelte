@@ -32,6 +32,10 @@
 
 <h1>{filter.label}</h1>
 
+{#if !filter.is_valid}
+    <p>Warning: This filter is invalid</p>
+{/if}
+
 <form on:submit|preventDefault={addTag}>
     <input bind:value={tagInput} placeholder="add tag" required />
 </form>

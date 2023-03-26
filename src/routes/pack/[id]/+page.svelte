@@ -62,7 +62,11 @@
     <ul>
         {#each filters as filter (filter.id)}
             <li>
-                <a class="hover:underline" href="/pack/{id}/filter/{filter.id}">
+                <a
+                    class="hover:underline"
+                    class:text-red-500={pack.invalid_filters.includes(filter.id)}
+                    href="/pack/{id}/filter/{filter.id}"
+                >
                     {filter.label}
                 </a>
             </li>

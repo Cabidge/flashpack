@@ -20,6 +20,7 @@ pub struct Summary {
 pub struct Dealer {
     pub title: String,
     pub filters: GroupedWeightedFilters,
+    pub invalid_filters: Vec<filter::Id>,
 }
 
 /// Filters grouped by the title of the pack they belong to
@@ -30,8 +31,8 @@ pub struct GroupedWeightedFilters(BTreeMap<String, Vec<WeightedFilter>>);
 #[derive(TS, Serialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
 pub struct WeightedFilter {
-    summary: filter::Summary,
-    weight: u32,
+    pub summary: filter::Summary,
+    pub weight: u32,
 }
 
 pub type Id = u32;
@@ -100,7 +101,7 @@ pub async fn list_filters(pool: &SqlitePool, id: Id) -> Result<GroupedWeightedFi
     let mut filters = GroupedWeightedFilters::default();
     while let Some(row) = rows.try_next().await? {
         let group = filters.0.entry(row.pack_title).or_default();
-        
+
         let filter = WeightedFilter {
             summary: filter::Summary {
                 id: row.id,
@@ -186,4 +187,10 @@ pub async fn next_filter(pool: &SqlitePool, dealer_id: Id) -> Result<Option<filt
     .map(|row| row.id);
 
     Ok(id)
+}
+
+impl GroupedWeightedFilters {
+    pub fn flatten(&self) -> impl Iterator<Item = &WeightedFilter> {
+        self.0.values().flatten()
+    }
 }

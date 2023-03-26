@@ -2,4 +2,4 @@
 import type { CardSummary } from "./CardSummary";
 import type { FilterSummary } from "./FilterSummary";
 
-export interface Pack { title: string, cards: Array<CardSummary>, filters: Array<FilterSummary>, }
+export interface Pack { title: string, cards: Array<CardSummary>, filters: Array<FilterSummary>, invalid_filters: Array<number>, }

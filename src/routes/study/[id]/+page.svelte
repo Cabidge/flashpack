@@ -48,7 +48,13 @@
                     {#each filterGroup as filter (filter.summary.id)}
                         <li>
                             <ModalController title="Edit Weight" let:open let:close>
-                                <button on:click={open} class="group">
+                                <button
+                                    on:click={open}
+                                    class="group"
+                                    class:text-red-500={dealer.invalid_filters.includes(
+                                        filter.summary.id
+                                    )}
+                                >
                                     {filter.summary.label}
                                     <span
                                         class="text-xs text-indigo-600 {filter.weight === 1

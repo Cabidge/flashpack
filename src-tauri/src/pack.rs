@@ -20,6 +20,7 @@ pub struct Pack {
     pub title: String,
     pub cards: Vec<card::Summary>,
     pub filters: Vec<filter::Summary>,
+    pub invalid_filters: Vec<filter::Id>,
 }
 
 pub type Id = u32;

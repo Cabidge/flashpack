@@ -82,10 +82,18 @@ pub async fn get_pack(pool: State<'_, SqlitePool>, id: pack::Id) -> Result<Pack>
     let cards = card::list_by_pack(pool.inner(), id).await?;
     let filters = filter::list_by_pack(pool.inner(), id).await?;
 
+    let mut invalid_filters = vec![];
+    for filter_id in filters.iter().map(|filter| filter.id) {
+        if !filter::check_validity(pool.inner(), filter_id).await? {
+            invalid_filters.push(filter_id);
+        }
+    }
+
     Ok(Pack {
         title,
         cards,
         filters,
+        invalid_filters,
     })
 }
 
@@ -164,7 +172,14 @@ pub async fn get_dealer(pool: State<'_, SqlitePool>, id: dealer::Id) -> Result<d
     let title = dealer::get_title(pool.inner(), id).await?;
     let filters = dealer::list_filters(pool.inner(), id).await?;
 
-    Ok(dealer::Dealer { title, filters })
+    let mut invalid_filters = vec![];
+    for filter_id in filters.flatten().map(|filter| filter.summary.id) {
+        if !filter::check_validity(pool.inner(), filter_id).await? {
+            invalid_filters.push(filter_id);
+        }
+    }
+
+    Ok(dealer::Dealer { title, filters, invalid_filters })
 }
 
 #[tauri::command]
@@ -207,8 +222,9 @@ pub async fn list_filters(pool: State<'_, SqlitePool>) -> Result<filter::Grouped
 pub async fn get_filter(pool: State<'_, SqlitePool>, id: filter::Id) -> Result<filter::Filter> {
     let label = filter::get_label(pool.inner(), id).await?;
     let tags = filter::list_tags(pool.inner(), id).await?;
+    let is_valid = filter::check_validity(pool.inner(), id).await?;
 
-    Ok(filter::Filter { label, tags })
+    Ok(filter::Filter { label, tags, is_valid })
 }
 
 #[tauri::command]
