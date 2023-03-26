@@ -9,64 +9,73 @@
 
     $: ({ id, card } = data);
 
-    $: tags = card.tags.map((tag) => ({ tag, removed: false }));
+    $: tags = card.tags;
 
     let front: string | null, back: string | null;
 
-    let tagModifications: ModifyCard[] = [];
-    let modifications: ModifyCard[];
+    $: shouldRename = (front !== null || back !== null);
 
-    $: {
-        modifications = tagModifications;
+    let additions: Set<string> = new Set();
+    let removals: Set<string> = new Set();
 
-        if (front!== null || back !== null) {
-            modifications = [...modifications, { Rename: { front, back } }]
+    const getChanges = () => {
+        let changes: ModifyCard[] = [];
+
+        for (const tag of additions.values()) {
+            changes.push({ AddTag: tag });
         }
+
+        for (const tag of removals.values()) {
+            changes.push({ RemoveTag: tag });
+        }
+
+        if (shouldRename) {
+            changes.push({ Rename: { front, back } });
+        }
+
+        return changes;
     }
 
     let tagInput = '';
 
-    $: canSave = modifications.length > 0;
+    $: canSave = additions.size > 0 || removals.size > 0 || shouldRename;
 
     const addTag = (tag: string) => {
         if (tag === '') {
             return;
         }
 
-        if (tags.map(({ tag }) => tag).includes(tag)) {
+        if (tags.includes(tag)) {
             return;
         }
 
-        tags = [...tags, { tag, removed: false }].sort(({ tag: tagA }, { tag: tagB }) => tagA.localeCompare(tagB));
-        tagModifications = [...tagModifications, { AddTag: tag }];
+        tags = [...tags, tag].sort();
+        additions = additions.add(tag);
     };
+
+    const toggleTag = (tag: string) => {
+        removals.has(tag) ? removals.delete(tag) : removals.add(tag);
+        removals = removals;
+    }
 
     const submitTag = () => {
         addTag(tagInput);
         tagInput = "";
     }
 
-    const removeTag = (tag: string) => {
-        let index = tags.findIndex(({ tag: t }) => t == tag);
-
-        if (index === -1 || tags[index].removed) {
-            return;
-        }
-
-        tags[index].removed = true;
-        tagModifications = [...tagModifications, { RemoveTag: tag }];
-    }
-
     const saveChanges = async () => {
-        if (!canSave) {
+        const changes = getChanges();
+
+        if (changes.length === 0) {
             return;
         }
 
-        for (const action of modifications) {
+        for (const action of changes) {
             await invoke('modify_card', { id, action });
         }
 
-        tagModifications = [];
+        additions = new Set();
+        removals = new Set();
 
         await invalidateAll();
     };
@@ -80,9 +89,13 @@
 </form>
 
 <ul>
-    {#each tags as { tag, removed } (tag)}
+    {#each tags as tag (tag)}
         <li>
-            <button class="hover:line-through" class:line-through={removed} disabled={removed} on:click={() => removeTag(tag)}>
+            <button
+                class="hover:line-through"
+                class:line-through={removals.has(tag)}
+                on:click={() => toggleTag(tag)}
+            >
                 {tag}
             </button>
         </li>
