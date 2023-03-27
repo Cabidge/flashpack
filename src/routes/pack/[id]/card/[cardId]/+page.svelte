@@ -94,8 +94,9 @@
             {#each tags as tag (tag)}
                 <li>
                     <button
-                        class="hover:line-through"
-                        class:line-through={removals.has(tag)}
+                        class={removals.has(tag)
+                            ? 'text-slate-400 line-through'
+                            : 'hover:line-through'}
                         on:click={() => toggleTag(tag)}
                     >
                         {tag}
