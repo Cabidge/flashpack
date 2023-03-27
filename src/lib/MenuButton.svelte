@@ -22,9 +22,8 @@
 
 <button
     on:click
-    class="flex w-full items-center gap-4 rounded px-1 font-semibold hover:bg-slate-100 {danger
-        ? 'text-red-600'
-        : ''}"
+    class="flex w-full items-center gap-4 rounded px-1 font-semibold hover:bg-slate-100
+        {danger ? 'text-red-600' : ''}"
 >
     <span class="flex-grow text-start">
         {label}

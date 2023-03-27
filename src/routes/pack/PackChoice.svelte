@@ -44,12 +44,10 @@
 <ModalController title="Rename Pack" let:active let:open let:close>
     <a
         {href}
-        class="
-            flex w-full cursor-default gap-2 rounded py-1 px-3 font-semibold
+        class="flex w-full cursor-default gap-2 rounded py-1 px-3 font-semibold
             {selected
             ? 'bg-indigo-500 text-white shadow hover:bg-indigo-600'
-            : 'hover:bg-slate-200'}
-        "
+            : 'hover:bg-slate-200'}"
         on:mouseenter={() => (hovering = true)}
         on:mouseleave={() => (hovering = false)}
         on:contextmenu|preventDefault={menu.onContextMenu}
