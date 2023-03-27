@@ -92,7 +92,7 @@
             <input class="rounded-full px-2" placeholder="add a tag..." bind:value={tagInput} />
         </form>
 
-        <ul class="flex flex-wrap gap-2 my-2">
+        <ul class="my-2 flex flex-wrap gap-2">
             {#each tags as tag (tag)}
                 <li animate:flip={{ duration: 200 }} transition:fade={{ duration: 200 }}>
                     <button
