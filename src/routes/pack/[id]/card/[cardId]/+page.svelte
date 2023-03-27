@@ -13,7 +13,7 @@
 
     let front: string | null, back: string | null;
 
-    $: shouldRename = (front !== null || back !== null);
+    $: shouldRename = front !== null || back !== null;
 
     let additions: Set<string> = new Set();
     let removals: Set<string> = new Set();
@@ -34,7 +34,7 @@
         }
 
         return changes;
-    }
+    };
 
     let tagInput = '';
 
@@ -56,12 +56,12 @@
     const toggleTag = (tag: string) => {
         removals.has(tag) ? removals.delete(tag) : removals.add(tag);
         removals = removals;
-    }
+    };
 
     const submitTag = () => {
         addTag(tagInput);
-        tagInput = "";
-    }
+        tagInput = '';
+    };
 
     const saveChanges = async () => {
         const changes = getChanges();
@@ -81,7 +81,7 @@
     };
 </script>
 
-<div class="h-full flex flex-col gap-2">
+<div class="flex h-full flex-col gap-2">
     <div class="flex-grow overflow-auto">
         <RenameInput placeholder="front" oldValue={card.front} bind:newValue={front} />
         <RenameInput placeholder="back" oldValue={card.back} bind:newValue={back} />
@@ -106,6 +106,9 @@
     </div>
 
     {#if canSave}
-        <button class="rounded bg-indigo-500 text-white font-semibold shadow-md py-2" on:click={saveChanges}>Save</button>
+        <button
+            class="rounded bg-indigo-500 py-2 font-semibold text-white shadow-md"
+            on:click={saveChanges}>Save</button
+        >
     {/if}
 </div>

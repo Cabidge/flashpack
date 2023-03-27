@@ -4,9 +4,9 @@
 
     $: inputValue = oldValue;
 
-    $: newValue = (oldValue !== inputValue && inputValue !== "") ? inputValue : null;
+    $: newValue = oldValue !== inputValue && inputValue !== '' ? inputValue : null;
 
-    export let placeholder = "";
+    export let placeholder = '';
 </script>
 
 <input {placeholder} bind:value={inputValue} />
