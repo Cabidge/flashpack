@@ -1,7 +1,6 @@
 <script lang="ts">
     import { goto, invalidateAll } from '$app/navigation';
     import { page } from '$app/stores';
-    import { conditionalClass } from '$lib/styling';
     import ModalController from '$lib/ModalController.svelte';
     import RenamePack from './RenamePack.svelte';
     import ContextMenu from '$lib/ContextMenu.svelte';
@@ -21,12 +20,6 @@
         const path = $page.url.pathname.split('/');
         selected = path[1] === 'pack' && path[2] === pack.id.toString();
     }
-
-    $: linkClass = conditionalClass(selected, {
-        base: 'w-full flex gap-2 font-semibold py-1 px-3 rounded cursor-default',
-        on: 'bg-indigo-500 hover:bg-indigo-600 shadow text-white',
-        off: 'hover:bg-slate-200'
-    });
 
     let menu: ContextMenu;
     let deleteModal: Modal;
@@ -51,7 +44,12 @@
 <ModalController title="Rename Pack" let:active let:open let:close>
     <a
         {href}
-        class={linkClass}
+        class="
+            flex w-full cursor-default gap-2 rounded py-1 px-3 font-semibold
+            {selected
+            ? 'bg-indigo-500 text-white shadow hover:bg-indigo-600'
+            : 'hover:bg-slate-200'}
+        "
         on:mouseenter={() => (hovering = true)}
         on:mouseleave={() => (hovering = false)}
         on:contextmenu|preventDefault={menu.onContextMenu}
