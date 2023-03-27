@@ -2,6 +2,8 @@
     import { invalidateAll } from '$app/navigation';
     import { invoke } from '$lib/commands';
     import type { ModifyCard } from '@bindings/ModifyCard';
+    import { flip } from 'svelte/animate';
+    import { fade } from 'svelte/transition';
     import type { PageData } from './$types';
     import RenameInput from './RenameInput.svelte';
 
@@ -92,7 +94,7 @@
 
         <ul>
             {#each tags as tag (tag)}
-                <li>
+                <li animate:flip={{ duration: 200 }} transition:fade={{ duration: 200 }}>
                     <button
                         class={removals.has(tag)
                             ? 'text-slate-400 line-through'
