@@ -89,16 +89,16 @@
         <RenameInput placeholder="back" oldValue={card.back} bind:newValue={back} />
 
         <form on:submit|preventDefault={submitTag}>
-            <input placeholder="add a tag..." bind:value={tagInput} />
+            <input class="rounded-full px-2" placeholder="add a tag..." bind:value={tagInput} />
         </form>
 
-        <ul>
+        <ul class="flex flex-wrap gap-2 my-2">
             {#each tags as tag (tag)}
                 <li animate:flip={{ duration: 200 }} transition:fade={{ duration: 200 }}>
                     <button
-                        class={removals.has(tag)
+                        class="rounded-full bg-slate-100 px-2 hover:bg-slate-200 {removals.has(tag)
                             ? 'text-slate-400 line-through'
-                            : 'hover:line-through'}
+                            : 'hover:line-through'}"
                         on:click={() => toggleTag(tag)}
                     >
                         {tag}
