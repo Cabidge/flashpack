@@ -31,11 +31,10 @@
 <div class="flex h-full flex-col">
     <h1 class="mx-6 my-4 text-lg font-bold">{data.dealer.title} practice</h1>
 
-    {#if prompt === undefined}
-        <p>Unable to generate prompt...</p>
-        <button on:click={advanceQuestion}>try again</button>
-    {:else}
-        <Transition class="flex-grow overflow-auto px-6" key={prompt}>
+    <Transition class="flex-grow overflow-auto px-6" key={prompt}>
+        {#if prompt === undefined}
+            <p>Unable to generate prompt...</p>
+        {:else}
             <h2>
                 {prompt.question}
                 {#if prompt.tags.length > 0}
@@ -51,22 +50,34 @@
                 <hr class="my-2" />
                 <p>{prompt.answer}</p>
             {/if}
-        </Transition>
+        {/if}
+    </Transition>
 
-        <div class="flex w-full items-center justify-center gap-4 bg-slate-100 py-6">
-            {#if showAnswer}
-                <button class="rounded bg-white py-1 px-2 shadow" on:click={advanceQuestion}
-                    >Correct</button
-                >
-                <button class="rounded bg-white py-1 px-2 shadow" on:click={advanceQuestion}
-                    >Wrong</button
-                >
-            {:else}
-                <button
-                    class="rounded bg-white py-1 px-2 shadow"
-                    on:click={() => (showAnswer = true)}>Show Answer</button
-                >
-            {/if}
-        </div>
-    {/if}
+    <div class="flex w-full items-center justify-center gap-4 bg-slate-100 py-6">
+        {#if prompt === undefined}
+            <button class="rounded bg-white py-1 px-2 shadow" on:click={advanceQuestion}>
+                Retry
+            </button >
+        {:else if showAnswer}
+            <button class="rounded bg-white py-1 px-2 shadow" on:click={advanceQuestion}>
+                Correct
+            </button>
+            <button
+                class="rounded bg-white py-1 px-2 shadow"
+                on:click={() => (showAnswer = false)}
+            >
+                Hide Answer
+            </button>
+            <button class="rounded bg-white py-1 px-2 shadow" on:click={advanceQuestion}>
+                Wrong
+            </button>
+        {:else}
+            <button
+                class="rounded bg-white py-1 px-2 shadow"
+                on:click={() => (showAnswer = true)}
+            >
+                Show Answer
+            </button>
+        {/if}
+    </div>
 </div>
