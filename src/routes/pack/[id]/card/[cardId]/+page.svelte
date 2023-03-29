@@ -113,5 +113,12 @@
             class="rounded bg-indigo-500 py-2 font-semibold text-white shadow-md"
             on:click={saveChanges}>Save</button
         >
+    {:else}
+        <a
+            class="rounded text-center py-2 bg-slate-100 font-semibold shadow-md"
+            href="{data.cardHref}/preview"
+        >
+            Preview
+        </a>
     {/if}
 </div>

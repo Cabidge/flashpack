@@ -36,7 +36,7 @@
         {#each cards as card (card.id)}
             <CardButton
                 label={card.label}
-                on:click={() => {}}
+                on:click={() => goto(`/pack/${id}/card/${card.id}/preview`)}
                 on:edit={() => goto(`/pack/${id}/card/${card.id}`)}
             />
         {/each}
