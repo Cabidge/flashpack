@@ -24,7 +24,7 @@ type Commands = {
     // card
     create_card: (args: { packId: number; front: string; back: string }) => void;
     get_card: (args: { id: number }) => Card;
-    deal_card: (args: { dealerId: number }) => number | undefined;
+    deal_card: (args: { dealerId: number }) => number | null;
     modify_card: (args: { id: number; action: ModifyCard }) => void;
     // dealer
     create_dealer: (args: { title: string }) => void;

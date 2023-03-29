@@ -8,7 +8,7 @@
 
     export let data: PageData;
 
-    let prompt: Prompt | undefined;
+    let prompt: Prompt | null = null;
 
     let showAnswer = false;
 
@@ -18,12 +18,9 @@
 
     const advanceQuestion = async () => {
         const cardId = await invoke('deal_card', { dealerId: data.id });
-
-        if (cardId === undefined) {
-            return;
-        }
-
-        prompt = await invoke('generate_prompt', { cardId });
+        prompt = cardId === null
+            ? null
+            : await invoke('generate_prompt', { cardId });
     };
 
     onMount(advanceQuestion);
@@ -33,7 +30,7 @@
     <h1 class="mx-6 my-4 text-lg font-bold">{data.dealer.title} practice</h1>
 
     <Transition class="flex-grow overflow-auto px-6" key={prompt}>
-        {#if prompt === undefined}
+        {#if prompt === null}
             <p>Unable to generate prompt...</p>
         {:else}
             <PromptView {prompt} {showAnswer} />
