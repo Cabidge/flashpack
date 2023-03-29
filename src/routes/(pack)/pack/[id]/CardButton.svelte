@@ -23,7 +23,8 @@
 
     <button
         on:click|stopPropagation={() => dispatch('edit')}
-        class="absolute top-1 right-1 hidden aspect-square rounded bg-slate-800 text-white hover:bg-indigo-500 group-hover:inline"
-        >EDIT</button
+        class="absolute top-1 right-1 hidden aspect-square w-7 rounded text-black hover:text-white hover:bg-indigo-500 group-hover:flex items-center justify-center"
     >
+        <i class="fa-solid fa-pen text-sm" />
+    </button>
 </button>
