@@ -115,7 +115,7 @@
         >
     {:else}
         <a
-            class="rounded text-center py-2 bg-slate-100 font-semibold shadow-md"
+            class="rounded bg-slate-100 py-2 text-center font-semibold shadow-md"
             href="{data.cardHref}/preview"
         >
             Preview

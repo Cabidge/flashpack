@@ -8,6 +8,6 @@ export const load: PageLoad = async ({ params }) => {
 
     return {
         id,
-        prompt,
+        prompt
     };
 };

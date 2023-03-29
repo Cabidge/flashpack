@@ -36,7 +36,7 @@
         {#if prompt === undefined}
             <p>Unable to generate prompt...</p>
         {:else}
-            <PromptView {prompt} {showAnswer}/>
+            <PromptView {prompt} {showAnswer} />
         {/if}
     </Transition>
 
@@ -44,25 +44,19 @@
         {#if prompt === undefined}
             <button class="rounded bg-white py-1 px-2 shadow" on:click={advanceQuestion}>
                 Retry
-            </button >
+            </button>
         {:else if showAnswer}
             <button class="rounded bg-white py-1 px-2 shadow" on:click={advanceQuestion}>
                 Correct
             </button>
-            <button
-                class="rounded bg-white py-1 px-2 shadow"
-                on:click={() => (showAnswer = false)}
-            >
+            <button class="rounded bg-white py-1 px-2 shadow" on:click={() => (showAnswer = false)}>
                 Hide Answer
             </button>
             <button class="rounded bg-white py-1 px-2 shadow" on:click={advanceQuestion}>
                 Wrong
             </button>
         {:else}
-            <button
-                class="rounded bg-white py-1 px-2 shadow"
-                on:click={() => (showAnswer = true)}
-            >
+            <button class="rounded bg-white py-1 px-2 shadow" on:click={() => (showAnswer = true)}>
                 Show Answer
             </button>
         {/if}

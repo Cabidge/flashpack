@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Prompt } from "@bindings/Prompt";
+    import type { Prompt } from '@bindings/Prompt';
 
     export let prompt: Prompt;
     export let showAnswer = true;
