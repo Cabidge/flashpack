@@ -11,8 +11,6 @@
     $: ({ id, dealer } = data);
 
     $: filterEntries = Object.entries(dealer.filters);
-
-    $: canPractice = dealer.invalid_filters.length == 0 && filterEntries.length > 0;
 </script>
 
 <h1>{dealer.title}</h1>
