@@ -220,11 +220,11 @@ pub async fn list_filters(pool: State<'_, SqlitePool>) -> Result<filter::Grouped
 
 #[tauri::command]
 pub async fn get_filter(pool: State<'_, SqlitePool>, id: filter::Id) -> Result<filter::Filter> {
-    let label = filter::get_label(pool.inner(), id).await?;
+    let details = filter::get_details(pool.inner(), id).await?;
     let tags = filter::list_tags(pool.inner(), id).await?;
     let is_valid = filter::check_validity(pool.inner(), id).await?;
 
-    Ok(filter::Filter { label, tags, is_valid })
+    Ok(filter::Filter { details, tags, is_valid })
 }
 
 #[tauri::command]

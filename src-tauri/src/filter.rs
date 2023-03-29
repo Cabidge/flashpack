@@ -5,7 +5,7 @@ use serde::Serialize;
 use sqlx::SqlitePool;
 use ts_rs::TS;
 
-use crate::{card, prelude::*};
+use crate::{card, prelude::*, pack};
 
 #[derive(TS, Serialize, Debug)]
 #[ts(rename = "FilterSummary", export, export_to = "../src/bindings/")]
@@ -15,9 +15,16 @@ pub struct Summary {
 }
 
 #[derive(TS, Serialize, Debug)]
+pub struct Details {
+    pub label: String,
+    pub pack_id: pack::Id,
+}
+
+#[derive(TS, Serialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
 pub struct Filter {
-    pub label: String,
+    #[serde(flatten)]
+    pub details: Details,
     pub tags: Vec<Tag>,
     pub is_valid: bool,
 }
@@ -99,16 +106,17 @@ pub async fn list_by_pack(pool: &SqlitePool, pack_id: crate::pack::Id) -> Result
     .map_err(Error::from)
 }
 
-pub async fn get_label(pool: &SqlitePool, id: Id) -> Result<String> {
-    sqlx::query!(
-        "
-        SELECT label
+pub async fn get_details(pool: &SqlitePool, id: Id) -> Result<Details> {
+    sqlx::query_as!(
+        Details,
+        r#"
+        SELECT label,
+            pack_id as "pack_id: pack::Id"
         FROM filters
         WHERE id = ?
-        ",
+        "#,
         id,
     )
-    .map(|row| row.label)
     .fetch_one(pool)
     .await
     .map_err(Error::from)
