@@ -8,7 +8,9 @@
 
     export let data: PageData;
 
-    $: ({ id, pack } = data);
+    $: ({ id, pack, activePack } = data);
+    $: activePack?.set(id);
+
     $: ({ cards, filters } = pack);
 </script>
 
@@ -36,8 +38,8 @@
         {#each cards as card (card.id)}
             <CardButton
                 label={card.label}
-                on:click={() => goto(`/pack/${id}/card/${card.id}/preview`)}
-                on:edit={() => goto(`/pack/${id}/card/${card.id}`)}
+                on:click={() => goto(`/card/${card.id}/preview`)}
+                on:edit={() => goto(`/card/${card.id}`)}
             />
         {/each}
     </div>
@@ -65,7 +67,7 @@
                 <a
                     class="hover:underline"
                     class:text-red-500={pack.invalid_filters.includes(filter.id)}
-                    href="/pack/{id}/filter/{filter.id}"
+                    href="/filter/{filter.id}"
                 >
                     {filter.label}
                 </a>

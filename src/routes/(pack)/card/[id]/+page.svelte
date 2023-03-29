@@ -2,8 +2,6 @@
     import { invalidateAll } from '$app/navigation';
     import { invoke } from '$lib/commands';
     import type { ModifyCard } from '@bindings/ModifyCard';
-    import { flip } from 'svelte/animate';
-    import { fade } from 'svelte/transition';
     import type { PageData } from './$types';
     import RenameInput from './RenameInput.svelte';
 
@@ -94,7 +92,7 @@
 
         <ul class="my-2 flex flex-wrap gap-2">
             {#each tags as tag (tag)}
-                <li animate:flip={{ duration: 200 }} transition:fade={{ duration: 200 }}>
+                <li>
                     <button
                         class="rounded-full bg-slate-100 px-2 hover:bg-slate-200 {removals.has(tag)
                             ? 'text-slate-400 line-through'
@@ -116,7 +114,7 @@
     {:else}
         <a
             class="rounded bg-slate-100 py-2 text-center font-semibold shadow-md"
-            href="{data.cardHref}/preview"
+            href="/card/{id}/preview"
         >
             Preview
         </a>

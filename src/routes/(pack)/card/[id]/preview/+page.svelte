@@ -4,10 +4,10 @@
 
     export let data: PageData;
 
-    $: ({ packHref, cardHref, prompt } = data);
+    $: ({ id, card, prompt } = data);
 </script>
 
-<a href={packHref}>Return to Pack</a>
-<a href={cardHref}>Edit</a>
+<a href="/pack/{card.pack_id}">Return to Pack</a>
+<a href="/card/{id}">Edit</a>
 
 <PromptView {prompt} />

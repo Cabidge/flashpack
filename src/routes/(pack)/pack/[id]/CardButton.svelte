@@ -22,7 +22,7 @@
     </ul>
 
     <button
-        on:click={() => dispatch('edit')}
+        on:click|stopPropagation={() => dispatch('edit')}
         class="absolute top-1 right-1 hidden aspect-square rounded bg-slate-800 text-white hover:bg-indigo-500 group-hover:inline"
         >EDIT</button
     >

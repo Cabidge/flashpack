@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto, invalidateAll } from '$app/navigation';
-    import { page } from '$app/stores';
     import ModalController from '$lib/ModalController.svelte';
     import RenamePack from './RenamePack.svelte';
     import ContextMenu from '$lib/ContextMenu.svelte';
@@ -15,11 +14,9 @@
 
     $: href = `/pack/${pack.id}`;
 
-    let selected: boolean;
-    $: {
-        const path = $page.url.pathname.split('/');
-        selected = path[1] === 'pack' && path[2] === pack.id.toString();
-    }
+    export let activePack: number | null;
+
+    $: selected = pack.id === activePack;
 
     let menu: ContextMenu;
     let deleteModal: Modal;

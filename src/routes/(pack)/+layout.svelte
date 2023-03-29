@@ -4,16 +4,20 @@
     import PackSelector from './PackSelector.svelte';
     import Transition from '$lib/Transition.svelte';
     import type { LayoutData } from './$types';
+    import { onMount } from 'svelte';
+    import { activeTab } from '$lib/routing/tabs';
 
     export let data: LayoutData;
 
     let search = '';
     $: query = search.toLowerCase();
 
-    $: packs = data.packs;
+    $: ({ activePack, packs } = data);
 
     $: filteredPacks =
         search === '' ? packs : packs.filter((pack) => pack.title.toLowerCase().includes(query));
+
+    onMount(() => ($activeTab = 'pack'));
 </script>
 
 <div class="flex h-full flex-row">
@@ -41,12 +45,10 @@
 
         <div class="border-b-2" />
 
-        <PackSelector packs={filteredPacks} />
+        <PackSelector packs={filteredPacks} activePack={$activePack} />
     </div>
 
-    <main class="w-full">
-        <Transition class="h-full overflow-auto px-6 py-4" key={data.href}>
-            <slot />
-        </Transition>
+    <main class="h-full w-full overflow-auto px-6 py-4">
+        <slot />
     </main>
 </div>

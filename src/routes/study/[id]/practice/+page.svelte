@@ -18,9 +18,7 @@
 
     const advanceQuestion = async () => {
         const cardId = await invoke('deal_card', { dealerId: data.id });
-        prompt = cardId === null
-            ? null
-            : await invoke('generate_prompt', { cardId });
+        prompt = cardId === null ? null : await invoke('generate_prompt', { cardId });
     };
 
     onMount(advanceQuestion);
