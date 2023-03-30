@@ -1,0 +1,2 @@
+ALTER TABLE cards
+ADD COLUMN label TEXT NOT NULL DEFAULT "Unnamed Card";
