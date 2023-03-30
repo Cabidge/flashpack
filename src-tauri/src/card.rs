@@ -2,7 +2,7 @@ use serde::Serialize;
 use sqlx::SqlitePool;
 use ts_rs::TS;
 
-use crate::{prelude::*, pack};
+use crate::{pack, prelude::*};
 
 #[derive(TS, Serialize, Debug)]
 #[ts(rename = "CardSummary", export, export_to = "../src/bindings/")]
@@ -13,6 +13,7 @@ pub struct Summary {
 
 #[derive(TS, Serialize, Debug)]
 pub struct Details {
+    pub label: String,
     pub front: String,
     pub back: String,
     pub pack_id: pack::Id,
@@ -54,7 +55,7 @@ pub async fn list_by_pack(pool: &SqlitePool, pack_id: crate::pack::Id) -> Result
     sqlx::query_as!(
         Summary,
         r#"
-        SELECT id as "id: Id", front as label
+        SELECT id as "id: Id", label
         FROM cards
         WHERE pack_id = ?
         "#,
@@ -71,7 +72,8 @@ pub async fn get_details(pool: &SqlitePool, id: Id) -> Result<Details> {
         r#"
         SELECT front,
             back,
-            pack_id as "pack_id: pack::Id"
+            pack_id as "pack_id: pack::Id",
+            label
         FROM cards
         WHERE id = ?
         "#,
