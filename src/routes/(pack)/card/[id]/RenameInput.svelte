@@ -9,4 +9,4 @@
     export let placeholder = '';
 </script>
 
-<input {placeholder} bind:value={inputValue} />
+<textarea draggable="false" rows="5" {placeholder} bind:value={inputValue} />
