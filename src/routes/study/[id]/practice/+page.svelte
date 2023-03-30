@@ -8,7 +8,12 @@
 
     export let data: PageData;
 
-    let prompt: Prompt | null = null;
+    type FullPrompt = {
+        prompt: Prompt;
+        tags: string[];
+    };
+
+    let prompt: FullPrompt | null = null;
 
     let showAnswer = false;
 
@@ -16,12 +21,32 @@
         showAnswer = false;
     }
 
-    const advanceQuestion = async () => {
-        const cardId = await invoke('deal_card', { dealerId: data.id });
-        prompt = cardId === null ? null : await invoke('generate_prompt', { cardId });
+    const advance = async () => {
+        prompt = await nextPrompt();
     };
 
-    onMount(advanceQuestion);
+    const nextPrompt = async () => {
+        const cardId = await invoke('deal_card', { dealerId: data.id });
+
+        if (cardId === null) {
+            return null;
+        }
+
+        const card = await invoke('get_card', { id: cardId });
+
+        const partialPrompt = await invoke('generate_prompt', {
+            script: null,
+            question: card.front,
+            answer: card.back
+        });
+
+        return {
+            prompt: partialPrompt,
+            tags: card.tags
+        };
+    };
+
+    onMount(nextPrompt);
 </script>
 
 <div class="flex h-full flex-col">
@@ -31,25 +56,21 @@
         {#if prompt === null}
             <p>Unable to generate prompt...</p>
         {:else}
-            <PromptView {prompt} {showAnswer} />
+            <PromptView {...prompt} {showAnswer} />
         {/if}
     </Transition>
 
     <div class="flex w-full items-center justify-center gap-4 bg-slate-100 py-6">
-        {#if prompt === undefined}
-            <button class="rounded bg-white py-1 px-2 shadow" on:click={advanceQuestion}>
-                Retry
-            </button>
+        {#if prompt === null}
+            <button class="rounded bg-white py-1 px-2 shadow" on:click={nextPrompt}> Retry </button>
         {:else if showAnswer}
-            <button class="rounded bg-white py-1 px-2 shadow" on:click={advanceQuestion}>
+            <button class="rounded bg-white py-1 px-2 shadow" on:click={nextPrompt}>
                 Correct
             </button>
             <button class="rounded bg-white py-1 px-2 shadow" on:click={() => (showAnswer = false)}>
                 Hide Answer
             </button>
-            <button class="rounded bg-white py-1 px-2 shadow" on:click={advanceQuestion}>
-                Wrong
-            </button>
+            <button class="rounded bg-white py-1 px-2 shadow" on:click={nextPrompt}> Wrong </button>
         {:else}
             <button class="rounded bg-white py-1 px-2 shadow" on:click={() => (showAnswer = true)}>
                 Show Answer

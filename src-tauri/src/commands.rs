@@ -48,19 +48,22 @@ pub enum ModifyFilter {
 pub struct Prompt {
     question: String,
     answer: String,
-    tags: Vec<String>,
 }
 
 #[tauri::command]
-pub async fn generate_prompt(pool: State<'_, SqlitePool>, card_id: card::Id) -> Result<Prompt> {
-    let details = card::get_details(pool.inner(), card_id).await?;
-    let tags = card::list_tags(pool.inner(), card_id).await?;
+pub fn generate_prompt(script: Option<String>, question: String, answer: String) -> Prompt {
+    fn parse(input: &str) -> String {
+        let parser = pulldown_cmark::Parser::new(input);
+        let mut output = String::new();
+        pulldown_cmark::html::push_html(&mut output, parser);
 
-    Ok(Prompt {
-        question: details.front,
-        answer: details.back,
-        tags,
-    })
+        output
+    }
+
+    Prompt {
+        question: parse(&question),
+        answer: parse(&answer),
+    }
 }
 
 // -- pack

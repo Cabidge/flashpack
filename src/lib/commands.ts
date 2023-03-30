@@ -15,7 +15,7 @@ import type { PackSummary } from '@bindings/PackSummary';
 import type { Prompt } from '@bindings/Prompt';
 
 type Commands = {
-    generate_prompt: (args: { cardId: number }) => Prompt;
+    generate_prompt: (args: { script: string | null; question: string; answer: string }) => Prompt;
     // pack
     create_pack: (args: { title: string }) => void;
     list_packs: () => PackSummary[];
