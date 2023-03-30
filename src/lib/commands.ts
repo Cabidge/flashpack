@@ -22,7 +22,7 @@ type Commands = {
     get_pack: (args: { id: number }) => Pack;
     modify_pack: (args: { id: number; action: ModifyPack }) => void;
     // card
-    create_card: (args: { packId: number; front: string; back: string }) => void;
+    create_card: (args: { packId: number; label: string }) => void;
     get_card: (args: { id: number }) => Card;
     deal_card: (args: { dealerId: number }) => number | null;
     modify_card: (args: { id: number; action: ModifyCard }) => void;

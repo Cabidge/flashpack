@@ -32,15 +32,17 @@ pub type Id = u32;
 pub async fn create(
     pool: &SqlitePool,
     pack_id: crate::pack::Id,
+    label: &str,
     front: &str,
     back: &str,
 ) -> Result<Id> {
     let row = sqlx::query!(
         r#"
-        INSERT INTO cards (front, back, pack_id)
-        VALUES (?, ?, ?)
+        INSERT INTO cards (label, front, back, pack_id)
+        VALUES (?, ?, ?, ?)
         RETURNING id as "id: Id"
         "#,
+        label,
         front,
         back,
         pack_id,

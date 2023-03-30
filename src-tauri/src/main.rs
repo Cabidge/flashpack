@@ -15,8 +15,8 @@ use crate::commands::*;
 mod prelude;
 use crate::prelude::*;
 
-use rand::Rng;
 use rand::seq::SliceRandom;
+use rand::Rng;
 use sqlx::SqlitePool;
 
 #[macro_export]
@@ -102,7 +102,7 @@ async fn seed_database(pool: &SqlitePool) -> Result<()> {
             let front = format!("What is {lhs} + {rhs}?");
             let back = format!("{} + {} = {}", lhs, rhs, lhs + rhs);
 
-            let card_id = card::create(pool, pack_id, &front, &back).await?;
+            let card_id = card::create(pool, pack_id, &front, &front, &back).await?;
 
             let tag_count = rng.gen_range(0..=tags.len());
             let card_tags = tags.choose_multiple(&mut rng, tag_count);
@@ -125,7 +125,8 @@ async fn seed_database(pool: &SqlitePool) -> Result<()> {
             let label = if tag_count == 0 {
                 String::from("all")
             } else {
-                filter_tags.iter()
+                filter_tags
+                    .iter()
                     .map(|&(tag, exclude)| {
                         let c = if exclude { '-' } else { '+' };
                         format!("{c}{tag}")

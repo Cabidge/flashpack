@@ -5,20 +5,18 @@
     export let id: number;
     export let close: () => void;
 
-    let front = '';
-    let back = '';
+    let label = '';
 
     const submit = async () => {
         close();
 
-        await invoke('create_card', { packId: id, front, back });
+        await invoke('create_card', { packId: id, label });
         await invalidateAll();
     };
 </script>
 
 <form on:submit|preventDefault={submit}>
-    <input type="text" bind:value={front} placeholder="front" required />
-    <input type="text" bind:value={back} placeholder="back" required />
+    <input type="text" bind:value={label} placeholder="Name" required />
 
-    <button type="submit">add</button>
+    <button type="submit">Add</button>
 </form>

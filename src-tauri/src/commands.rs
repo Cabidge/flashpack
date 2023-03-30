@@ -118,10 +118,11 @@ pub async fn modify_pack(
 pub async fn create_card(
     pool: State<'_, SqlitePool>,
     pack_id: pack::Id,
-    front: String,
-    back: String,
+    label: String,
 ) -> Result<()> {
-    card::create(pool.inner(), pack_id, &front, &back).await?;
+    let front = format!("## {label} Question Side");
+    let back = format!("## {label} Answer Side");
+    card::create(pool.inner(), pack_id, &label, &front, &back).await?;
     Ok(())
 }
 
@@ -182,7 +183,11 @@ pub async fn get_dealer(pool: State<'_, SqlitePool>, id: dealer::Id) -> Result<d
         }
     }
 
-    Ok(dealer::Dealer { title, filters, invalid_filters })
+    Ok(dealer::Dealer {
+        title,
+        filters,
+        invalid_filters,
+    })
 }
 
 #[tauri::command]
@@ -227,7 +232,11 @@ pub async fn get_filter(pool: State<'_, SqlitePool>, id: filter::Id) -> Result<f
     let tags = filter::list_tags(pool.inner(), id).await?;
     let is_valid = filter::check_validity(pool.inner(), id).await?;
 
-    Ok(filter::Filter { details, tags, is_valid })
+    Ok(filter::Filter {
+        details,
+        tags,
+        is_valid,
+    })
 }
 
 #[tauri::command]
