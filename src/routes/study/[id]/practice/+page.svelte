@@ -5,6 +5,7 @@
     import type { PageData } from './$types';
     import Transition from '$lib/Transition.svelte';
     import PromptView from '$lib/PromptView.svelte';
+    import ShowTags from '$lib/ShowTags.svelte';
 
     export let data: PageData;
 
@@ -56,7 +57,11 @@
         {#if prompt === null}
             <p>Unable to generate prompt...</p>
         {:else}
-            <PromptView {...prompt} {showAnswer} />
+            {#if prompt.tags.length > 0}
+                <ShowTags tags={prompt.tags} />
+            {/if}
+
+            <PromptView prompt={prompt.prompt} {showAnswer} />
         {/if}
     </Transition>
 
