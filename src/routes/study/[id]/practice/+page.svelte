@@ -47,7 +47,7 @@
         };
     };
 
-    onMount(nextPrompt);
+    onMount(advance);
 </script>
 
 <div class="flex h-full flex-col">
@@ -67,15 +67,15 @@
 
     <div class="flex w-full items-center justify-center gap-4 bg-slate-100 py-6">
         {#if prompt === null}
-            <button class="rounded bg-white py-1 px-2 shadow" on:click={nextPrompt}> Retry </button>
+            <button class="rounded bg-white py-1 px-2 shadow" on:click={advance}> Retry </button>
         {:else if showAnswer}
-            <button class="rounded bg-white py-1 px-2 shadow" on:click={nextPrompt}>
+            <button class="rounded bg-white py-1 px-2 shadow" on:click={advance}>
                 Correct
             </button>
             <button class="rounded bg-white py-1 px-2 shadow" on:click={() => (showAnswer = false)}>
                 Hide Answer
             </button>
-            <button class="rounded bg-white py-1 px-2 shadow" on:click={nextPrompt}> Wrong </button>
+            <button class="rounded bg-white py-1 px-2 shadow" on:click={advance}> Wrong </button>
         {:else}
             <button class="rounded bg-white py-1 px-2 shadow" on:click={() => (showAnswer = true)}>
                 Show Answer
