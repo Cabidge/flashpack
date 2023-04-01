@@ -1,5 +1,5 @@
 <script lang="ts">
-    import ModalController from "./ModalController.svelte";
+    import ModalController from './ModalController.svelte';
 
     export let tags: string[];
 </script>

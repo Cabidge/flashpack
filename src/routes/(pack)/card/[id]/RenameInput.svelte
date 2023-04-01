@@ -9,4 +9,10 @@
     export let placeholder = '';
 </script>
 
-<textarea class="rounded font-mono p-1 border border-slate-300 shadow" draggable="false" rows="5" {placeholder} bind:value={inputValue} />
+<textarea
+    class="rounded border border-slate-300 p-1 font-mono shadow"
+    draggable="false"
+    rows="5"
+    {placeholder}
+    bind:value={inputValue}
+/>

@@ -82,7 +82,7 @@
 </script>
 
 <div class="flex h-full flex-col gap-2">
-    <div class="flex flex-col gap-2 p-2 flex-grow overflow-auto">
+    <div class="flex flex-grow flex-col gap-2 overflow-auto p-2">
         <RenameInput placeholder="front" oldValue={card.front} bind:newValue={front} />
         <RenameInput placeholder="back" oldValue={card.back} bind:newValue={back} />
 

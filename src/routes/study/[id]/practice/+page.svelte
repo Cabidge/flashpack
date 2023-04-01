@@ -69,9 +69,7 @@
         {#if prompt === null}
             <button class="rounded bg-white py-1 px-2 shadow" on:click={advance}> Retry </button>
         {:else if showAnswer}
-            <button class="rounded bg-white py-1 px-2 shadow" on:click={advance}>
-                Correct
-            </button>
+            <button class="rounded bg-white py-1 px-2 shadow" on:click={advance}> Correct </button>
             <button class="rounded bg-white py-1 px-2 shadow" on:click={() => (showAnswer = false)}>
                 Hide Answer
             </button>
