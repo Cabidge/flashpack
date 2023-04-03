@@ -62,7 +62,7 @@ pub fn generate_prompt(script: Option<String>, question: String, answer: String)
 
     fn parse_latex(input: &str) -> String {
         use nom::branch::alt;
-        use nom::bytes::complete::{tag, take_until1};
+        use nom::bytes::complete::{tag, take_until};
         use nom::character::complete::anychar;
         use nom::multi::fold_many0;
         use nom::sequence::delimited;
@@ -77,10 +77,15 @@ pub fn generate_prompt(script: Option<String>, question: String, answer: String)
 
         fn parse_latex(input: &str) -> IResult<&str, ParsedLatex<'_>> {
             let escaped = tag("\\$").map(|_| ParsedLatex::Char('$'));
-            let latex_display =
-                delimited(tag("$$"), take_until1("$$"), tag("$$")).map(ParsedLatex::LatexDisplay);
-            let latex = delimited(tag("$"), take_until1("$"), tag("$")).map(ParsedLatex::Latex);
+
+            let surrounded = |pattern| delimited(tag(pattern), take_until(pattern), tag(pattern));
+
+            let latex_display = surrounded("$$").map(ParsedLatex::LatexDisplay);
+
+            let latex = surrounded("$").map(ParsedLatex::Latex);
+
             let char_wrapped = anychar.map(ParsedLatex::Char);
+
             alt((escaped, latex_display, latex, char_wrapped))(input)
         }
 
