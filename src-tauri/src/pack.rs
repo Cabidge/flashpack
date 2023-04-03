@@ -25,7 +25,11 @@ pub struct Pack {
 
 pub type Id = u32;
 
-async fn find_unique_title<'a>(pool: &SqlitePool, desired_title: &'a str, skip_id: Option<Id>) -> Result<Cow<'a, str>> {
+async fn find_unique_title<'a>(
+    pool: &SqlitePool,
+    desired_title: &'a str,
+    skip_id: Option<Id>,
+) -> Result<Cow<'a, str>> {
     let mut unique_title = Cow::Borrowed(desired_title);
     let mut unique_lower = desired_title.to_lowercase();
 

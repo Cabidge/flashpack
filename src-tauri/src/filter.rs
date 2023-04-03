@@ -1,11 +1,11 @@
-use std::collections::{BTreeSet, BTreeMap};
+use std::collections::{BTreeMap, BTreeSet};
 
 use futures::TryStreamExt;
 use serde::Serialize;
 use sqlx::SqlitePool;
 use ts_rs::TS;
 
-use crate::{card, prelude::*, pack};
+use crate::{card, pack, prelude::*};
 
 #[derive(TS, Serialize, Debug)]
 #[ts(rename = "FilterSummary", export, export_to = "../src/bindings/")]
@@ -177,7 +177,7 @@ pub async fn next_card(pool: &SqlitePool, filter_id: Id) -> Result<Option<card::
     Ok(None)
 }
 
-/// Figures out whether or not the given filter can 
+/// Figures out whether or not the given filter can
 pub async fn check_validity(pool: &SqlitePool, id: Id) -> Result<bool> {
     next_card(pool, id).await.map(|card_id| card_id.is_some())
 }

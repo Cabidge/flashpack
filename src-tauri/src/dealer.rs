@@ -153,7 +153,12 @@ pub async fn remove_filter(pool: &SqlitePool, dealer_id: Id, filter_id: filter::
     Ok(())
 }
 
-pub async fn set_weight(pool: &SqlitePool, id: Id, filter_id: filter::Id, weight: i32) -> Result<()> {
+pub async fn set_weight(
+    pool: &SqlitePool,
+    id: Id,
+    filter_id: filter::Id,
+    weight: i32,
+) -> Result<()> {
     sqlx::query!(
         "
         UPDATE dealer_filters
