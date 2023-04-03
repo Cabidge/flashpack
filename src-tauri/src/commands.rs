@@ -52,12 +52,53 @@ pub struct Prompt {
 
 #[tauri::command]
 pub fn generate_prompt(script: Option<String>, question: String, answer: String) -> Prompt {
-    fn parse(input: &str) -> String {
+    fn parse_markdown(input: &str) -> String {
         let parser = pulldown_cmark::Parser::new(input);
         let mut output = String::new();
         pulldown_cmark::html::push_html(&mut output, parser);
 
         output
+    }
+
+    fn parse_latex(input: &str) -> String {
+        use nom::branch::alt;
+        use nom::bytes::complete::{tag, take_until1};
+        use nom::character::complete::anychar;
+        use nom::IResult;
+        use nom::multi::fold_many0;
+        use nom::Parser;
+        use nom::sequence::delimited;
+
+        enum ParsedLatex<'a> {
+            Char(char),
+            Latex(&'a str)
+        }
+
+        fn parse_latex(input: &str) -> IResult<&str, ParsedLatex<'_>> {
+            let latex = delimited(tag("$"), take_until1("$"), tag("$")).map(ParsedLatex::Latex);
+            let char_wrapped = anychar.map(ParsedLatex::Char);
+            alt((latex, char_wrapped))(input)
+        }
+
+        let opts = katex::Opts::builder().output_type(katex::OutputType::Mathml).throw_on_error(false).build().unwrap();
+
+        let mut parser = fold_many0(parse_latex, String::new, |mut acc, parsed| {
+            match parsed {
+                ParsedLatex::Char(ch) => acc.push(ch),
+                ParsedLatex::Latex(latex) => {
+                    let parsed = katex::render_with_opts(latex, &opts).expect("bad");
+                    acc.push_str(&parsed);
+                }
+            }
+            acc
+        });
+
+        parser(input).expect("bad nom").1
+    }
+
+    fn parse(input: &str) -> String {
+        let output = parse_markdown(input);
+        parse_latex(&output)
     }
 
     Prompt {
