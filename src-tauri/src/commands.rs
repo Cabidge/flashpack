@@ -64,29 +64,53 @@ pub fn generate_prompt(script: Option<String>, question: String, answer: String)
         use nom::branch::alt;
         use nom::bytes::complete::{tag, take_until1};
         use nom::character::complete::anychar;
-        use nom::IResult;
         use nom::multi::fold_many0;
-        use nom::Parser;
         use nom::sequence::delimited;
+        use nom::IResult;
+        use nom::Parser;
 
         enum ParsedLatex<'a> {
             Char(char),
-            Latex(&'a str)
+            Latex(&'a str),
+            LatexDisplay(&'a str),
         }
 
         fn parse_latex(input: &str) -> IResult<&str, ParsedLatex<'_>> {
+            let escaped = tag("\\$").map(|_| ParsedLatex::Char('$'));
+            let latex_display =
+                delimited(tag("$$"), take_until1("$$"), tag("$$")).map(ParsedLatex::LatexDisplay);
             let latex = delimited(tag("$"), take_until1("$"), tag("$")).map(ParsedLatex::Latex);
             let char_wrapped = anychar.map(ParsedLatex::Char);
-            alt((latex, char_wrapped))(input)
+            alt((escaped, latex_display, latex, char_wrapped))(input)
         }
 
-        let opts = katex::Opts::builder().output_type(katex::OutputType::Mathml).throw_on_error(false).build().unwrap();
+        let mut builder = katex::Opts::builder();
+
+        builder
+            .throw_on_error(false)
+            .output_type(katex::OutputType::Mathml);
+
+        let default_opts = builder
+            .display_mode(false)
+            .build()
+            .expect("Options should not fail");
+
+        let display_opts = builder
+            .display_mode(true)
+            .build()
+            .expect("Options should not fail");
 
         let mut parser = fold_many0(parse_latex, String::new, |mut acc, parsed| {
             match parsed {
                 ParsedLatex::Char(ch) => acc.push(ch),
                 ParsedLatex::Latex(latex) => {
-                    let parsed = katex::render_with_opts(latex, &opts).expect("bad");
+                    let parsed = katex::render_with_opts(latex, &default_opts)
+                        .unwrap_or_else(|_| format!(r#"<p style="color: red">{latex}</p>"#));
+                    acc.push_str(&parsed);
+                }
+                ParsedLatex::LatexDisplay(latex) => {
+                    let parsed = katex::render_with_opts(latex, &display_opts)
+                        .unwrap_or_else(|_| format!(r#"<p style="color: red">{latex}</p>"#));
                     acc.push_str(&parsed);
                 }
             }
@@ -97,8 +121,7 @@ pub fn generate_prompt(script: Option<String>, question: String, answer: String)
     }
 
     fn parse(input: &str) -> String {
-        let output = parse_markdown(input);
-        parse_latex(&output)
+        parse_markdown(&parse_latex(input))
     }
 
     Prompt {
