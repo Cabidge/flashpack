@@ -91,106 +91,43 @@ fn template_script(scope: &mut rhai::Scope, engine: &rhai::Engine, template: &st
 
 #[tauri::command]
 pub fn generate_prompt(script: Option<String>, question: String, answer: String) -> Prompt {
-    let (question, answer) = if let Some(script) = script {
+    let mut inputs = [question, answer];
+
+    if let Some(script) = script {
         let engine = rhai::Engine::new();
         let mut scope = rhai::Scope::new();
 
         engine.run_with_scope(&mut scope, &script).unwrap();
 
-        (
-            template_script(&mut scope, &engine, &question),
-            template_script(&mut scope, &engine, &answer),
-        )
-    } else {
-        (question, answer)
+        inputs.iter_mut()
+            .for_each(|input| *input = template_script(&mut scope, &engine, input));
+    }
+
+    let options = markdown::Options {
+        parse: markdown::ParseOptions {
+            constructs: markdown::Constructs {
+                math_flow: true,
+                math_text: true,
+                ..Default::default()
+            },
+            ..Default::default()
+        },
+        compile: Default::default(),
     };
 
-    fn parse_markdown(input: &str) -> String {
-        let parser = pulldown_cmark::Parser::new(input);
-        let mut output = String::new();
-        pulldown_cmark::html::push_html(&mut output, parser);
+    inputs.iter_mut()
+        .for_each(|input| {
+            let md = markdown::to_html_with_options(input, &options)
+                .unwrap();
 
-        output
-    }
-
-    fn parse_latex(input: &str) -> String {
-        use nom::branch::alt;
-        use nom::bytes::complete::{tag, take_until1};
-        use nom::character::complete::anychar;
-        use nom::combinator::verify;
-        use nom::multi::fold_many0;
-        use nom::sequence::delimited;
-        use nom::IResult;
-        use nom::Parser;
-
-        enum ParsedLatex<'a> {
-            Char(char),
-            Latex(&'a str),
-            LatexDisplay(&'a str),
-        }
-
-        fn parse_latex(input: &str) -> IResult<&str, ParsedLatex<'_>> {
-            let escaped = tag("\\$").map(|_| ParsedLatex::Char('$'));
-
-            let surrounded = |pattern| {
-                let surround_simple = delimited(tag(pattern), take_until1(pattern), tag(pattern));
-                let surround_trimmed = surround_simple.map(str::trim);
-
-                verify(surround_trimmed, |s: &str| s.len() > 0)
-            };
-
-            let latex_display = surrounded("$$").map(ParsedLatex::LatexDisplay);
-
-            let latex = surrounded("$").map(ParsedLatex::Latex);
-
-            let char_wrapped = anychar.map(ParsedLatex::Char);
-
-            alt((escaped, latex_display, latex, char_wrapped))(input)
-        }
-
-        let mut builder = katex::Opts::builder();
-
-        builder
-            .throw_on_error(false)
-            .output_type(katex::OutputType::Mathml);
-
-        let default_opts = builder
-            .display_mode(false)
-            .build()
-            .expect("Options should not fail");
-
-        let display_opts = builder
-            .display_mode(true)
-            .build()
-            .expect("Options should not fail");
-
-        let mut parser = fold_many0(parse_latex, String::new, |mut acc, parsed| {
-            match parsed {
-                ParsedLatex::Char(ch) => acc.push(ch),
-                ParsedLatex::Latex(latex) => {
-                    let parsed = katex::render_with_opts(latex, &default_opts)
-                        .unwrap_or_else(|_| format!(r#"<p style="color: red">{latex}</p>"#));
-                    acc.push_str(&parsed);
-                }
-                ParsedLatex::LatexDisplay(latex) => {
-                    let parsed = katex::render_with_opts(latex, &display_opts)
-                        .unwrap_or_else(|_| format!(r#"<p style="color: red">{latex}</p>"#));
-                    acc.push_str(&parsed);
-                }
-            }
-            acc
+            *input = md;
         });
 
-        parser(input).expect("bad nom").1
-    }
-
-    fn parse(input: &str) -> String {
-        parse_markdown(&parse_latex(input))
-    }
+    let [question, answer] = inputs;
 
     Prompt {
-        question: parse(&question),
-        answer: parse(&answer),
+        question,
+        answer,
     }
 }
 

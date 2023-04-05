@@ -1,18 +1,15 @@
 <script lang="ts">
     import type { Prompt } from '@bindings/Prompt';
+    import PromptHalf from './PromptHalf.svelte';
 
     export let prompt: Prompt;
     export let showAnswer = true;
 </script>
 
-<div class="prose">
-    {@html prompt.question}
-</div>
+<PromptHalf input={prompt.question} />
 
 {#if showAnswer}
     <hr class="my-2" />
 
-    <div class="prose">
-        {@html prompt.answer}
-    </div>
+    <PromptHalf input={prompt.answer} />
 {/if}
