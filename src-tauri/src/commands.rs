@@ -50,8 +50,58 @@ pub struct Prompt {
     answer: String,
 }
 
+fn template_script(scope: &mut rhai::Scope, engine: &rhai::Engine, template: &str) -> String {
+    use nom::branch::alt;
+    use nom::bytes::complete::{tag, take_until};
+    use nom::character::complete::anychar;
+    use nom::multi::fold_many0;
+    use nom::sequence::delimited;
+    use nom::IResult;
+    use nom::Parser;
+
+    enum Parsed<'a> {
+        Char(char),
+        Expression(&'a str),
+    }
+
+    fn parse_template(input: &str) -> IResult<&str, Parsed<'_>> {
+        let expression = delimited(tag("{{"), take_until("}}"), tag("}}")).map(Parsed::Expression);
+        let char_wrapped = anychar.map(Parsed::Char);
+
+        alt((expression, char_wrapped))(input)
+    }
+
+    let mut parser = fold_many0(parse_template, String::new, |mut acc, parsed| {
+        match parsed {
+            Parsed::Char(ch) => acc.push(ch),
+            Parsed::Expression(expr) => {
+                let result = engine.eval_expression_with_scope::<rhai::Dynamic>(scope, expr)
+                    .unwrap()
+                    .to_string();
+
+                acc.push_str(&result);
+            }
+        }
+        acc
+    });
+
+    parser(template).expect("bad nom").1
+}
+
 #[tauri::command]
 pub fn generate_prompt(script: Option<String>, question: String, answer: String) -> Prompt {
+    let (question, answer) = if let Some(script) = script {
+        let engine = rhai::Engine::new();
+        let mut scope = rhai::Scope::new();
+
+        engine.run_with_scope(&mut scope, &script).unwrap();
+
+        (
+            template_script(&mut scope, &engine, &question),
+            template_script(&mut scope, &engine, &answer),
+        )
+    } else { (question, answer) };
+
     fn parse_markdown(input: &str) -> String {
         let parser = pulldown_cmark::Parser::new(input);
         let mut output = String::new();
