@@ -38,8 +38,10 @@
     },
     "type": "module",
     "dependencies": {
+        "@codemirror/lang-rust": "^6.0.1",
         "@tauri-apps/api": "^1.2.0",
         "@types/katex": "^0.16.0",
-        "katex": "^0.16.4"
+        "katex": "^0.16.4",
+        "svelte-codemirror-editor": "^1.1.0"
     }
 }

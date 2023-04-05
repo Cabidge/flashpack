@@ -4,6 +4,7 @@
     import type { ModifyCard } from '@bindings/ModifyCard';
     import type { PageData } from './$types';
     import RenameInput from './RenameInput.svelte';
+    import ScriptInput from './ScriptInput.svelte';
 
     export let data: PageData;
 
@@ -79,10 +80,13 @@
 
         await invalidateAll();
     };
+
+    let script: string | null = "";
 </script>
 
 <div class="flex h-full flex-col gap-2">
     <div class="flex flex-grow flex-col gap-2 overflow-auto p-2">
+        <ScriptInput bind:script={script}/>
         <RenameInput placeholder="front" oldValue={card.front} bind:newValue={front} />
         <RenameInput placeholder="back" oldValue={card.back} bind:newValue={back} />
 
