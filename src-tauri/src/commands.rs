@@ -75,7 +75,8 @@ fn template_script(scope: &mut rhai::Scope, engine: &rhai::Engine, template: &st
         match parsed {
             Parsed::Char(ch) => acc.push(ch),
             Parsed::Expression(expr) => {
-                let result = engine.eval_expression_with_scope::<rhai::Dynamic>(scope, expr)
+                let result = engine
+                    .eval_expression_with_scope::<rhai::Dynamic>(scope, expr)
                     .unwrap()
                     .to_string();
 
@@ -100,7 +101,9 @@ pub fn generate_prompt(script: Option<String>, question: String, answer: String)
             template_script(&mut scope, &engine, &question),
             template_script(&mut scope, &engine, &answer),
         )
-    } else { (question, answer) };
+    } else {
+        (question, answer)
+    };
 
     fn parse_markdown(input: &str) -> String {
         let parser = pulldown_cmark::Parser::new(input);
