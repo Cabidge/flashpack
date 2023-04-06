@@ -65,18 +65,24 @@
         {/if}
     </Transition>
 
-    <div class="flex w-full items-center justify-center gap-4 bg-slate-100 py-6">
+    <div class="flex w-full items-center justify-center gap-2 bg-slate-100 py-6">
         {#if prompt === null}
-            <button class="rounded bg-white py-1 px-2 shadow" on:click={advance}> Retry </button>
-        {:else if showAnswer}
-            <button class="rounded bg-white py-1 px-2 shadow" on:click={advance}> Correct </button>
-            <button class="rounded bg-white py-1 px-2 shadow" on:click={() => (showAnswer = false)}>
-                Hide Answer
+            <button class="rounded bg-white py-1 px-2 shadow" on:click={advance}>
+                <i class="fa-solid fa-rotate-left" /> Refresh
             </button>
-            <button class="rounded bg-white py-1 px-2 shadow" on:click={advance}> Wrong </button>
+        {:else if showAnswer}
+            <button class="rounded bg-white py-1 px-2 shadow" on:click={advance}>
+                <i class="fa-solid fa-check-double" /> Easy
+            </button>
+            <button class="rounded bg-white py-1 px-2 shadow" on:click={advance}>
+                <i class="fa-solid fa-check" /> Correct
+            </button>
+            <button class="rounded bg-white py-1 px-2 shadow" on:click={advance}>
+                <i class="fa-solid fa-xmark" /> Wrong
+            </button>
         {:else}
             <button class="rounded bg-white py-1 px-2 shadow" on:click={() => (showAnswer = true)}>
-                Show Answer
+                <i class="fa-solid fa-eye" /> Show Answer
             </button>
         {/if}
     </div>
