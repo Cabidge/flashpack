@@ -26,7 +26,8 @@
                 output: 'mathml'
             });
 
-            const texElement = new DOMParser().parseFromString(texHtml, 'text/html').body.children[0];
+            const texElement = new DOMParser().parseFromString(texHtml, 'text/html').body
+                .children[0];
 
             element.parentElement?.replaceChild(texElement, element);
         }

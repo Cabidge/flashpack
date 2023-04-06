@@ -81,12 +81,12 @@
         await invalidateAll();
     };
 
-    let script: string | null = "";
+    let script: string | null = '';
 </script>
 
 <div class="flex h-full flex-col gap-2">
     <div class="flex flex-grow flex-col gap-2 overflow-auto p-2">
-        <ScriptInput bind:script={script}/>
+        <ScriptInput bind:script />
         <RenameInput placeholder="front" oldValue={card.front} bind:newValue={front} />
         <RenameInput placeholder="back" oldValue={card.back} bind:newValue={back} />
 
