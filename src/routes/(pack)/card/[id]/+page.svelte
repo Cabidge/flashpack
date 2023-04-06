@@ -112,7 +112,7 @@
 
     {#if canSave}
         <button
-            class="rounded bg-indigo-500 py-2 font-semibold text-white shadow-md"
+            class="rounded bg-violet-500 py-2 font-semibold text-white shadow-md"
             on:click={saveChanges}>Save</button
         >
     {:else}

@@ -29,7 +29,7 @@
 
             <ModalController title="Create a Pack" let:open let:close>
                 <button
-                    class="aspect-square w-9 flex-none rounded bg-indigo-500 text-center text-xl font-semibold text-white shadow hover:bg-indigo-600"
+                    class="aspect-square w-9 flex-none rounded bg-violet-500 text-center text-xl font-semibold text-white shadow hover:bg-violet-600"
                     on:click={open}
                 >
                     +

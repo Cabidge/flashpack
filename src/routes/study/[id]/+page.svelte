@@ -61,7 +61,7 @@
                                 >
                                     {filter.summary.label}
                                     <span
-                                        class="text-xs text-indigo-600 {filter.weight === 1
+                                        class="text-xs text-violet-600 {filter.weight === 1
                                             ? 'hidden group-hover:inline'
                                             : ''}"
                                     >
