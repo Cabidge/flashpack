@@ -6,6 +6,7 @@
     import Transition from '$lib/Transition.svelte';
     import PromptView from '$lib/PromptView.svelte';
     import ShowTags from '$lib/ShowTags.svelte';
+    import PracticeButton from './PracticeButton.svelte';
 
     export let data: PageData;
 
@@ -67,23 +68,13 @@
 
     <div class="flex w-full items-center justify-center gap-2 bg-slate-100 py-6">
         {#if prompt === null}
-            <button class="rounded bg-white py-1 px-2 shadow" on:click={advance}>
-                <i class="fa-solid fa-rotate-left" /> Refresh
-            </button>
+            <PracticeButton icon="rotate-left" label="Refresh" on:click={advance} />
         {:else if showAnswer}
-            <button class="rounded bg-white py-1 px-2 shadow" on:click={advance}>
-                <i class="fa-solid fa-check-double" /> Easy
-            </button>
-            <button class="rounded bg-white py-1 px-2 shadow" on:click={advance}>
-                <i class="fa-solid fa-check" /> Correct
-            </button>
-            <button class="rounded bg-white py-1 px-2 shadow" on:click={advance}>
-                <i class="fa-solid fa-xmark" /> Wrong
-            </button>
+            <PracticeButton icon="check-double" label="Easy" on:click={advance} />
+            <PracticeButton icon="check" label="Correct" on:click={advance} />
+            <PracticeButton icon="xmark" label="Wrong" on:click={advance} />
         {:else}
-            <button class="rounded bg-white py-1 px-2 shadow" on:click={() => (showAnswer = true)}>
-                <i class="fa-solid fa-eye" /> Show Answer
-            </button>
+            <PracticeButton icon="eye" label="Show Answer" on:click={() => (showAnswer = true)} />
         {/if}
     </div>
 </div>
