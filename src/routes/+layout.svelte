@@ -10,10 +10,10 @@
 </script>
 
 <div class="flex h-screen flex-row">
-    <nav class="item-stretch flex flex-col gap-2 bg-slate-300 p-2">
-        <ul>
-            <li><TabButton tab="pack" label="Pack" href="/pack" /></li>
-            <li><TabButton tab="study" label="Study" href="/study" /></li>
+    <nav class="bg-slate-300">
+        <ul class="flex flex-col items-stretch">
+            <li class="flex"><TabButton tab="pack" icon="layer-group" href="/pack" /></li>
+            <li class="flex"><TabButton tab="study" icon="book" href="/study" /></li>
         </ul>
     </nav>
 
