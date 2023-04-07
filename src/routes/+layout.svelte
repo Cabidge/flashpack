@@ -5,6 +5,7 @@
     import '../app.postcss';
     import TabButton from './TabButton.svelte';
     import { fade } from 'svelte/transition';
+    import { invoke } from '$lib/commands';
 
     type TabInfo = {
         label: string;

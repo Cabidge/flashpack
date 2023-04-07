@@ -13,6 +13,7 @@ import type { Pack } from '@bindings/Pack';
 
 import type { PackSummary } from '@bindings/PackSummary';
 import type { Prompt } from '@bindings/Prompt';
+import { banners } from './banners';
 
 type Commands = {
     generate_prompt: (args: { script: string | null; question: string; answer: string }) => Prompt;
@@ -51,5 +52,11 @@ type Window = {
 
 export const invoke: Invoke = async (cmd, ...args) => {
     const invoke = (window as unknown as Window).__TAURI__.invoke;
-    return await invoke(cmd, ...args);
+
+    try {
+        return await invoke(cmd, ...args);
+    } catch (err) {
+        banners.add(`${cmd} Error`, String(err));
+        throw err;
+    }
 };
