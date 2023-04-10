@@ -9,11 +9,9 @@
 </script>
 
 <a
-    class="relative flex aspect-square w-full items-center justify-center p-3 text-slate-800 hover:bg-slate-200"
+    class="relative flex aspect-square w-full items-center justify-center p-3 hover:bg-slate-100
+        {active ? 'bg-slate-200 text-slate-900' : 'text-slate-800'}"
     {href}
 >
     <i class="fa-solid fa-{icon} fa-xl" />
-    {#if active}
-        <div class="absolute right-1 left-1 bottom-1 h-1 rounded bg-slate-100" />
-    {/if}
 </a>
