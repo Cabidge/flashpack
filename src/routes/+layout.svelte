@@ -28,14 +28,14 @@
     </div>
 </div>
 
-<div class="fixed flex flex-col gap-2 m-2 bottom-0">
+<div class="fixed bottom-0 m-2 flex flex-col gap-2">
     {#each bannerArray as banner (banner)}
         <div
             animate:flip={{ duration: 200 }}
             transition:fade={{ duration: 200 }}
-            class="flex flex-row gap-4 items-start rounded shadow bg-red-500 text-white px-4 py-2"
+            class="flex flex-row items-start gap-4 rounded bg-red-500 px-4 py-2 text-white shadow"
         >
-            <span><i class="fa-solid fa-triangle-exclamation"/></span>
+            <span><i class="fa-solid fa-triangle-exclamation" /></span>
             <div>
                 <h2 class="font-semibold">{banner.heading}</h2>
                 {#if banner.details !== undefined}
