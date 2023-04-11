@@ -91,32 +91,7 @@
     };
 </script>
 
-<div class="flex h-full flex-col gap-2">
-    <div class="flex flex-grow flex-col gap-2 overflow-auto p-2">
-        <ScriptInput bind:script />
-        <RenameInput placeholder="front" oldValue={card.front} bind:newValue={front} />
-        <RenameInput placeholder="back" oldValue={card.back} bind:newValue={back} />
-
-        <form on:submit|preventDefault={submitTag}>
-            <input class="rounded-full px-2" placeholder="add a tag..." bind:value={tagInput} />
-        </form>
-
-        <ul class="my-2 flex flex-wrap gap-2">
-            {#each tags as tag (tag)}
-                <li>
-                    <button
-                        class="rounded-full bg-slate-100 px-2 hover:bg-slate-200 {removals.has(tag)
-                            ? 'text-slate-400 line-through'
-                            : 'hover:line-through'}"
-                        on:click={() => toggleTag(tag)}
-                    >
-                        {tag}
-                    </button>
-                </li>
-            {/each}
-        </ul>
-    </div>
-
+<div class="flex flex-col gap-2 overflow-y-auto p-2">
     {#if canSave}
         <button
             class="rounded bg-violet-500 py-2 font-semibold text-white shadow-md"
@@ -130,4 +105,27 @@
             Preview
         </a>
     {/if}
+
+    <ScriptInput bind:script />
+    <RenameInput placeholder="front" oldValue={card.front} bind:newValue={front} />
+    <RenameInput placeholder="back" oldValue={card.back} bind:newValue={back} />
+
+    <form on:submit|preventDefault={submitTag}>
+        <input class="rounded-full px-2" placeholder="add a tag..." bind:value={tagInput} />
+    </form>
+
+    <ul class="my-2 flex flex-wrap gap-2">
+        {#each tags as tag (tag)}
+            <li>
+                <button
+                    class="rounded-full bg-slate-100 px-2 hover:bg-slate-200 {removals.has(tag)
+                        ? 'text-slate-400 line-through'
+                        : 'hover:line-through'}"
+                    on:click={() => toggleTag(tag)}
+                >
+                    {tag}
+                </button>
+            </li>
+        {/each}
+    </ul>
 </div>
