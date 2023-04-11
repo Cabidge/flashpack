@@ -14,6 +14,7 @@ pub struct Summary {
 #[derive(TS, Serialize, Debug)]
 pub struct Details {
     pub label: String,
+    pub script: Option<String>,
     pub front: String,
     pub back: String,
     pub pack_id: pack::Id,
@@ -75,7 +76,8 @@ pub async fn get_details(pool: &SqlitePool, id: Id) -> Result<Details> {
         SELECT front,
             back,
             pack_id as "pack_id: pack::Id",
-            label
+            label,
+            script
         FROM cards
         WHERE id = ?
         "#,
@@ -147,6 +149,22 @@ pub async fn rename(
         ",
         front,
         back,
+        id,
+    )
+    .execute(pool)
+    .await?;
+
+    Ok(())
+}
+
+pub async fn set_script(pool: &SqlitePool, id: Id, script: Option<&str>) -> Result<()> {
+    sqlx::query!(
+        "
+        UPDATE cards
+        SET script = ?
+        WHERE id = ?
+        ",
+        script,
         id,
     )
     .execute(pool)

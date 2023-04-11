@@ -3,10 +3,10 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ parent }) => {
     const {
-        card: { front, back }
+        card: { script, front, back }
     } = await parent();
 
-    const prompt = await invoke('generate_prompt', { script: null, question: front, answer: back });
+    const prompt = await invoke('generate_prompt', { script, question: front, answer: back });
 
     return {
         prompt

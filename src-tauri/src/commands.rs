@@ -26,6 +26,7 @@ pub enum ModifyCard {
         front: Option<String>,
         back: Option<String>,
     },
+    SetScript(Option<String>),
 }
 
 #[derive(TS, Deserialize, Debug)]
@@ -99,7 +100,8 @@ pub fn generate_prompt(script: Option<String>, question: String, answer: String)
 
         engine.run_with_scope(&mut scope, &script).unwrap();
 
-        inputs.iter_mut()
+        inputs
+            .iter_mut()
             .for_each(|input| *input = template_script(&mut scope, &engine, input));
     }
 
@@ -115,20 +117,15 @@ pub fn generate_prompt(script: Option<String>, question: String, answer: String)
         compile: Default::default(),
     };
 
-    inputs.iter_mut()
-        .for_each(|input| {
-            let md = markdown::to_html_with_options(input, &options)
-                .unwrap();
+    inputs.iter_mut().for_each(|input| {
+        let md = markdown::to_html_with_options(input, &options).unwrap();
 
-            *input = md;
-        });
+        *input = md;
+    });
 
     let [question, answer] = inputs;
 
-    Prompt {
-        question,
-        answer,
-    }
+    Prompt { question, answer }
 }
 
 // -- pack
@@ -219,6 +216,9 @@ pub async fn modify_card(
         ModifyCard::RemoveTag(tag) => card::remove_tag(pool.inner(), id, &tag).await,
         ModifyCard::Rename { front, back } => {
             card::rename(pool.inner(), id, front.as_deref(), back.as_deref()).await
+        }
+        ModifyCard::SetScript(script) => {
+            card::set_script(pool.inner(), id, script.as_deref()).await
         }
     }
 }

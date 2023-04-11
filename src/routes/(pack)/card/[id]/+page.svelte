@@ -5,6 +5,7 @@
     import type { PageData } from './$types';
     import RenameInput from './RenameInput.svelte';
     import ScriptInput from './ScriptInput.svelte';
+    import { onMount } from 'svelte';
 
     export let data: PageData;
 
@@ -15,6 +16,9 @@
     let front: string | null, back: string | null;
 
     $: shouldRename = front !== null || back !== null;
+
+    $: originalScript = card.script;
+    $: script = originalScript;
 
     let additions: Set<string> = new Set();
     let removals: Set<string> = new Set();
@@ -34,12 +38,17 @@
             changes.push({ Rename: { front, back } });
         }
 
+        if (script !== originalScript) {
+            changes.push({ SetScript: script });
+        }
+
         return changes;
     };
 
     let tagInput = '';
 
-    $: canSave = additions.size > 0 || removals.size > 0 || shouldRename;
+    $: canSave =
+        additions.size > 0 || removals.size > 0 || shouldRename || script !== originalScript;
 
     const addTag = (tag: string) => {
         if (tag === '') {
@@ -80,8 +89,6 @@
 
         await invalidateAll();
     };
-
-    let script: string | null = '';
 </script>
 
 <div class="flex h-full flex-col gap-2">
