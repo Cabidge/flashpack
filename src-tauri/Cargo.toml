@@ -31,6 +31,7 @@ katex = { version = "0.4", default-features = false, features = ["duktape"] }
 nom = "7.1"
 rhai = "1.13"
 markdown = "1.0.0-alpha.7"
+rhai-rand = "0.1.5"
 
 [features]
 # by default Tauri runs in production mode

@@ -95,7 +95,13 @@ pub fn generate_prompt(script: Option<String>, question: String, answer: String)
     let mut inputs = [question, answer];
 
     if let Some(script) = script {
-        let engine = rhai::Engine::new();
+        use rhai::packages::Package;
+
+        let mut engine = rhai::Engine::new();
+        let rand_package = rhai_rand::RandomPackage::new();
+
+        engine.register_static_module("rand", rand_package.as_shared_module());
+
         let mut scope = rhai::Scope::new();
 
         engine.run_with_scope(&mut scope, &script).unwrap();
