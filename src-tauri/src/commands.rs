@@ -76,12 +76,14 @@ fn template_script(scope: &mut rhai::Scope, engine: &rhai::Engine, template: &st
         match parsed {
             Parsed::Char(ch) => acc.push(ch),
             Parsed::Expression(expr) => {
-                let result = engine
-                    .eval_expression_with_scope::<rhai::Dynamic>(scope, expr)
-                    .unwrap()
-                    .to_string();
+                let result = engine.eval_expression_with_scope::<rhai::Dynamic>(scope, expr);
 
-                acc.push_str(&result);
+                let output = match result {
+                    Ok(val) => val.to_string(),
+                    Err(err) => err.to_string(),
+                };
+
+                acc.push_str(&output);
             }
         }
         acc
