@@ -5,6 +5,7 @@
 
 mod card;
 mod dealer;
+mod engine;
 mod error;
 mod filter;
 mod pack;
