@@ -21,13 +21,10 @@ tauri = { version = "1.2.4", features = [] }
 tokio = { version = "1", features = ["full"] }
 anyhow = "1.0.69"
 thiserror = "1.0.38"
-map-macro = "0.2.5"
 ts-rs = "6.2.1"
 sqlx = { version = "0.6", features = ["runtime-tokio-rustls", "sqlite", "migrate"] }
 rand = "0.8.5"
 futures = "0.3.27"
-pulldown-cmark = "0.9.2"
-katex = { version = "0.4", default-features = false, features = ["duktape"] }
 nom = "7.1"
 rhai = "1.13"
 markdown = "1.0.0-alpha.7"
