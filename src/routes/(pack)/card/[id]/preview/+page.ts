@@ -6,7 +6,7 @@ export const load: PageLoad = async ({ parent }) => {
         card: { script, front, back }
     } = await parent();
 
-    const prompt = await invoke('generate_prompt', { script, question: front, answer: back });
+    const prompt = await invoke('generate_prompt', { script, front, back });
 
     return {
         prompt

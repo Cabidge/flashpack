@@ -6,10 +6,10 @@
     export let showAnswer = true;
 </script>
 
-<PromptHalf input={prompt.question} />
+<PromptHalf input={prompt.front} />
 
 {#if showAnswer}
     <hr class="my-2" />
 
-    <PromptHalf input={prompt.answer} />
+    <PromptHalf input={prompt.back} />
 {/if}

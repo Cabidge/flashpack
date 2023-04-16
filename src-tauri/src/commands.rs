@@ -47,70 +47,57 @@ pub enum ModifyFilter {
 #[derive(TS, Serialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
 pub struct Prompt {
-    question: String,
-    answer: String,
+    front: String,
+    back: String,
 }
 
-fn template_script(scope: &mut rhai::Scope, engine: &rhai::Engine, template: &str) -> String {
-    use nom::branch::alt;
-    use nom::bytes::complete::{tag, take_until};
-    use nom::character::complete::anychar;
-    use nom::multi::fold_many0;
-    use nom::sequence::delimited;
-    use nom::IResult;
-    use nom::Parser;
-
-    enum Parsed<'a> {
-        Char(char),
-        Expression(&'a str),
-    }
-
-    fn parse_template(input: &str) -> IResult<&str, Parsed<'_>> {
-        let expression = delimited(tag("{{"), take_until("}}"), tag("}}")).map(Parsed::Expression);
-        let char_wrapped = anychar.map(Parsed::Char);
-
-        alt((expression, char_wrapped))(input)
-    }
-
-    let mut parser = fold_many0(parse_template, String::new, |mut acc, parsed| {
-        match parsed {
-            Parsed::Char(ch) => acc.push(ch),
-            Parsed::Expression(expr) => {
-                let result = engine.eval_expression_with_scope::<rhai::Dynamic>(scope, expr);
-
-                let output = match result {
-                    Ok(val) => val.to_string(),
-                    Err(err) => err.to_string(),
-                };
-
-                acc.push_str(&output);
-            }
-        }
-        acc
-    });
-
-    parser(template).expect("bad nom").1
+struct ScriptResult {
+    front: Option<String>,
+    back: Option<String>,
 }
 
-#[tauri::command]
-pub fn generate_prompt(script: Option<String>, question: String, answer: String) -> Prompt {
-    let mut inputs = [question, answer];
-
-    if let Some(script) = script {
+fn run_script(script: &str, front: String, back: String) -> Result<ScriptResult> {
+    let module = {
         let engine = crate::engine::create_engine();
 
         let mut scope = rhai::Scope::new();
 
-        let error = engine.run_with_scope(&mut scope, &script).err();
+        scope.push_constant("FRONT", front);
+        scope.push_constant("BACK", back);
 
-        inputs
-            .iter_mut()
-            .for_each(|input| *input = template_script(&mut scope, &engine, input));
+        let ast = engine
+            .compile_with_scope(&mut scope, &script)
+            .map_err(anyhow::Error::from)?;
 
-        if let Some(error) = error {
-            inputs[0] = format!("```\n{}\n```\n\n{}", error, inputs[0]);
+        rhai::Module::eval_ast_as_new(scope, &ast, &engine)
+            .map_err(|err| err.to_string())
+            .map_err(anyhow::Error::msg)?
+    };
+
+    let front = module.get_var_value::<String>("front");
+    let back = module.get_var_value::<String>("back");
+
+    Ok(ScriptResult { front, back })
+}
+
+#[tauri::command]
+pub fn generate_prompt(script: Option<String>, front: String, back: String) -> Prompt {
+    let (front, back) = if let Some(script) = script {
+        match run_script(&script, front, back) {
+            Ok(ScriptResult { front, back }) => {
+                let front = front.unwrap_or_else(|| String::from("`No front defined`"));
+                let back = back.unwrap_or_else(|| String::from("`No back defined`"));
+
+                (front, back)
+            }
+            Err(err) => {
+                let msg = format!("```\n{err}\n```");
+                (msg.clone(), msg)
+            }
         }
-    }
+    } else {
+        (front, back)
+    };
 
     let options = markdown::Options {
         parse: markdown::ParseOptions {
@@ -124,15 +111,10 @@ pub fn generate_prompt(script: Option<String>, question: String, answer: String)
         compile: Default::default(),
     };
 
-    inputs.iter_mut().for_each(|input| {
-        let md = markdown::to_html_with_options(input, &options).unwrap();
+    let front = markdown::to_html_with_options(&front, &options).unwrap();
+    let back = markdown::to_html_with_options(&back, &options).unwrap();
 
-        *input = md;
-    });
-
-    let [question, answer] = inputs;
-
-    Prompt { question, answer }
+    Prompt { front, back }
 }
 
 // -- pack

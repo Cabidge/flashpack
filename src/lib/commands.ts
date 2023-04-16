@@ -16,7 +16,7 @@ import type { Prompt } from '@bindings/Prompt';
 import { banners } from './banners';
 
 type Commands = {
-    generate_prompt: (args: { script: string | null; question: string; answer: string }) => Prompt;
+    generate_prompt: (args: { script: string | null; front: string; back: string }) => Prompt;
     // pack
     create_pack: (args: { title: string }) => void;
     list_packs: () => PackSummary[];

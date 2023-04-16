@@ -36,11 +36,7 @@
 
         const card = await invoke('get_card', { id: cardId });
 
-        const partialPrompt = await invoke('generate_prompt', {
-            script: card.script,
-            question: card.front,
-            answer: card.back
-        });
+        const partialPrompt = await invoke('generate_prompt', card);
 
         return {
             prompt: partialPrompt,
