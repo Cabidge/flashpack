@@ -1,6 +1,6 @@
 <script lang="ts">
     import CodeMirror from 'svelte-codemirror-editor';
-    import { rust } from '@codemirror/lang-rust';
+    import { javascript } from '@codemirror/lang-javascript';
 
     export let script: string | null;
 </script>
@@ -18,5 +18,5 @@
 />
 
 {#if script !== null}
-    <CodeMirror bind:value={script} lang={rust()} />
+    <CodeMirror bind:value={script} lang={javascript()} />
 {/if}
