@@ -12,7 +12,9 @@
     let search = '';
     $: query = search.toLowerCase();
 
-    $: ({ activePack, packs } = data);
+    $: ({ packs } = data);
+
+    let activePack: number | null = null;
 
     $: filteredPacks =
         search === '' ? packs : packs.filter((pack) => pack.title.toLowerCase().includes(query));
@@ -41,7 +43,7 @@
 
         <div class="border-b-2" />
 
-        <PackSelector packs={filteredPacks} activePack={$activePack} />
+        <PackSelector packs={filteredPacks} bind:activePack />
     </div>
 
     <main class="h-full w-full overflow-auto px-6 py-4">

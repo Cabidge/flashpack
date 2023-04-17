@@ -8,9 +8,7 @@
 
     export let data: PageData;
 
-    $: ({ id, pack, activePack } = data);
-    $: activePack?.set(id);
-
+    $: ({ id, pack } = data);
     $: ({ cards, filters } = pack);
 </script>
 

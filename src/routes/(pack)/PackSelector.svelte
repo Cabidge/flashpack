@@ -12,7 +12,7 @@
     <ul class="flex flex-col">
         {#each packs as pack (pack.id)}
             <li class="flex">
-                <PackChoice {pack} {activePack} />
+                <PackChoice {pack} bind:activePack />
             </li>
         {/each}
     </ul>
