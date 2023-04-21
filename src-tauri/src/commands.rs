@@ -62,11 +62,12 @@ fn run_script(script: &str, front: String, back: String) -> Result<ScriptResult>
 
         let mut scope = rhai::Scope::new();
 
-        scope.push_constant("FRONT", front);
-        scope.push_constant("BACK", back);
+        scope
+            .push_constant("FRONT", front)
+            .push_constant("BACK", back);
 
         let ast = engine
-            .compile_with_scope(&mut scope, &script)
+            .compile_with_scope(&scope, script)
             .map_err(anyhow::Error::from)?;
 
         rhai::Module::eval_ast_as_new(scope, &ast, &engine)
