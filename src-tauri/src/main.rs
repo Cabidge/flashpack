@@ -8,6 +8,7 @@ mod dealer;
 mod engine;
 mod error;
 mod filter;
+mod markdown;
 mod pack;
 
 mod commands;
@@ -58,6 +59,7 @@ async fn main() -> Result<()> {
 
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
+            render_markdown,
             generate_prompt,
             // pack
             create_pack,

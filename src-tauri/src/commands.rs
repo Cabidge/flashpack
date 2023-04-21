@@ -6,6 +6,7 @@ use ts_rs::TS;
 use crate::{
     card::{self, Card},
     dealer, filter,
+    markdown::Parser,
     pack::{self, Pack},
     prelude::*,
 };
@@ -82,8 +83,18 @@ fn run_script(script: &str, front: String, back: String) -> Result<ScriptResult>
 }
 
 #[tauri::command]
-pub fn generate_prompt(script: Option<String>, front: String, back: String) -> Prompt {
-    let (front, back) = if let Some(script) = script {
+pub fn render_markdown(markdown: String) -> String {
+    let parser = Parser::new(&markdown);
+
+    let mut html = String::new();
+    pulldown_cmark::html::push_html(&mut html, parser);
+
+    html
+}
+
+#[tauri::command]
+pub fn generate_prompt(script: String, front: String, back: String) -> Prompt {
+    let (front, back) = {
         match run_script(&script, front, back) {
             Ok(ScriptResult { front, back }) => {
                 let front = front.unwrap_or_else(|| String::from("`No front defined`"));
@@ -96,24 +107,7 @@ pub fn generate_prompt(script: Option<String>, front: String, back: String) -> P
                 (msg.clone(), msg)
             }
         }
-    } else {
-        (front, back)
     };
-
-    let options = markdown::Options {
-        parse: markdown::ParseOptions {
-            constructs: markdown::Constructs {
-                math_flow: true,
-                math_text: true,
-                ..Default::default()
-            },
-            ..Default::default()
-        },
-        compile: Default::default(),
-    };
-
-    let front = markdown::to_html_with_options(&front, &options).unwrap();
-    let back = markdown::to_html_with_options(&back, &options).unwrap();
 
     Prompt { front, back }
 }

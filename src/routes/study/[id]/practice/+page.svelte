@@ -34,13 +34,19 @@
             return null;
         }
 
-        const card = await invoke('get_card', { id: cardId });
+        const { script, front, back, tags } = await invoke('get_card', { id: cardId });
 
-        const partialPrompt = await invoke('generate_prompt', card);
+        const prompt: Prompt =
+            script === null
+                ? { front, back }
+                : await invoke('generate_prompt', { script, front, back });
+
+        prompt.front = await invoke('render_markdown', { markdown: prompt.front });
+        prompt.back = await invoke('render_markdown', { markdown: prompt.back });
 
         return {
-            prompt: partialPrompt,
-            tags: card.tags
+            prompt,
+            tags
         };
     };
 
