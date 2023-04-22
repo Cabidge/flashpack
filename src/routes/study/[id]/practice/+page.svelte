@@ -41,9 +41,6 @@
                 ? { front, back }
                 : await invoke('generate_prompt', { script, front, back });
 
-        prompt.front = await invoke('render_markdown', { markdown: prompt.front });
-        prompt.back = await invoke('render_markdown', { markdown: prompt.back });
-
         return {
             prompt,
             tags

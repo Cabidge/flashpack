@@ -1,15 +1,17 @@
 <script lang="ts">
     import type { Prompt } from '@bindings/Prompt';
-    import PromptHalf from './PromptHalf.svelte';
+    import Markdown from './Markdown.svelte';
 
     export let prompt: Prompt;
     export let showAnswer = true;
 </script>
 
-<PromptHalf input={prompt.front} />
+<div class="prose">
+    <Markdown content={prompt.front}/>
 
-{#if showAnswer}
-    <hr class="my-2" />
+    {#if showAnswer}
+        <hr class="my-2" />
 
-    <PromptHalf input={prompt.back} />
-{/if}
+        <Markdown content={prompt.back}/>
+    {/if}
+</div>
