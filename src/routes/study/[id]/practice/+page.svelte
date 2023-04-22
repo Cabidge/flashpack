@@ -69,7 +69,6 @@
         {#if prompt === null}
             <PracticeButton icon="rotate-left" label="Refresh" on:click={advance} />
         {:else if showAnswer}
-            <PracticeButton icon="check-double" label="Easy" on:click={advance} />
             <PracticeButton icon="check" label="Correct" on:click={advance} />
             <PracticeButton icon="xmark" label="Wrong" on:click={advance} />
         {:else}
