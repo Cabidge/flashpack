@@ -14,7 +14,7 @@
 <a href="/card/{id}">Edit</a>
 
 <label for="showAnswer">
-    <input type="checkbox" name="showAnswer" id="showAnswer" bind:checked={showAnswer}>
+    <input type="checkbox" name="showAnswer" id="showAnswer" bind:checked={showAnswer} />
     Show Answer
 </label>
 

@@ -7,11 +7,11 @@
 </script>
 
 <div class="prose">
-    <Markdown content={prompt.front}/>
+    <Markdown content={prompt.front} />
 
     {#if showAnswer}
         <hr class="my-2" />
 
-        <Markdown content={prompt.back}/>
+        <Markdown content={prompt.back} />
     {/if}
 </div>

@@ -48,7 +48,7 @@
         on:mouseenter={() => (hovering = true)}
         on:mouseleave={() => (hovering = false)}
         on:contextmenu|preventDefault={menu.onContextMenu}
-        on:click={() => activePack = pack.id}
+        on:click={() => (activePack = pack.id)}
     >
         <span class="flex-grow overflow-hidden text-ellipsis">
             {pack.title}
