@@ -68,6 +68,7 @@ async fn main() -> Result<()> {
             modify_pack,
             // card
             create_card,
+            query_cards,
             get_card,
             deal_card,
             modify_card,

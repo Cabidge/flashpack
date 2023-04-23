@@ -1,3 +1,6 @@
+use std::collections::BTreeSet;
+
+use futures::TryStreamExt;
 use serde::Serialize;
 use sqlx::SqlitePool;
 use ts_rs::TS;
@@ -67,6 +70,82 @@ pub async fn list_by_pack(pool: &SqlitePool, pack_id: crate::pack::Id) -> Result
     .fetch_all(pool)
     .await
     .map_err(Error::from)
+}
+
+pub async fn random(
+    pool: &SqlitePool,
+    pack_id: crate::pack::Id,
+    limit: Option<usize>,
+) -> Result<Vec<Id>> {
+    let mut queried = vec![];
+
+    let mut cards = sqlx::query!(
+        r#"
+        SELECT id as "id: Id"
+        FROM cards
+        WHERE pack_id = ?
+        ORDER BY RANDOM()
+        "#,
+        pack_id,
+    )
+    .map(|row| row.id)
+    .fetch(pool);
+
+    while let Some(id) = cards.try_next().await? {
+        if Some(queried.len()) == limit {
+            break;
+        }
+
+        queried.push(id);
+    }
+
+    Ok(queried)
+}
+
+pub async fn random_by_tags(
+    pool: &SqlitePool,
+    pack_id: crate::pack::Id,
+    limit: Option<usize>,
+    mut predicate: impl FnMut(&BTreeSet<String>) -> bool,
+) -> Result<Vec<Id>> {
+    let mut queried = vec![];
+
+    let mut cards = sqlx::query!(
+        r#"
+        SELECT id as "id: Id"
+        FROM cards
+        WHERE pack_id = ?
+        ORDER BY RANDOM()
+        "#,
+        pack_id,
+    )
+    .map(|row| row.id)
+    .fetch(pool);
+
+    while let Some(id) = cards.try_next().await? {
+        if Some(queried.len()) == limit {
+            break;
+        }
+
+        let tags: BTreeSet<String> = sqlx::query!(
+            "
+            SELECT tag
+            FROM card_tags
+            WHERE card_id = ?
+            ",
+            id,
+        )
+        .fetch(pool)
+        .map_ok(|row| row.tag)
+        .try_collect()
+        .await?;
+
+        if predicate(&tags) {
+            queried.push(id);
+        }
+    }
+
+    Ok(queried)
 }
 
 pub async fn get_details(pool: &SqlitePool, id: Id) -> Result<Details> {

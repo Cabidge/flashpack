@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
 use tauri::State;
@@ -170,6 +172,24 @@ pub async fn create_card(
     let back = format!("## {label} Answer Side");
     card::create(pool.inner(), pack_id, &label, &front, &back).await?;
     Ok(())
+}
+
+#[tauri::command]
+pub async fn query_cards(
+    pool: State<'_, SqlitePool>,
+    pack_id: pack::Id,
+    include: BTreeSet<String>,
+    exclude: BTreeSet<String>,
+    limit: Option<usize>,
+) -> Result<Vec<card::Id>> {
+    if include.is_empty() && exclude.is_empty() {
+        card::random(pool.inner(), pack_id, limit).await
+    } else {
+        card::random_by_tags(pool.inner(), pack_id, limit, |tags: &BTreeSet<String>| {
+            tags.is_superset(&include) && tags.is_disjoint(&exclude)
+        })
+        .await
+    }
 }
 
 #[tauri::command]
