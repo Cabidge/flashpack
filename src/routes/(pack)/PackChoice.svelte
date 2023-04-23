@@ -7,6 +7,7 @@
     import Modal from '$lib/Modal.svelte';
     import { invoke } from '$lib/commands';
     import type { PackSummary } from '@bindings/PackSummary';
+    import QuickStudy from './QuickStudy.svelte';
 
     export let pack: PackSummary;
 
@@ -20,6 +21,7 @@
 
     let menu: ContextMenu;
     let deleteModal: Modal;
+    let studyModal: Modal;
 
     const remove = async () => {
         deleteModal.close();
@@ -33,8 +35,7 @@
     };
 
     const quickStudy = async () => {
-        // TODO
-        console.log('Study not ready...');
+        studyModal.open();
     };
 </script>
 
@@ -72,4 +73,8 @@
 <Modal title="Delete {pack.title}?" bind:this={deleteModal}>
     <button on:click={remove}>yes</button>
     <button on:click={deleteModal.close}>cancel</button>
+</Modal>
+
+<Modal title="Study {pack.title}" bind:this={studyModal}>
+    <QuickStudy packId={pack.id}/>
 </Modal>
