@@ -23,7 +23,7 @@
     });
 
     setModalContext({
-        close: () => closeContent(),
+        close: () => closeContent()
     });
 </script>
 

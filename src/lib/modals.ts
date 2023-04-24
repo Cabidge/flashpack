@@ -1,5 +1,5 @@
-import { getContext, setContext, type ComponentType, type SvelteComponentTyped } from "svelte";
-import { derived, writable } from "svelte/store";
+import { getContext, setContext, type ComponentType, type SvelteComponentTyped } from 'svelte';
+import { derived, writable } from 'svelte/store';
 
 export type ModalContent = {
     component: ComponentType<SvelteComponentTyped>;
@@ -24,23 +24,23 @@ const createStore = () => {
         });
 
         return id;
-    }
+    };
 
     const remove = (id: symbol) => {
         contents.update((map) => {
             map.delete(id);
             return map;
         });
-    }
+    };
 
     const { subscribe } = derived(contents, (map) => [...map.entries()]);
 
     return {
         subscribe,
         add,
-        remove,
-    }
-}
+        remove
+    };
+};
 
 export const modals = createStore();
 
@@ -51,7 +51,13 @@ type ModalContext = {
 const contextKey = Symbol();
 
 export const getModalContext = () => {
-    return getContext(contextKey) as ModalContext ?? { close: () => { return; } };
+    return (
+        (getContext(contextKey) as ModalContext) ?? {
+            close: () => {
+                return;
+            }
+        }
+    );
 };
 
 export const setModalContext = (context: ModalContext) => {
