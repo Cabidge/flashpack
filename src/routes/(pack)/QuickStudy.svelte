@@ -1,10 +1,13 @@
 <script lang="ts">
     import TagInput from '$lib/TagInput.svelte';
+    import { getModalContext } from '$lib/modals';
 
     export let packId: number;
+
+    const { close } = getModalContext();
 </script>
 
-<form action="/study/practice" class="flex flex-col gap-2">
+<form action="/study/practice" class="flex flex-col gap-2" on:submit={close}>
     <input type="hidden" name="pack" value={packId} />
 
     <span>Included Tags</span>
