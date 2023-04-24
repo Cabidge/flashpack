@@ -116,10 +116,7 @@ pub async fn get_pack(pool: State<'_, SqlitePool>, id: pack::Id) -> Result<Pack>
     let title = pack::get_title(pool.inner(), id).await?;
     let cards = card::list_by_pack(pool.inner(), id).await?;
 
-    Ok(Pack {
-        title,
-        cards,
-    })
+    Ok(Pack { title, cards })
 }
 
 #[tauri::command]
