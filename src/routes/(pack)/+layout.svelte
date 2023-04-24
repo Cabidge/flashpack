@@ -1,10 +1,10 @@
 <script lang="ts">
     import CreatePack from './CreatePack.svelte';
-    import ModalController from '$lib/ModalController.svelte';
     import PackSelector from './PackSelector.svelte';
     import type { LayoutData } from './$types';
     import { onMount } from 'svelte';
     import { activeTab } from '$lib/routing/tabs';
+    import { modals } from '$lib/modals';
 
     export let data: LayoutData;
 
@@ -28,16 +28,12 @@
         <div class="flex gap-2">
             <input class="w-full rounded pl-2 shadow" bind:value={search} placeholder="Search..." />
 
-            <ModalController title="Create a Pack" let:open let:close>
-                <button
-                    class="aspect-square w-9 flex-none rounded bg-violet-500 text-center text-xl font-semibold text-white shadow hover:bg-violet-600"
-                    on:click={open}
-                >
-                    +
-                </button>
-
-                <CreatePack slot="modal" {close} />
-            </ModalController>
+            <button
+                class="aspect-square w-9 flex-none rounded bg-violet-500 text-center text-xl font-semibold text-white shadow hover:bg-violet-600"
+                on:click={() => modals.add(CreatePack, {})}
+            >
+                +
+            </button>
         </div>
 
         <div class="border-b-2" />

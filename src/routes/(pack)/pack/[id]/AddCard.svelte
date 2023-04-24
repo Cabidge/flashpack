@@ -1,9 +1,11 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
     import { invoke } from '$lib/commands';
+    import { getModalContext } from '$lib/modals';
 
     export let id: number;
-    export let close: () => void;
+
+    const { close } = getModalContext();
 
     let label = '';
 

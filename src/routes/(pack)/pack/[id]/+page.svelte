@@ -1,9 +1,9 @@
 <script lang="ts">
     import AddCard from './AddCard.svelte';
-    import ModalController from '$lib/ModalController.svelte';
     import type { PageData } from './$types';
     import CardButton from './CardButton.svelte';
     import { goto } from '$app/navigation';
+    import { modals } from '$lib/modals';
 
     export let data: PageData;
 
@@ -17,14 +17,10 @@
 
 <br />
 
-<ModalController title="Add a Card" let:open let:close>
-    <h2 class="text-lg">
-        Cards
-        <button on:click={open}>+</button>
-    </h2>
-
-    <AddCard slot="modal" {id} {close} />
-</ModalController>
+<h2 class="text-lg">
+    Cards
+    <button on:click={() => modals.add(AddCard, { id })}>+</button>
+</h2>
 
 <div class="mb-2 border-b-2" />
 

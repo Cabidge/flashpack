@@ -1,10 +1,12 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
     import { invoke } from '$lib/commands';
+    import { getModalContext } from '$lib/modals';
     import type { PackSummary } from '@bindings/PackSummary';
 
     export let pack: PackSummary;
-    export let close: () => void;
+
+    const { close } = getModalContext();
 
     $: title = pack.title;
     $: id = pack.id;

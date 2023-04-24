@@ -1,13 +1,13 @@
 <script lang="ts">
     import { goto, invalidateAll } from '$app/navigation';
-    import ModalController from '$lib/ModalController.svelte';
     import RenamePack from './RenamePack.svelte';
     import ContextMenu from '$lib/ContextMenu.svelte';
     import MenuButton from '$lib/MenuButton.svelte';
-    import Modal from '$lib/Modal.svelte';
     import { invoke } from '$lib/commands';
     import type { PackSummary } from '@bindings/PackSummary';
     import QuickStudy from './QuickStudy.svelte';
+    import { modals } from '$lib/modals';
+    import ConfirmDelete from './ConfirmDelete.svelte';
 
     export let pack: PackSummary;
 
@@ -20,12 +20,8 @@
     $: selected = pack.id === activePack;
 
     let menu: ContextMenu;
-    let deleteModal: Modal;
-    let studyModal: Modal;
 
     const remove = async () => {
-        deleteModal.close();
-
         if (selected) {
             await goto('/pack');
         }
@@ -35,46 +31,37 @@
     };
 
     const quickStudy = async () => {
-        studyModal.open();
+        modals.add(QuickStudy, { packId: pack.id });
     };
 </script>
 
-<ModalController title="Rename Pack" let:active let:open let:close>
-    <a
-        {href}
-        class="flex w-full cursor-default gap-2 rounded py-1 px-3 font-semibold
-            {selected
-            ? 'bg-violet-500 text-white shadow hover:bg-violet-600'
-            : 'hover:bg-slate-200'}"
-        on:mouseenter={() => (hovering = true)}
-        on:mouseleave={() => (hovering = false)}
-        on:contextmenu|preventDefault={menu.onContextMenu}
-        on:click={() => (activePack = pack.id)}
-    >
-        <span class="flex-grow overflow-hidden text-ellipsis">
-            {pack.title}
-        </span>
-        {#if hovering || selected || active}
-            <button class="flex-none" on:click|preventDefault={open}>
-                <i class="fa-solid fa-pen text-sm" />
-            </button>
-        {/if}
-    </a>
-
-    <RenamePack {close} {pack} slot="modal" />
-</ModalController>
+<a
+    {href}
+    class="flex w-full cursor-default gap-2 rounded py-1 px-3 font-semibold
+        {selected
+        ? 'bg-violet-500 text-white shadow hover:bg-violet-600'
+        : 'hover:bg-slate-200'}"
+    on:mouseenter={() => (hovering = true)}
+    on:mouseleave={() => (hovering = false)}
+    on:contextmenu|preventDefault={menu.onContextMenu}
+    on:click={() => (activePack = pack.id)}
+>
+    <span class="flex-grow overflow-hidden text-ellipsis">
+        {pack.title}
+    </span>
+    {#if hovering || selected}
+        <button class="flex-none" on:click|preventDefault={() => modals.add(RenamePack, { pack })}>
+            <i class="fa-solid fa-pen text-sm" />
+        </button>
+    {/if}
+</a>
 
 <ContextMenu bind:this={menu}>
     <MenuButton on:click={quickStudy} label="Quick Study" icon="book" />
-    <MenuButton on:click={deleteModal.open} label="Delete" danger icon="trash" />
+    <MenuButton
+        on:click={() => modals.add(ConfirmDelete, { confirm: remove })}
+        label="Delete"
+        danger
+        icon="trash"
+    />
 </ContextMenu>
-
-<!-- TODO: Fix delete transition acting funky when this Modal is transitioning out -->
-<Modal title="Delete {pack.title}?" bind:this={deleteModal}>
-    <button on:click={remove}>yes</button>
-    <button on:click={deleteModal.close}>cancel</button>
-</Modal>
-
-<Modal title="Study {pack.title}" bind:this={studyModal}>
-    <QuickStudy packId={pack.id} />
-</Modal>

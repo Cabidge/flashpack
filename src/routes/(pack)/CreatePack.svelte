@@ -1,8 +1,9 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
     import { invoke } from '$lib/commands';
+    import { getModalContext } from '$lib/modals';
 
-    export let close: () => void;
+    const { close } = getModalContext();
 
     let title = '';
 
