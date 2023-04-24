@@ -2,7 +2,6 @@
     import CreatePack from './CreatePack.svelte';
     import ModalController from '$lib/ModalController.svelte';
     import PackSelector from './PackSelector.svelte';
-    import Transition from '$lib/Transition.svelte';
     import type { LayoutData } from './$types';
     import { onMount } from 'svelte';
     import { activeTab } from '$lib/routing/tabs';
