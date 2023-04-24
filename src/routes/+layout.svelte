@@ -5,6 +5,8 @@
     import '../app.postcss';
     import TabButton from './TabButton.svelte';
     import { fade } from 'svelte/transition';
+    import { modals } from '$lib/modals';
+    import ModalDialog from '$lib/ModalDialog.svelte';
 
     $: bannerArray = [...$banners.values()];
 </script>
@@ -40,6 +42,10 @@
         </div>
     {/each}
 </div>
+
+{#each $modals as [id, content] (id)}
+    <ModalDialog {content} />
+{/each}
 
 <svelte:body
     on:click={() => {
