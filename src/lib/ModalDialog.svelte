@@ -27,12 +27,11 @@
     });
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
 <dialog
     bind:this={dialog}
     on:cancel|preventDefault={closeContent}
     on:close={closeContent}
-    on:click|stopPropagation={(e) => {
+    on:mousedown={(e) => {
         let rect = dialog.getBoundingClientRect();
         let isInDialog =
             rect.top <= e.clientY &&
