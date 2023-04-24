@@ -35,7 +35,13 @@ export const load: PageLoad = async ({ url }) => {
     const include = url.searchParams.getAll('include[]');
     const exclude = url.searchParams.getAll('exclude[]');
 
-    const limit = maybeParseInt(url.searchParams.get('limit'));
+    // first convert to number definite number, then change to undefined for zero case
+    // TODO: change query_cards to only accept a number, then handle the zero case in rust
+    let limit: number | undefined = maybeParseInt(url.searchParams.get('limit')) ?? 0;
+    limit = Math.max(limit, 0);
+    if (limit === 0) {
+        limit = undefined;
+    }
 
     const cardIds = await invoke('query_cards', { packId, include, exclude, limit });
     const questions = await Promise.all(cardIds.map(promptFromCardId));
