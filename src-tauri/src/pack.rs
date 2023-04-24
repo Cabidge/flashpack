@@ -5,7 +5,7 @@ use serde::Serialize;
 use sqlx::SqlitePool;
 use ts_rs::TS;
 
-use crate::{card, filter, prelude::*};
+use crate::{card, prelude::*};
 
 #[derive(TS, Serialize, Debug)]
 #[ts(rename = "PackSummary", export, export_to = "../src/bindings/")]
@@ -19,8 +19,6 @@ pub struct Summary {
 pub struct Pack {
     pub title: String,
     pub cards: Vec<card::Summary>,
-    pub filters: Vec<filter::Summary>,
-    pub invalid_filters: Vec<filter::Id>,
 }
 
 pub type Id = u32;

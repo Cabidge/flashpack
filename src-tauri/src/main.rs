@@ -4,10 +4,8 @@
 )]
 
 mod card;
-mod dealer;
 mod engine;
 mod error;
-mod filter;
 mod markdown;
 mod pack;
 
@@ -70,18 +68,7 @@ async fn main() -> Result<()> {
             create_card,
             query_cards,
             get_card,
-            deal_card,
             modify_card,
-            // dealer
-            create_dealer,
-            list_dealers,
-            get_dealer,
-            modify_dealer,
-            // filter
-            create_filter,
-            list_filters,
-            get_filter,
-            modify_filter,
         ])
         .manage(pool)
         .run(tauri::generate_context!())
@@ -94,7 +81,6 @@ async fn seed_database(pool: &SqlitePool) -> Result<()> {
     let mut rng = rand::thread_rng();
 
     let tags = ["math", "epic", "hard", "important"];
-    let mut filters = vec![];
 
     for _ in 0..10 {
         let pack_id = pack::create(pool, "pack").await?;
@@ -114,60 +100,6 @@ async fn seed_database(pool: &SqlitePool) -> Result<()> {
             for tag in card_tags {
                 card::add_tag(pool, card_id, tag).await?;
             }
-        }
-
-        for _ in 0..2 {
-            let tag_count = rng.gen_range(0..=tags.len());
-            let filter_tags = tags
-                .choose_multiple(&mut rng, tag_count)
-                .map(|&tag| {
-                    let exclude = rng.gen_bool(0.2);
-                    (tag, exclude)
-                })
-                .collect::<Vec<_>>();
-
-            let label = if tag_count == 0 {
-                String::from("all")
-            } else {
-                filter_tags
-                    .iter()
-                    .map(|&(tag, exclude)| {
-                        let c = if exclude { '-' } else { '+' };
-                        format!("{c}{tag}")
-                    })
-                    .collect::<Vec<_>>()
-                    .join(",")
-            };
-
-            let filter_id = filter::create(pool, pack_id, &label).await?;
-
-            filters.push(filter_id);
-
-            for (tag, exclude) in filter_tags {
-                filter::add_tag(pool, filter_id, tag).await?;
-
-                if exclude {
-                    filter::set_excluded(pool, filter_id, tag, exclude).await?;
-                }
-            }
-        }
-    }
-
-    for i in 0..10 {
-        let title = format!("Study #{i}");
-        let dealer_id = dealer::create(pool, &title).await?;
-
-        let filter_count = rng.gen_range(1..=3);
-        let dealer_filters = filters.choose_multiple(&mut rng, filter_count);
-
-        for &filter_id in dealer_filters {
-            let weight = if rng.gen_bool(0.1) {
-                rng.gen_range(2..=5)
-            } else {
-                1
-            };
-
-            dealer::add_filter(pool, dealer_id, filter_id, weight).await?;
         }
     }
 
