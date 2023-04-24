@@ -1,4 +1,5 @@
 import { invoke } from '$lib/commands';
+import type { Prompt } from '@bindings/Prompt';
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
@@ -21,9 +22,7 @@ const promptFromCardId = async (id: number): Promise<FullPrompt> => {
     };
 }
 
-type FullPrompt = {
-    front: string;
-    back: string;
+export type FullPrompt = Prompt & {
     tags: string[];
 }
 
