@@ -1,6 +1,5 @@
 <script lang="ts">
     import type { PageData } from './$types';
-    import Transition from '$lib/Transition.svelte';
     import PromptView from '$lib/PromptView.svelte';
     import ShowTags from '$lib/ShowTags.svelte';
     import PracticeButton from './PracticeButton.svelte';
@@ -23,7 +22,7 @@
 </script>
 
 <div class="flex h-full flex-col">
-    <Transition class="flex-grow overflow-auto px-6" key={prompt}>
+    <div class="flex-grow overflow-auto px-6">
         {#if questions.length === 0}
             <p>No questions generated...</p>
         {:else if prompt === undefined}
@@ -37,7 +36,7 @@
 
             <PromptView {prompt} {showAnswer} />
         {/if}
-    </Transition>
+    </div>
 
     {#if prompt !== undefined}
         <div class="flex w-full items-center justify-center gap-2 bg-slate-100 py-6">
