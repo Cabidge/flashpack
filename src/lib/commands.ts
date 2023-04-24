@@ -19,7 +19,12 @@ type Commands = {
     modify_pack: (args: { id: number; action: ModifyPack }) => void;
     // card
     create_card: (args: { packId: number; label: string }) => void;
-    query_cards: (args: { packId: number, include: string[], exclude: string[], limit?: number }) => number[];
+    query_cards: (args: {
+        packId: number;
+        include: string[];
+        exclude: string[];
+        limit?: number;
+    }) => number[];
     get_card: (args: { id: number }) => Card;
     modify_card: (args: { id: number; action: ModifyCard }) => void;
 };

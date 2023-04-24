@@ -76,5 +76,5 @@
 </Modal>
 
 <Modal title="Study {pack.title}" bind:this={studyModal}>
-    <QuickStudy packId={pack.id}/>
+    <QuickStudy packId={pack.id} />
 </Modal>

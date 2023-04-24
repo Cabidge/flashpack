@@ -45,7 +45,11 @@
                 <PracticeButton icon="check" label="Correct" on:click={advance} />
                 <PracticeButton icon="xmark" label="Wrong" on:click={advance} />
             {:else}
-                <PracticeButton icon="eye" label="Show Answer" on:click={() => (showAnswer = true)} />
+                <PracticeButton
+                    icon="eye"
+                    label="Show Answer"
+                    on:click={() => (showAnswer = true)}
+                />
             {/if}
         </div>
     {/if}
