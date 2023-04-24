@@ -38,12 +38,18 @@
             handleEnter();
         }
     }}
+    class="rounded border border-slate-300 p-1"
 />
 
-{#each tags as tag (tag)}
-    <div>
-        <button type="button" on:click={() => removeTag(tag)}> x </button>
-        {tag}
-    </div>
+<ul class="flex flex-wrap">
+    {#each tags as tag (tag)}
+        <li class="px-2 rounded-full bg-slate-200">
+            <button type="button" on:click={() => removeTag(tag)}> x </button>
+            {tag}
+        </li>
+    {/each}
+</ul>
+
+{#each tags as tag}
     <input type="hidden" {name} value={tag} />
 {/each}
