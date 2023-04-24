@@ -52,3 +52,13 @@
         menuStatus.close();
     }}
 />
+
+<style global>
+    .katex {
+        font-size: 1em;
+    }
+
+    .katex-display {
+        font-size: 1.21em;
+    }
+</style>
