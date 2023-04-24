@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { PageData } from './$types';
     import PromptView from '$lib/PromptView.svelte';
-    import ShowTags from '$lib/ShowTags.svelte';
     import PracticeButton from './PracticeButton.svelte';
     import type { FullPrompt } from './+page';
 
@@ -29,11 +28,6 @@
             <p>End of questions...</p>
         {:else}
             <p>{index + 1}/{questions.length}</p>
-
-            {#if prompt.tags.length > 0}
-                <ShowTags tags={prompt.tags} />
-            {/if}
-
             <PromptView {prompt} {showAnswer} />
         {/if}
     </div>
