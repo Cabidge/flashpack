@@ -41,7 +41,7 @@
     class="rounded border border-slate-300 p-1"
 />
 
-<ul class="flex flex-wrap">
+<ul class="flex flex-wrap gap-1">
     {#each tags as tag (tag)}
         <li class="px-2 rounded-full bg-slate-200">
             <button type="button" on:click={() => removeTag(tag)}> x </button>
