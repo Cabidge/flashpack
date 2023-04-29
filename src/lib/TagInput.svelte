@@ -43,6 +43,7 @@
             handleEnter();
         }
     }}
+    type="text"
     class="{clazz} rounded border border-slate-300 p-1"
 />
 

@@ -26,7 +26,7 @@
         class="float-left flex w-1/3 min-w-[14rem] max-w-[18rem] flex-col gap-3 overflow-x-hidden bg-slate-100 p-4 shadow"
     >
         <div class="flex gap-2">
-            <input class="w-full rounded pl-2 shadow" bind:value={search} placeholder="Search..." />
+            <input type="text" class="w-full rounded pl-2 shadow" bind:value={search} placeholder="Search..." />
 
             <button
                 class="aspect-square w-9 flex-none rounded bg-violet-500 text-center text-xl font-semibold text-white shadow hover:bg-violet-600"

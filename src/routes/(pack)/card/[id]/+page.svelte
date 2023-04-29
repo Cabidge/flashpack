@@ -111,7 +111,7 @@
     <RenameInput placeholder="back" oldValue={card.back} bind:newValue={back} />
 
     <form on:submit|preventDefault={submitTag}>
-        <input class="rounded-full px-2" placeholder="add a tag..." bind:value={tagInput} />
+        <input type="text" class="rounded-full px-2" placeholder="add a tag..." bind:value={tagInput} />
     </form>
 
     <ul class="my-2 flex flex-wrap gap-2">
