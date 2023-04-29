@@ -1,5 +1,9 @@
 <script lang="ts">
     export let name: string;
+    export let id: string | undefined = undefined;
+
+    let clazz = "";
+    export { clazz as class };
 
     let inputValue: string = '';
 
@@ -31,6 +35,7 @@
 </script>
 
 <input
+    {id}
     bind:value={inputValue}
     on:keypress={(e) => {
         if (e.key === 'Enter') {
@@ -38,7 +43,7 @@
             handleEnter();
         }
     }}
-    class="rounded border border-slate-300 p-1"
+    class="{clazz} rounded border border-slate-300 p-1"
 />
 
 <ul class="flex flex-wrap gap-1">
