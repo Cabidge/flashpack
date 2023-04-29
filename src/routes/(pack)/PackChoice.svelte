@@ -48,14 +48,14 @@
         {pack.title}
     </span>
     {#if hovering || selected}
-        <button class="flex-none" on:click|preventDefault={() => modals.add(RenamePack, { pack })}>
-            <i class="fa-solid fa-pen text-sm" />
+        <button class="flex-none" on:click|preventDefault|stopPropagation={quickStudy}>
+            <i class="fa-solid fa-bolt-lightning fa-sm" />
         </button>
     {/if}
 </a>
 
 <ContextMenu bind:this={menu}>
-    <MenuButton on:click={quickStudy} label="Quick Study" icon="book" />
+    <MenuButton on:click={() => modals.add(RenamePack, { pack })} label="Rename" icon="pen" />
     <MenuButton
         on:click={() => modals.add(ConfirmDelete, { confirm: remove })}
         label="Delete"
