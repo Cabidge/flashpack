@@ -2,7 +2,7 @@
     export let name: string;
     export let id: string | undefined = undefined;
 
-    let clazz = "";
+    let clazz = '';
     export { clazz as class };
 
     let inputValue: string = '';
@@ -49,7 +49,7 @@
 
 <ul class="flex flex-wrap gap-1">
     {#each tags as tag (tag)}
-        <li class="px-2 rounded-full bg-slate-200">
+        <li class="rounded-full bg-slate-200 px-2">
             <button type="button" on:click={() => removeTag(tag)}> x </button>
             {tag}
         </li>
