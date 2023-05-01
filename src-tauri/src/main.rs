@@ -32,21 +32,6 @@ macro_rules! bail {
     };
 }
 
-#[macro_export]
-macro_rules! vars {
-    {$($name: expr => $value: expr),* $(,)?} => {
-        {
-            let mut map = std::collections::BTreeMap::new();
-
-            $(
-                map.insert($name.to_string(), surrealdb::sql::Value::from($value));
-            )*
-
-            map
-        }
-    }
-}
-
 #[tokio::main]
 async fn main() -> Result<()> {
     let pool = SqlitePool::connect("sqlite::memory:").await?;
