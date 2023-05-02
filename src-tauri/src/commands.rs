@@ -165,7 +165,6 @@ pub async fn pack_cards(
             script: row.script,
             front: row.front,
             back: row.back,
-            pack_id: id,
         };
 
         cards.insert(row.id as card::Id, card);

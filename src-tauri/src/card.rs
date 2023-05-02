@@ -14,7 +14,6 @@ pub struct Card {
     pub script: Option<String>,
     pub front: String,
     pub back: String,
-    pub pack_id: pack::Id,
 }
 
 pub type Id = u32;
