@@ -2,7 +2,7 @@ import { invoke } from "$lib/commands";
 import type { Pack } from "@bindings/Pack";
 import { derived, writable, type Readable } from "svelte/store";
 
-type PackWithId = Pack & {
+export type PackWithId = Pack & {
     id: number;
 };
 
