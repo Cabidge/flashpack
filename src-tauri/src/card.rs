@@ -5,7 +5,7 @@ use serde::Serialize;
 use sqlx::SqlitePool;
 use ts_rs::TS;
 
-use crate::{pack, prelude::*};
+use crate::prelude::*;
 
 #[derive(TS, Serialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
