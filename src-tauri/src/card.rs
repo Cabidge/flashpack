@@ -8,27 +8,13 @@ use ts_rs::TS;
 use crate::{pack, prelude::*};
 
 #[derive(TS, Serialize, Debug)]
-#[ts(rename = "CardSummary", export, export_to = "../src/bindings/")]
-pub struct Summary {
-    pub id: Id,
-    pub label: String,
-}
-
-#[derive(TS, Serialize, Debug)]
-pub struct Details {
+#[ts(export, export_to = "../src/bindings/")]
+pub struct Card {
     pub label: String,
     pub script: Option<String>,
     pub front: String,
     pub back: String,
     pub pack_id: pack::Id,
-}
-
-#[derive(TS, Serialize, Debug)]
-#[ts(export, export_to = "../src/bindings/")]
-pub struct Card {
-    #[serde(flatten)]
-    pub details: Details,
-    pub tags: Vec<String>,
 }
 
 pub type Id = u32;
@@ -55,21 +41,6 @@ pub async fn create(
     .await?;
 
     Ok(row.id)
-}
-
-pub async fn list_by_pack(pool: &SqlitePool, pack_id: crate::pack::Id) -> Result<Vec<Summary>> {
-    sqlx::query_as!(
-        Summary,
-        r#"
-        SELECT id as "id: Id", label
-        FROM cards
-        WHERE pack_id = ?
-        "#,
-        pack_id,
-    )
-    .fetch_all(pool)
-    .await
-    .map_err(Error::from)
 }
 
 pub async fn random(
@@ -146,25 +117,6 @@ pub async fn random_by_tags(
     }
 
     Ok(queried)
-}
-
-pub async fn get_details(pool: &SqlitePool, id: Id) -> Result<Details> {
-    sqlx::query_as!(
-        Details,
-        r#"
-        SELECT front,
-            back,
-            pack_id as "pack_id: pack::Id",
-            label,
-            script
-        FROM cards
-        WHERE id = ?
-        "#,
-        id,
-    )
-    .fetch_one(pool)
-    .await
-    .map_err(Error::from)
 }
 
 pub async fn list_tags(pool: &SqlitePool, id: Id) -> Result<Vec<String>> {

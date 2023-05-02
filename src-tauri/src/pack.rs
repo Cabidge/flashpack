@@ -5,20 +5,12 @@ use serde::Serialize;
 use sqlx::SqlitePool;
 use ts_rs::TS;
 
-use crate::{card, prelude::*};
+use crate::prelude::*;
 
 #[derive(TS, Serialize, Debug)]
-#[ts(rename = "PackSummary", export, export_to = "../src/bindings/")]
-pub struct Summary {
-    pub id: Id,
-    pub title: String,
-}
-
-#[derive(TS, Serialize, Debug)]
-#[ts(export, export_to = "../src/bindings/")]
+#[ts(rename = "Pack", export, export_to = "../src/bindings/")]
 pub struct Pack {
     pub title: String,
-    pub cards: Vec<card::Summary>,
 }
 
 pub type Id = u32;
@@ -77,35 +69,6 @@ pub async fn create(pool: &SqlitePool, title: &str) -> Result<Id> {
     Ok(row.id)
 }
 
-pub async fn list_all(pool: &SqlitePool) -> Result<Vec<Summary>> {
-    sqlx::query_as!(
-        Summary,
-        r#"
-        SELECT id as "id: Id", title
-        FROM packs
-        ORDER BY LOWER(title) ASC, id ASC
-        "#,
-    )
-    .fetch_all(pool)
-    .await
-    .map_err(Error::from)
-}
-
-pub async fn get_title(pool: &SqlitePool, id: Id) -> Result<String> {
-    let row = sqlx::query!(
-        r#"
-        SELECT title
-        FROM packs
-        WHERE id = ?
-        "#,
-        id,
-    )
-    .fetch_one(pool)
-    .await?;
-
-    Ok(row.title)
-}
-
 pub async fn delete(pool: &SqlitePool, id: Id) -> Result<()> {
     sqlx::query!(
         "
@@ -121,19 +84,7 @@ pub async fn delete(pool: &SqlitePool, id: Id) -> Result<()> {
 }
 
 pub async fn rename(pool: &SqlitePool, id: Id, new_title: &str) -> Result<()> {
-    let title = get_title(pool, id).await?;
-
-    if title == new_title {
-        return Ok(());
-    }
-
-    let new_title = if title.to_lowercase() == new_title.to_lowercase() {
-        // if the title is the same, but just has different casing
-        Cow::Borrowed(new_title)
-    } else {
-        // if the title is completely different, check for uniqueness
-        find_unique_title(pool, new_title, Some(id)).await?
-    };
+    let new_title = find_unique_title(pool, new_title, Some(id)).await?;
 
     sqlx::query!(
         "

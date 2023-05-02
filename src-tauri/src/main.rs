@@ -46,15 +46,15 @@ async fn main() -> Result<()> {
             render_markdown,
             generate_prompt,
             // pack
-            create_pack,
-            list_packs,
-            get_pack,
-            modify_pack,
+            pack_create,
+            pack_list,
+            pack_cards,
+            pack_modify,
             // card
-            create_card,
-            query_cards,
-            get_card,
-            modify_card,
+            card_create,
+            card_query,
+            card_tags,
+            card_modify,
             // study
             study_create,
             study_list,
