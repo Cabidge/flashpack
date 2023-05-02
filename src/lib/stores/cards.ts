@@ -2,7 +2,7 @@ import { banners } from "$lib/banners";
 import { invoke } from "$lib/commands";
 import { createContext } from "$lib/context";
 import type { Card } from "@bindings/Card";
-import { derived, writable } from "svelte/store";
+import { derived, writable, type Readable } from "svelte/store";
 
 export const createStore = () => {
     const cards = writable<Record<number, Card>>({});
@@ -26,8 +26,8 @@ export const createStore = () => {
         invoke("pack_cards", { id: _packId }).then((latest) => cards.set(latest));
     }
 
-    const get = (id: number) => derived(cards, ($cards) => {
-        return $cards[id] ?? {
+    const get = (id: Readable<number>) => derived([cards, id], ([$cards, $id]) => {
+        return $cards[$id] ?? {
             label: "Deleted Card",
             script: null,
             front: "...",
