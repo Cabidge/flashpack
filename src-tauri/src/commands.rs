@@ -9,7 +9,7 @@ use crate::{
     card::{self, Card},
     markdown::Parser,
     pack::{self, Pack},
-    prelude::*,
+    prelude::*, study::{self, Study, StudyTags},
 };
 
 #[derive(TS, Deserialize, Debug)]
@@ -29,6 +29,18 @@ pub enum ModifyCard {
         back: Option<String>,
     },
     SetScript(Option<String>),
+}
+
+#[derive(TS, Deserialize, Debug)]
+#[ts(export, export_to = "../src/bindings/")]
+pub enum ModifyStudy {
+    Rename(String),
+    SetPack(Option<pack::Id>),
+    SetLimit(usize),
+    AddIncluded(String),
+    RemoveIncluded(String),
+    AddExcluded(String),
+    RemoveExcluded(String),
 }
 
 #[derive(TS, Serialize, Debug)]
@@ -187,4 +199,51 @@ pub async fn modify_card(
             card::set_script(pool.inner(), id, script.as_deref()).await
         }
     }
+}
+
+// -- study
+
+#[tauri::command]
+pub async fn create_study(pool: State<'_, SqlitePool>, title: String) -> Result<()> {
+    study::create(pool.inner(), &title, None, 0).await?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn list_studies(pool: State<'_, SqlitePool>) -> Result<Vec<Study>> {
+    study::list_all(pool.inner()).await
+}
+
+#[tauri::command]
+pub async fn list_study_tags(pool: State<'_, SqlitePool>, id: study::Id) -> Result<StudyTags> {
+    study::list_tags(pool.inner(), id).await
+}
+
+#[tauri::command]
+pub async fn modify_study(
+    pool: State<'_, SqlitePool>,
+    id: study::Id,
+    action: ModifyStudy,
+) -> Result<()> {
+    use ModifyStudy::*;
+
+    let pool = pool.inner();
+
+    match action {
+        Rename(title) => study::rename(pool, id, &title).await,
+        SetPack(pack_id) => study::set_pack(pool, id, pack_id).await,
+        SetLimit(limit) => study::set_limit(pool, id, limit).await,
+        AddIncluded(tag) => study::add_tag(pool, id, &tag, false).await,
+        RemoveIncluded(tag) => study::remove_tag(pool, id, &tag, false).await,
+        AddExcluded(tag) => study::add_tag(pool, id, &tag, true).await,
+        RemoveExcluded(tag) => study::remove_tag(pool, id, &tag, true).await,
+    }
+}
+
+#[tauri::command]
+pub async fn delete_study(
+    pool: State<'_, SqlitePool>,
+    id: study::Id,
+) -> Result<()> {
+    study::delete(pool.inner(), id).await
 }

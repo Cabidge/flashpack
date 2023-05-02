@@ -71,14 +71,14 @@ fn render_math(source: &str, display: MathDisplay) -> String {
         .build()
         .expect("Option builder should not fail");
 
-    katex::render_with_opts(&tex, &opts)
-        .unwrap_or_default()
+    katex::render_with_opts(&tex, &opts).unwrap_or_default()
 }
 
 fn asciimath_to_tex(source: &str) -> String {
     let mut script = js_sandbox::Script::from_string(include_str!("asciimath_tex.js"))
         .expect("Script should not fail");
 
-    script.call("AMTparseAMtoTeX", &source)
+    script
+        .call("AMTparseAMtoTeX", &source)
         .expect("Function should not fail")
 }

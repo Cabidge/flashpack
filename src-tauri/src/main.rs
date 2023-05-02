@@ -8,6 +8,7 @@ mod engine;
 mod error;
 mod markdown;
 mod pack;
+mod study;
 
 mod commands;
 use crate::commands::*;
@@ -54,6 +55,12 @@ async fn main() -> Result<()> {
             query_cards,
             get_card,
             modify_card,
+            // study
+            create_study,
+            list_studies,
+            list_study_tags,
+            modify_study,
+            delete_study,
         ])
         .manage(pool)
         .run(tauri::generate_context!())
