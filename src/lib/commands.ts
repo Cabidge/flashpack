@@ -1,32 +1,41 @@
 import type { Card } from '@bindings/Card';
-
 import type { ModifyCard } from '@bindings/ModifyCard';
 import type { ModifyPack } from '@bindings/ModifyPack';
-
+import type { ModifyStudy } from '@bindings/ModifyStudy';
 import type { Pack } from '@bindings/Pack';
-
-import type { PackSummary } from '@bindings/PackSummary';
 import type { Prompt } from '@bindings/Prompt';
+import type { Study } from '@bindings/Study';
+import type { StudyTags } from '@bindings/StudyTags';
+
 import { banners } from './banners';
+
+type PackId = number;
+type CardId = number;
+type StudyId = number;
 
 type Commands = {
     render_markdown: (args: { markdown: string }) => string;
     generate_prompt: (args: { script: string; front: string; back: string }) => Prompt;
     // pack
-    create_pack: (args: { title: string }) => void;
-    list_packs: () => PackSummary[];
-    get_pack: (args: { id: number }) => Pack;
-    modify_pack: (args: { id: number; action: ModifyPack }) => void;
+    pack_create: (args: { title: string }) => void;
+    pack_list: () => Record<PackId, Pack>;
+    pack_cards: (args: { id: PackId }) => Record<CardId, Card>;
+    pack_modify: (args: { id: PackId; action: ModifyPack }) => void;
     // card
-    create_card: (args: { packId: number; label: string }) => void;
-    query_cards: (args: {
+    card_create: (args: { packId: PackId; label: string }) => void;
+    card_query: (args: {
         packId: number;
         include: string[];
         exclude: string[];
         limit?: number;
-    }) => number[];
-    get_card: (args: { id: number }) => Card;
-    modify_card: (args: { id: number; action: ModifyCard }) => void;
+    }) => CardId[];
+    card_tags: (args: { id: CardId }) => string[];
+    card_modify: (args: { id: CardId; action: ModifyCard }) => void;
+    // study
+    study_create: (title: string) => void;
+    study_list: () => Record<StudyId, Study>;
+    study_tags: (args: { id: StudyId }) => StudyTags;
+    study_modify: (args: { id: StudyId, action: ModifyStudy }) => void;
 };
 
 type Invoke = <T extends keyof Commands>(
