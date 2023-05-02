@@ -1,4 +1,6 @@
+import { banners } from "$lib/banners";
 import { invoke } from "$lib/commands";
+import { createContext } from "$lib/context";
 import type { Card } from "@bindings/Card";
 import { derived, writable } from "svelte/store";
 
@@ -29,3 +31,10 @@ export const createStore = (packId: number) => {
         get,
     }
 };
+
+type CardsStore = ReturnType<typeof createStore>;
+
+export const cardsContext = createContext<CardsStore>(() => {
+    banners.add("Cards Context not found...");
+    throw new Error("No cards context found...");
+});
