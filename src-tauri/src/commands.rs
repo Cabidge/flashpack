@@ -251,8 +251,28 @@ pub async fn study_create(pool: State<'_, SqlitePool>, title: String) -> Result<
 }
 
 #[tauri::command]
-pub async fn study_list(pool: State<'_, SqlitePool>) -> Result<Vec<Study>> {
-    study::list_all(pool.inner()).await
+pub async fn study_list(pool: State<'_, SqlitePool>) -> Result<BTreeMap<study::Id, Study>> {
+    let mut rows = sqlx::query!(
+        "
+        SELECT id, title, pack_id, question_count
+        FROM study_queries
+        ",
+    )
+    .fetch(pool.inner());
+
+    let mut studies = BTreeMap::new();
+
+    while let Some(row) = rows.try_next().await? {
+        let study = Study {
+            title: row.title,
+            pack_id: row.pack_id.map(|id| id as pack::Id),
+            limit: row.question_count as usize,
+        };
+
+        studies.insert(row.id as study::Id, study);
+    }
+
+    Ok(studies)
 }
 
 #[tauri::command]

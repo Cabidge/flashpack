@@ -8,7 +8,6 @@ use crate::{pack, prelude::*};
 #[derive(TS, Serialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
 pub struct Study {
-    pub id: Id,
     pub title: String,
     pub pack_id: Option<pack::Id>,
     pub limit: usize,
@@ -46,28 +45,6 @@ pub async fn create(
     .id;
 
     Ok(id)
-}
-
-pub async fn list_all(pool: &SqlitePool) -> Result<Vec<Study>> {
-    sqlx::query!(
-        r#"
-        SELECT id,
-            title,
-            pack_id,
-            question_count
-        FROM study_queries
-        ORDER BY LOWER(title) ASC, id ASC
-        "#,
-    )
-    .map(|row| Study {
-        id: row.id as u32,
-        title: row.title,
-        pack_id: row.pack_id.map(|id| id as pack::Id),
-        limit: row.question_count as usize,
-    })
-    .fetch_all(pool)
-    .await
-    .map_err(Error::from)
 }
 
 pub async fn list_tags(pool: &SqlitePool, id: Id) -> Result<StudyTags> {
