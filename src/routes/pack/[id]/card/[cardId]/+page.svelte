@@ -2,22 +2,34 @@
     import { invalidateAll } from '$app/navigation';
     import { invoke } from '$lib/commands';
     import type { ModifyCard } from '@bindings/ModifyCard';
-    import type { PageData } from './$types';
     import RenameInput from './RenameInput.svelte';
     import ScriptInput from './ScriptInput.svelte';
-    import { onMount } from 'svelte';
+    import { page } from '$app/stores';
+    import { derived } from 'svelte/store';
+    import { cardsContext } from '$lib/stores/cards';
 
-    export let data: PageData;
+    const cards = cardsContext.get();
 
-    $: ({ id, card } = data);
+    const packId = derived(page, ($page) => parseInt($page.params.id));
+    const id = derived(page, ($page) => parseInt($page.params.cardId));
+    const card = cards.get(id);
 
-    $: tags = card.tags;
+    $: packHref = `/pack/${$packId}`;
+    $: cardHref = `${packHref}/card/${$id}`;
+
+    let tags: string[] = [];
+
+    $: if ($card) {
+        (async () => {
+            tags = await invoke("card_tags", { id: $id });
+        })()
+    }
 
     let front: string | null, back: string | null;
 
     $: shouldRename = front !== null || back !== null;
 
-    $: originalScript = card.script;
+    $: originalScript = $card.script;
     $: script = originalScript;
 
     let additions: Set<string> = new Set();
@@ -81,13 +93,13 @@
         }
 
         for (const action of changes) {
-            await invoke('modify_card', { id, action });
+            await invoke('card_modify', { id: $id, action });
         }
 
         additions = new Set();
         removals = new Set();
 
-        await invalidateAll();
+        cards.reload();
     };
 </script>
 
@@ -100,15 +112,15 @@
     {:else}
         <a
             class="rounded bg-slate-100 py-2 text-center font-semibold shadow-md"
-            href="/card/{id}/preview"
+            href="{cardHref}/preview"
         >
             Preview
         </a>
     {/if}
 
     <ScriptInput bind:script />
-    <RenameInput placeholder="front" oldValue={card.front} bind:newValue={front} />
-    <RenameInput placeholder="back" oldValue={card.back} bind:newValue={back} />
+    <RenameInput placeholder="front" oldValue={$card.front} bind:newValue={front} />
+    <RenameInput placeholder="back" oldValue={$card.back} bind:newValue={back} />
 
     <form on:submit|preventDefault={submitTag}>
         <input
