@@ -8,7 +8,7 @@ export type PackWithId = Pack & {
 
 export type PacksStore = Readable<PackWithId[]> & {
     reload: () => void;
-    get: (id: number) => Readable<Pack>;
+    get: (id: Readable<number>) => Readable<Pack>;
 };
 
 const createStore = (): PacksStore => {
@@ -22,8 +22,8 @@ const createStore = (): PacksStore => {
 
     const reload = () => invoke("pack_list").then((latest) => packs.set(latest));
 
-    const get = (id: number) => derived(packs, ($packs) => {
-        return $packs[id] ?? {
+    const get = (id: Readable<number>) => derived([packs, id], ([$packs, $id]) => {
+        return $packs[$id] ?? {
             title: "Deleted Pack"
         };
     })

@@ -6,9 +6,10 @@
     import { packs } from '$lib/stores/packs';
     import { page } from '$app/stores';
     import { cardsContext } from '$lib/stores/cards';
+    import { derived } from 'svelte/store';
 
-    $: id = parseInt($page.params.id);
-    $: pack = packs.get(id);
+    const id = derived(page, ($page) => parseInt($page.params.id));
+    const pack = packs.get(id);
 
     $: packHref = `/pack/${id}`;
 
@@ -23,7 +24,7 @@
 
 <h2 class="text-lg">
     Cards
-    <button on:click={() => modals.add(AddCard, { id })}>+</button>
+    <button on:click={() => modals.add(AddCard, { id: $id })}>+</button>
 </h2>
 
 <div class="mb-2 border-b-2" />
