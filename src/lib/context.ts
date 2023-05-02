@@ -3,7 +3,12 @@ import { getContext, setContext } from "svelte";
 export type GetContext<T> = () => T;
 export type SetContext<T> = (value: T) => void;
 
-export const createContext = <T>(defaultValue: T | (() => T)): [GetContext<T>, SetContext<T>] => {
+export type Context<T> = {
+    get: GetContext<T>,
+    set: SetContext<T>,
+}
+
+export const createContext = <T>(defaultValue: T | (() => T)): Context<T> => {
     const key = Symbol();
 
     const getDefaultValue = typeof defaultValue === "function"
@@ -13,5 +18,5 @@ export const createContext = <T>(defaultValue: T | (() => T)): [GetContext<T>, S
     const get = () => getContext(key) as T | undefined ?? getDefaultValue();
     const set = (value: T) => setContext(key, value);
 
-    return [get, set];
+    return { get, set };
 };
