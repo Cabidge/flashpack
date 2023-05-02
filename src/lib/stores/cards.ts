@@ -4,7 +4,7 @@ import { createContext } from "$lib/context";
 import type { Card } from "@bindings/Card";
 import { derived, writable } from "svelte/store";
 
-export const createStore = (packId: number) => {
+export const createStore = () => {
     const cards = writable<Record<number, Card>>({});
 
     const { subscribe } = derived(cards, ($cards) => {
@@ -12,7 +12,19 @@ export const createStore = (packId: number) => {
             .map(([id, card]) => ({ id: Number(id), ...card }))
     })
 
-    const reload = () => invoke("pack_cards", { id: packId }).then((latest) => cards.set(latest));
+    let _packId: number | undefined = undefined;
+
+    const reload = (packId?: number) => {
+        if (packId  !== undefined) {
+            _packId = packId;
+        }
+
+        if (_packId === undefined) {
+            return;
+        }
+
+        invoke("pack_cards", { id: _packId }).then((latest) => cards.set(latest));
+    }
 
     const get = (id: number) => derived(cards, ($cards) => {
         return $cards[id] ?? {
@@ -22,8 +34,6 @@ export const createStore = (packId: number) => {
             back: "...",
         };
     });
-
-    reload();
 
     return {
         subscribe,
