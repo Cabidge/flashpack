@@ -56,11 +56,11 @@ async fn main() -> Result<()> {
             get_card,
             modify_card,
             // study
-            create_study,
-            list_studies,
-            list_study_tags,
-            modify_study,
-            delete_study,
+            study_create,
+            study_list,
+            study_tags,
+            study_modify,
+            study_delete,
         ])
         .manage(pool)
         .run(tauri::generate_context!())

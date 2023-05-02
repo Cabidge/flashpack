@@ -204,23 +204,23 @@ pub async fn modify_card(
 // -- study
 
 #[tauri::command]
-pub async fn create_study(pool: State<'_, SqlitePool>, title: String) -> Result<()> {
+pub async fn study_create(pool: State<'_, SqlitePool>, title: String) -> Result<()> {
     study::create(pool.inner(), &title, None, 0).await?;
     Ok(())
 }
 
 #[tauri::command]
-pub async fn list_studies(pool: State<'_, SqlitePool>) -> Result<Vec<Study>> {
+pub async fn study_list(pool: State<'_, SqlitePool>) -> Result<Vec<Study>> {
     study::list_all(pool.inner()).await
 }
 
 #[tauri::command]
-pub async fn list_study_tags(pool: State<'_, SqlitePool>, id: study::Id) -> Result<StudyTags> {
+pub async fn study_tags(pool: State<'_, SqlitePool>, id: study::Id) -> Result<StudyTags> {
     study::list_tags(pool.inner(), id).await
 }
 
 #[tauri::command]
-pub async fn modify_study(
+pub async fn study_modify(
     pool: State<'_, SqlitePool>,
     id: study::Id,
     action: ModifyStudy,
@@ -241,7 +241,7 @@ pub async fn modify_study(
 }
 
 #[tauri::command]
-pub async fn delete_study(
+pub async fn study_delete(
     pool: State<'_, SqlitePool>,
     id: study::Id,
 ) -> Result<()> {
