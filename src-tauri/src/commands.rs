@@ -43,6 +43,7 @@ pub enum ModifyStudy {
     RemoveIncluded(String),
     AddExcluded(String),
     RemoveExcluded(String),
+    Delete,
 }
 
 #[derive(TS, Serialize, Debug)]
@@ -277,10 +278,6 @@ pub async fn study_modify(
         RemoveIncluded(tag) => study::remove_tag(pool, id, &tag, false).await,
         AddExcluded(tag) => study::add_tag(pool, id, &tag, true).await,
         RemoveExcluded(tag) => study::remove_tag(pool, id, &tag, true).await,
+        Delete => study::delete(pool, id).await,
     }
-}
-
-#[tauri::command]
-pub async fn study_delete(pool: State<'_, SqlitePool>, id: study::Id) -> Result<()> {
-    study::delete(pool.inner(), id).await
 }

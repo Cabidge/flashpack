@@ -60,7 +60,6 @@ async fn main() -> Result<()> {
             study_list,
             study_tags,
             study_modify,
-            study_delete,
         ])
         .manage(pool)
         .run(tauri::generate_context!())
