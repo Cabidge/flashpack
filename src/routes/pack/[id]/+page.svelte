@@ -11,7 +11,7 @@
     const id = derived(page, ($page) => parseInt($page.params.id));
     const pack = packs.get(id);
 
-    $: packHref = `/pack/${id}`;
+    $: packHref = `/pack/${$id}`;
 
     const cards = cardsContext.get();
 </script>
