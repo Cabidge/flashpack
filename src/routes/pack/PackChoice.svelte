@@ -1,15 +1,15 @@
 <script lang="ts">
-    import { goto, invalidateAll } from '$app/navigation';
+    import { goto } from '$app/navigation';
     import RenamePack from './RenamePack.svelte';
     import ContextMenu from '$lib/ContextMenu.svelte';
     import MenuButton from '$lib/MenuButton.svelte';
     import { invoke } from '$lib/commands';
-    import type { PackSummary } from '@bindings/PackSummary';
     import QuickStudy from './QuickStudy.svelte';
     import { modals } from '$lib/modals';
     import ConfirmDelete from './ConfirmDelete.svelte';
+    import { packs, type PackWithId } from '$lib/stores/packs';
 
-    export let pack: PackSummary;
+    export let pack: PackWithId;
 
     let hovering = false;
 
@@ -26,8 +26,8 @@
             await goto('/pack');
         }
 
-        await invoke('modify_pack', { id: pack.id, action: 'Delete' });
-        await invalidateAll();
+        await invoke('pack_modify', { id: pack.id, action: 'Delete' });
+        packs.reload();
     };
 
     const quickStudy = async () => {

@@ -1,8 +1,8 @@
 <script lang="ts">
-    import type { PackSummary } from '@bindings/PackSummary';
+    import type { PackWithId } from '$lib/stores/packs';
     import PackChoice from './PackChoice.svelte';
 
-    export let packs: PackSummary[];
+    export let packs: PackWithId[];
     export let activePack: number | null;
 </script>
 

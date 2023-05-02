@@ -1,10 +1,9 @@
 <script lang="ts">
-    import { invalidateAll } from '$app/navigation';
     import { invoke } from '$lib/commands';
     import { getModalContext } from '$lib/modals';
-    import type { PackSummary } from '@bindings/PackSummary';
+    import { packs, type PackWithId } from '$lib/stores/packs';
 
-    export let pack: PackSummary;
+    export let pack: PackWithId;
 
     const { close } = getModalContext();
 
@@ -17,8 +16,8 @@
         close();
 
         if (canSave) {
-            await invoke('modify_pack', { id, action: { Rename: newTitle } });
-            await invalidateAll();
+            await invoke('pack_modify', { id, action: { Rename: newTitle } });
+            packs.reload();
         }
     };
 

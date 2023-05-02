@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { invalidateAll } from '$app/navigation';
     import { invoke } from '$lib/commands';
     import { getModalContext } from '$lib/modals';
+    import { packs } from '$lib/stores/packs';
 
     const { close } = getModalContext();
 
@@ -10,8 +10,8 @@
     const submit = async () => {
         close();
 
-        await invoke('create_pack', { title });
-        await invalidateAll();
+        await invoke('pack_create', { title });
+        packs.reload();
     };
 </script>
 

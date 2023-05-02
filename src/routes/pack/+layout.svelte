@@ -1,22 +1,18 @@
 <script lang="ts">
     import CreatePack from './CreatePack.svelte';
     import PackSelector from './PackSelector.svelte';
-    import type { LayoutData } from './$types';
     import { onMount } from 'svelte';
     import { activeTab } from '$lib/routing/tabs';
     import { modals } from '$lib/modals';
-
-    export let data: LayoutData;
+    import { packs } from '$lib/stores/packs';
 
     let search = '';
     $: query = search.toLowerCase();
 
-    $: ({ packs } = data);
-
     let activePack: number | null = null;
 
     $: filteredPacks =
-        search === '' ? packs : packs.filter((pack) => pack.title.toLowerCase().includes(query));
+        search === '' ? $packs : $packs.filter((pack) => pack.title.toLowerCase().includes(query));
 
     onMount(() => ($activeTab = 'pack'));
 </script>
