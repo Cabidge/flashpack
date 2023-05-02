@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { invalidateAll } from '$app/navigation';
     import { invoke } from '$lib/commands';
     import { getModalContext } from '$lib/modals';
+    import { cardsContext } from '$lib/stores/cards';
 
     export let id: number;
 
@@ -9,11 +9,13 @@
 
     let label = '';
 
+    const cards = cardsContext.get();
+
     const submit = async () => {
         close();
 
-        await invoke('create_card', { packId: id, label });
-        await invalidateAll();
+        await invoke('card_create', { packId: id, label });
+        cards.reload();
     };
 </script>
 
