@@ -127,7 +127,6 @@ pub async fn pack_list(pool: State<'_, SqlitePool>) -> Result<BTreeMap<pack::Id,
         "
         SELECT id, title
         FROM packs
-        ORDER BY LOWER(title) ASC, id ASC
         ",
     )
     .fetch(pool.inner());
