@@ -7,7 +7,7 @@ use tauri::State;
 use ts_rs::TS;
 
 use crate::{
-    card::{self, Card},
+    card::{self, Card, CardWithId},
     markdown::Parser,
     pack::{self, Pack},
     prelude::*,
@@ -220,25 +220,27 @@ pub async fn card_query(
         tags.is_superset(&include) && tags.is_disjoint(&exclude)
     };
 
+    fn prompt_from_card((card, tags): (CardWithId, BTreeSet<String>)) -> FullPrompt {
+        let prompt = if let Some(script) = card.script {
+            generate_prompt(script, card.front, card.back)
+        } else {
+            Prompt {
+                front: card.front,
+                back: card.back,
+            }
+        };
+
+        FullPrompt {
+            card_id: card.id,
+            prompt,
+            tags
+        }
+    }
+
     let prompts = card::random_by_tags(pool.inner(), pack_id, limit, tags_match)
         .await?
         .into_iter()
-        .map(|(card, tags)| {
-            let prompt = if let Some(script) = card.script {
-                generate_prompt(script, card.front, card.back)
-            } else {
-                Prompt {
-                    front: card.front,
-                    back: card.back,
-                }
-            };
-
-            FullPrompt {
-                card_id: card.id,
-                prompt,
-                tags
-            }
-        })
+        .map(prompt_from_card)
         .collect();
 
     Ok(prompts)
