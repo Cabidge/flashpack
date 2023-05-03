@@ -53,6 +53,15 @@ pub struct Prompt {
     back: String,
 }
 
+#[derive(TS, Serialize, Debug)]
+#[ts(export, export_to = "../src/bindings/")]
+pub struct FullPrompt {
+    card_id: card::Id,
+    #[serde(flatten)]
+    prompt: Prompt,
+    tags: BTreeSet<String>,
+}
+
 struct ScriptResult {
     front: Option<String>,
     back: Option<String>,
@@ -206,15 +215,33 @@ pub async fn card_query(
     include: BTreeSet<String>,
     exclude: BTreeSet<String>,
     limit: Option<usize>,
-) -> Result<Vec<card::Id>> {
-    if include.is_empty() && exclude.is_empty() {
-        card::random(pool.inner(), pack_id, limit).await
-    } else {
-        card::random_by_tags(pool.inner(), pack_id, limit, |tags: &BTreeSet<String>| {
-            tags.is_superset(&include) && tags.is_disjoint(&exclude)
+) -> Result<Vec<FullPrompt>> {
+    let tags_match = |tags: &BTreeSet<String>| {
+        tags.is_superset(&include) && tags.is_disjoint(&exclude)
+    };
+
+    let prompts = card::random_by_tags(pool.inner(), pack_id, limit, tags_match)
+        .await?
+        .into_iter()
+        .map(|(card, tags)| {
+            let prompt = if let Some(script) = card.script {
+                generate_prompt(script, card.front, card.back)
+            } else {
+                Prompt {
+                    front: card.front,
+                    back: card.back,
+                }
+            };
+
+            FullPrompt {
+                card_id: card.id,
+                prompt,
+                tags
+            }
         })
-        .await
-    }
+        .collect();
+
+    Ok(prompts)
 }
 
 #[tauri::command]

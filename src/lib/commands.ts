@@ -1,4 +1,5 @@
 import type { Card } from '@bindings/Card';
+import type { FullPrompt } from '@bindings/FullPrompt';
 import type { ModifyCard } from '@bindings/ModifyCard';
 import type { ModifyPack } from '@bindings/ModifyPack';
 import type { ModifyStudy } from '@bindings/ModifyStudy';
@@ -28,7 +29,7 @@ type Commands = {
         include: string[];
         exclude: string[];
         limit?: number;
-    }) => CardId[];
+    }) => FullPrompt[];
     card_tags: (args: { id: CardId }) => string[];
     card_modify: (args: { id: CardId; action: ModifyCard }) => void;
     // study
