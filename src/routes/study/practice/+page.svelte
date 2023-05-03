@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { page } from "$app/stores";
-    import { invoke } from "$lib/commands";
-    import PracticePage from "./PracticePage.svelte";
+    import { page } from '$app/stores';
+    import { invoke } from '$lib/commands';
+    import PracticePage from './PracticePage.svelte';
 
     const executeQuery = (query: URLSearchParams) => {
         const maybeParseInt = (n: string | null) => {
@@ -21,7 +21,7 @@
             limit = undefined;
         }
 
-        return invoke("card_query", { packId, include, exclude, limit });
+        return invoke('card_query', { packId, include, exclude, limit });
     };
 
     $: questions = executeQuery($page.url.searchParams);
@@ -29,7 +29,7 @@
 
 {#await questions}
     <p>Loading questions...</p>
-{:then questions} 
+{:then questions}
     <PracticePage {questions} />
 {:catch err}
     <p>Error: {err}</p>

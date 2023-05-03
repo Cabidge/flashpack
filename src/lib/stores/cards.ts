@@ -1,21 +1,20 @@
-import { banners } from "$lib/banners";
-import { invoke } from "$lib/commands";
-import { createContext } from "$lib/context";
-import type { Card } from "@bindings/Card";
-import { derived, writable, type Readable } from "svelte/store";
+import { banners } from '$lib/banners';
+import { invoke } from '$lib/commands';
+import { createContext } from '$lib/context';
+import type { Card } from '@bindings/Card';
+import { derived, writable, type Readable } from 'svelte/store';
 
 export const createStore = () => {
     const cards = writable<Record<number, Card>>({});
 
     const { subscribe } = derived(cards, ($cards) => {
-        return Object.entries($cards)
-            .map(([id, card]) => ({ id: Number(id), ...card }))
-    })
+        return Object.entries($cards).map(([id, card]) => ({ id: Number(id), ...card }));
+    });
 
     let _packId: number | undefined = undefined;
 
     const reload = (packId?: number) => {
-        if (packId  !== undefined) {
+        if (packId !== undefined) {
             _packId = packId;
         }
 
@@ -23,28 +22,31 @@ export const createStore = () => {
             return;
         }
 
-        invoke("pack_cards", { id: _packId }).then((latest) => cards.set(latest));
-    }
+        invoke('pack_cards', { id: _packId }).then((latest) => cards.set(latest));
+    };
 
-    const get = (id: Readable<number>) => derived([cards, id], ([$cards, $id]) => {
-        return $cards[$id] ?? {
-            label: "Deleted Card",
-            script: null,
-            front: "...",
-            back: "...",
-        };
-    });
+    const get = (id: Readable<number>) =>
+        derived([cards, id], ([$cards, $id]) => {
+            return (
+                $cards[$id] ?? {
+                    label: 'Deleted Card',
+                    script: null,
+                    front: '...',
+                    back: '...'
+                }
+            );
+        });
 
     return {
         subscribe,
         reload,
-        get,
-    }
+        get
+    };
 };
 
 type CardsStore = ReturnType<typeof createStore>;
 
 export const cardsContext = createContext<CardsStore>(() => {
-    banners.add("Cards Context not found...");
-    throw new Error("No cards context found...");
+    banners.add('Cards Context not found...');
+    throw new Error('No cards context found...');
 });

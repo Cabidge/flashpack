@@ -216,9 +216,8 @@ pub async fn card_query(
     exclude: BTreeSet<String>,
     limit: Option<usize>,
 ) -> Result<Vec<FullPrompt>> {
-    let tags_match = |tags: &BTreeSet<String>| {
-        tags.is_superset(&include) && tags.is_disjoint(&exclude)
-    };
+    let tags_match =
+        |tags: &BTreeSet<String>| tags.is_superset(&include) && tags.is_disjoint(&exclude);
 
     fn prompt_from_card((card, tags): (CardWithId, BTreeSet<String>)) -> FullPrompt {
         let prompt = if let Some(script) = card.script {
@@ -233,7 +232,7 @@ pub async fn card_query(
         FullPrompt {
             card_id: card.id,
             prompt,
-            tags
+            tags,
         }
     }
 

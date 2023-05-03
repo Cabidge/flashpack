@@ -36,7 +36,7 @@ type Commands = {
     study_create: (title: string) => void;
     study_list: () => Record<StudyId, Study>;
     study_tags: (args: { id: StudyId }) => StudyTags;
-    study_modify: (args: { id: StudyId, action: ModifyStudy }) => void;
+    study_modify: (args: { id: StudyId; action: ModifyStudy }) => void;
 };
 
 type Invoke = <T extends keyof Commands>(

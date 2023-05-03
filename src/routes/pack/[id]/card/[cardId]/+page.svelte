@@ -21,8 +21,8 @@
 
     $: if ($card) {
         (async () => {
-            tags = await invoke("card_tags", { id: $id });
-        })()
+            tags = await invoke('card_tags', { id: $id });
+        })();
     }
 
     let front: string | null, back: string | null;

@@ -23,10 +23,11 @@
         (async () => {
             const { script, front, back } = $card;
 
-            prompt = script === null
-                ? { front, back }
-                : await invoke('generate_prompt', { script, front, back });
-        })()
+            prompt =
+                script === null
+                    ? { front, back }
+                    : await invoke('generate_prompt', { script, front, back });
+        })();
     }
 </script>
 

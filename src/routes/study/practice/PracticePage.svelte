@@ -1,7 +1,7 @@
 <script lang="ts">
-    import PromptView from "$lib/PromptView.svelte";
-    import type { Prompt } from "@bindings/Prompt";
-    import PracticeButton from "./PracticeButton.svelte";
+    import PromptView from '$lib/PromptView.svelte';
+    import type { Prompt } from '@bindings/Prompt';
+    import PracticeButton from './PracticeButton.svelte';
 
     export let questions: Prompt[];
     export let index = 0;
