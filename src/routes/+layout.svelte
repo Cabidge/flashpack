@@ -7,8 +7,6 @@
     import { fade } from 'svelte/transition';
     import { modals } from '$lib/modals';
     import ModalDialog from '$lib/ModalDialog.svelte';
-
-    $: bannerArray = [...$banners.values()];
 </script>
 
 <div class="flex h-screen flex-row">
@@ -25,7 +23,7 @@
 </div>
 
 <div class="fixed bottom-0 m-2 flex flex-col gap-2">
-    {#each bannerArray as banner (banner)}
+    {#each $banners as banner (banner)}
         <div
             animate:flip={{ duration: 200 }}
             transition:fade={{ duration: 200 }}

@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 
 const BANNER_TIMEOUT = 5000;
 
@@ -9,7 +9,6 @@ export type Banner = {
 
 const createStore = () => {
     const banners = writable<Set<Banner>>(new Set());
-    const { subscribe } = banners;
 
     const remove = (banner: Banner) => {
         banners.update((banners) => {
@@ -28,6 +27,8 @@ const createStore = () => {
         const banner = addUntimed(heading, details);
         setTimeout(() => remove(banner), BANNER_TIMEOUT);
     };
+
+    const { subscribe } = derived(banners, ($banners) => [...$banners]);
 
     return {
         subscribe,
