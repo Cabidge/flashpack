@@ -211,7 +211,7 @@ pub async fn card_create(
 #[tauri::command]
 pub async fn card_query(
     pool: State<'_, SqlitePool>,
-    pack_id: pack::Id,
+    pack_id: Option<pack::Id>,
     include: BTreeSet<String>,
     exclude: BTreeSet<String>,
     limit: Option<usize>,

@@ -25,7 +25,7 @@ type Commands = {
     // card
     card_create: (args: { packId: PackId; label: string }) => void;
     card_query: (args: {
-        packId: number;
+        packId?: number;
         include: string[];
         exclude: string[];
         limit?: number;

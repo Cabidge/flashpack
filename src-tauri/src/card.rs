@@ -5,7 +5,7 @@ use serde::Serialize;
 use sqlx::SqlitePool;
 use ts_rs::TS;
 
-use crate::prelude::*;
+use crate::{prelude::*, pack};
 
 #[derive(TS, Serialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
@@ -52,7 +52,7 @@ pub async fn create(
 
 pub async fn random_by_tags(
     pool: &SqlitePool,
-    pack_id: crate::pack::Id,
+    pack_id: Option<pack::Id>,
     limit: Option<usize>,
     mut predicate: impl FnMut(&BTreeSet<String>) -> bool,
 ) -> Result<Vec<(CardWithId, BTreeSet<String>)>> {
@@ -67,7 +67,8 @@ pub async fn random_by_tags(
             front,
             back
         FROM cards
-        WHERE pack_id = ?
+        WHERE ?1 IS NULL
+        OR pack_id = ?1
         ORDER BY RANDOM()
         "#,
         pack_id,
