@@ -1,49 +1,36 @@
 <script lang="ts">
-    import type { PageData } from './$types';
-    import PromptView from '$lib/PromptView.svelte';
-    import PracticeButton from './PracticeButton.svelte';
-    import type { FullPrompt } from './+page';
+    import { page } from "$app/stores";
+    import { invoke } from "$lib/commands";
+    import PracticePage from "./PracticePage.svelte";
 
-    export let data: PageData;
+    const executeQuery = (query: URLSearchParams) => {
+        const maybeParseInt = (n: string | null) => {
+            return n === null ? undefined : parseInt(n);
+        };
 
-    $: questions = data.questions;
-    let index = 0;
+        const packId = maybeParseInt(query.get('pack'));
 
-    let prompt: FullPrompt | undefined;
-    $: prompt = questions[index];
+        const include = query.getAll('include[]');
+        const exclude = query.getAll('exclude[]');
 
-    let showAnswer = false;
+        // first convert to number definite number, then change to undefined for zero case
+        // TODO: change query_cards to only accept a number, then handle the zero case in rust
+        let limit: number | undefined = maybeParseInt(query.get('limit')) ?? 0;
+        limit = Math.max(limit, 0);
+        if (limit === 0) {
+            limit = undefined;
+        }
 
-    const advance = async () => {
-        index += 1;
-        showAnswer = false;
+        return invoke("card_query", { packId, include, exclude, limit });
     };
+
+    $: questions = executeQuery($page.url.searchParams);
 </script>
 
-<div class="flex h-full flex-col">
-    <div class="flex-grow overflow-auto px-6">
-        {#if questions.length === 0}
-            <p>No questions generated...</p>
-        {:else if prompt === undefined}
-            <p>End of questions...</p>
-        {:else}
-            <p>{index + 1}/{questions.length}</p>
-            <PromptView {prompt} {showAnswer} />
-        {/if}
-    </div>
-
-    {#if prompt !== undefined}
-        <div class="flex w-full items-center justify-center gap-2 bg-slate-100 py-6">
-            {#if showAnswer}
-                <PracticeButton icon="check" label="Correct" on:click={advance} />
-                <PracticeButton icon="xmark" label="Wrong" on:click={advance} />
-            {:else}
-                <PracticeButton
-                    icon="eye"
-                    label="Show Answer"
-                    on:click={() => (showAnswer = true)}
-                />
-            {/if}
-        </div>
-    {/if}
-</div>
+{#await questions}
+    <p>Loading questions...</p>
+{:then questions} 
+    <PracticePage {questions} />
+{:catch err}
+    <p>Error: {err}</p>
+{/await}
