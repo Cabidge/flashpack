@@ -16,7 +16,7 @@ impl<'a, 'b> Iterator for Parser<'a, 'b> {
                     return Some(event);
                 };
 
-                let html = render_math(&code, MathDisplay::Inline);
+                let html = render_math(code, MathDisplay::Inline);
                 Some(Event::Html(html.into()))
             }
             Event::Start(Tag::CodeBlock(CodeBlockKind::Fenced(lang))) if *lang == "math".into() => {
@@ -71,7 +71,7 @@ fn render_math(source: &str, display: MathDisplay) -> String {
         .build()
         .expect("Option builder should not fail");
 
-    katex::render_with_opts(&tex, &opts).unwrap_or_default()
+    katex::render_with_opts(&tex, opts).unwrap_or_default()
 }
 
 fn asciimath_to_tex(source: &str) -> String {
