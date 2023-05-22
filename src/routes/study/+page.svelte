@@ -1,8 +1,10 @@
 <script lang="ts">
+    import { modals } from '$lib/modals';
     import { studies } from '$lib/stores/studies';
+    import CreateStudy from './CreateStudy.svelte';
 </script>
 
-<button>Add Study</button>
+<button on:click={() => modals.add(CreateStudy, {})}>Add Study</button>
 
 <ul>
     {#each $studies as study (study.id)}
