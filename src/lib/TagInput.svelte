@@ -1,5 +1,5 @@
 <script lang="ts">
-    export let name: string;
+    export let name: string | undefined = undefined;
     export let id: string | undefined = undefined;
 
     let clazz = '';

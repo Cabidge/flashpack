@@ -14,5 +14,5 @@
     {/each}
 </select>
 
-<TagInput name="included[]" />
-<TagInput name="excluded[]" />
+<TagInput />
+<TagInput />
