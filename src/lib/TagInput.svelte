@@ -9,7 +9,8 @@
 
     $: tagInput = inputValue.trim().toLowerCase();
 
-    let tags: string[] = [];
+    // TODO: change this to a custom store to allow for validation
+    export let value: string[] = [];
 
     const handleEnter = () => {
         if (tagInput === '') {
@@ -22,15 +23,15 @@
     };
 
     const addTag = (tag: string) => {
-        if (tags.includes(tag)) {
+        if (value.includes(tag)) {
             return;
         }
 
-        tags = [...tags, tag];
+        value = [...value, tag];
     };
 
     const removeTag = (tag: string) => {
-        tags = tags.filter((t) => t !== tag);
+        value = value.filter((t) => t !== tag);
     };
 </script>
 
@@ -48,7 +49,7 @@
 />
 
 <ul class="flex flex-wrap gap-1">
-    {#each tags as tag (tag)}
+    {#each value as tag (tag)}
         <li class="rounded-full bg-slate-200 px-2">
             <button type="button" on:click={() => removeTag(tag)}> x </button>
             {tag}
@@ -56,6 +57,6 @@
     {/each}
 </ul>
 
-{#each tags as tag}
+{#each value as tag}
     <input type="hidden" {name} value={tag} />
 {/each}
