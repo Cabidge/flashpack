@@ -1,3 +1,4 @@
+import { listen } from '@tauri-apps/api/event';
 import { invoke } from '$lib/commands';
 import type { Pack } from '@bindings/Pack';
 import { derived, writable, type Readable } from 'svelte/store';
@@ -12,14 +13,31 @@ export type PacksStore = Readable<PackWithId[]> & {
 };
 
 const createStore = (): PacksStore => {
-    const packs = writable<Record<number, Pack>>({});
+    const trigger = writable(null);
+    const runTrigger = () => trigger.set(null);
 
     // Turn the packs into an array
-    const { subscribe } = derived(packs, ($packs) => {
-        return Object.entries($packs).map(([id, pack]) => ({ id: Number(id), ...pack }));
-    });
+    const { subscribe } = derived(
+        trigger,
+        (_$trigger, set) => {
+            const reloadPacks = () =>
+                invoke('pack_list').then((packs) =>
+                    set(Object.entries(packs).map(([id, pack]) => ({ id: Number(id), ...pack })))
+                );
 
-    const reload = () => invoke('pack_list').then((latest) => packs.set(latest));
+            reloadPacks();
+
+            const unlisten = listen('update:packs', reloadPacks);
+
+            return async () => {
+                // listen returns a Promise to a function that removes the listener
+                (await unlisten)();
+            };
+        },
+        [] as PackWithId[]
+    );
+
+    const reload = runTrigger;
 
     const get = (id: Readable<number>) =>
         derived([packs, id], ([$packs, $id]) => {
@@ -29,8 +47,6 @@ const createStore = (): PacksStore => {
                 }
             );
         });
-
-    reload();
 
     return {
         subscribe,
