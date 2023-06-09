@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invoke } from '$lib/commands';
     import { getModalContext } from '$lib/modals';
-    import { packs, type PackWithId } from '$lib/stores/packs';
+    import type { PackWithId } from '$lib/stores/packs';
 
     export let pack: PackWithId;
 
@@ -17,7 +17,6 @@
 
         if (canSave) {
             await invoke('pack_modify', { id, action: { Rename: newTitle } });
-            packs.reload();
         }
     };
 

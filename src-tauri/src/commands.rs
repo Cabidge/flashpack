@@ -3,7 +3,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use futures::TryStreamExt;
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
-use tauri::State;
+use tauri::{Manager, State, Window};
 use ts_rs::TS;
 
 use crate::{
@@ -121,8 +121,11 @@ pub fn generate_prompt(script: Option<String>, front: String, back: String) -> P
 // -- pack
 
 #[tauri::command]
-pub async fn pack_create(pool: State<'_, SqlitePool>, title: String) -> Result<()> {
+pub async fn pack_create(window: Window, pool: State<'_, SqlitePool>, title: String) -> Result<()> {
     pack::create(pool.inner(), &title).await?;
+
+    window.emit_all("update:packs", ()).expect("Event error");
+
     Ok(())
 }
 
@@ -180,6 +183,7 @@ pub async fn pack_cards(
 
 #[tauri::command]
 pub async fn pack_modify(
+    window: Window,
     pool: State<'_, SqlitePool>,
     id: pack::Id,
     action: ModifyPack,
@@ -187,13 +191,18 @@ pub async fn pack_modify(
     match action {
         ModifyPack::Rename(new_title) => pack::rename(pool.inner(), id, &new_title).await,
         ModifyPack::Delete => pack::delete(pool.inner(), id).await,
-    }
+    }?;
+
+    window.emit_all("update:packs", ()).expect("Event error");
+
+    Ok(())
 }
 
 // -- card
 
 #[tauri::command]
 pub async fn card_create(
+    window: Window,
     pool: State<'_, SqlitePool>,
     pack_id: pack::Id,
     label: String,
@@ -201,6 +210,9 @@ pub async fn card_create(
     let front = format!("## {label} Question Side");
     let back = format!("## {label} Answer Side");
     card::create(pool.inner(), pack_id, &label, &front, &back).await?;
+
+    window.emit_all("update:cards", ()).expect("Event error");
+
     Ok(())
 }
 
@@ -241,6 +253,7 @@ pub async fn card_tags(pool: State<'_, SqlitePool>, id: card::Id) -> Result<Vec<
 
 #[tauri::command]
 pub async fn card_modify(
+    window: Window,
     pool: State<'_, SqlitePool>,
     id: card::Id,
     action: ModifyCard,
@@ -254,14 +267,25 @@ pub async fn card_modify(
         ModifyCard::SetScript(script) => {
             card::set_script(pool.inner(), id, script.as_deref()).await
         }
-    }
+    }?;
+
+    window.emit_all("update:cards", ()).expect("Event error");
+
+    Ok(())
 }
 
 // -- study
 
 #[tauri::command]
-pub async fn study_create(pool: State<'_, SqlitePool>, title: String) -> Result<()> {
+pub async fn study_create(
+    window: Window,
+    pool: State<'_, SqlitePool>,
+    title: String,
+) -> Result<()> {
     study::create(pool.inner(), &title, None, 0).await?;
+
+    window.emit_all("update:studies", ()).expect("Event error");
+
     Ok(())
 }
 
@@ -297,6 +321,7 @@ pub async fn study_tags(pool: State<'_, SqlitePool>, id: study::Id) -> Result<St
 
 #[tauri::command]
 pub async fn study_modify(
+    window: Window,
     pool: State<'_, SqlitePool>,
     id: study::Id,
     action: ModifyStudy,
@@ -314,5 +339,9 @@ pub async fn study_modify(
         AddExcluded(tag) => study::add_tag(pool, id, &tag, true).await,
         RemoveExcluded(tag) => study::remove_tag(pool, id, &tag, true).await,
         Delete => study::delete(pool, id).await,
-    }
+    }?;
+
+    window.emit_all("update:studies", ()).expect("Event error");
+
+    Ok(())
 }

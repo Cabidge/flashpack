@@ -7,7 +7,7 @@
     import QuickStudy from './QuickStudy.svelte';
     import { modals } from '$lib/modals';
     import ConfirmDelete from './ConfirmDelete.svelte';
-    import { packs, type PackWithId } from '$lib/stores/packs';
+    import type { PackWithId } from '$lib/stores/packs';
 
     export let pack: PackWithId;
 
@@ -27,7 +27,6 @@
         }
 
         await invoke('pack_modify', { id: pack.id, action: 'Delete' });
-        packs.reload();
     };
 
     const quickStudy = async () => {

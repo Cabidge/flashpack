@@ -11,7 +11,6 @@
         close();
 
         await invoke('pack_create', { title });
-        packs.reload();
     };
 </script>
 
