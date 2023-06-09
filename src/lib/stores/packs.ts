@@ -42,7 +42,7 @@ const createStore = (): PacksStore => {
     const get = (id: Readable<number>) =>
         derived([packs, id], ([$packs, $id]) => {
             return (
-                $packs[$id] ?? {
+                $packs.find((pack) => pack.id === $id) ?? {
                     title: 'Deleted Pack'
                 }
             );
