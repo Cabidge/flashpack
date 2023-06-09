@@ -16,7 +16,7 @@ type StudyId = number;
 
 type Commands = {
     render_markdown: (args: { markdown: string }) => string;
-    generate_prompt: (args: { script: string; front: string; back: string }) => Prompt;
+    generate_prompt: (args: { script?: string; front: string; back: string }) => Prompt;
     // pack
     pack_create: (args: { title: string }) => void;
     pack_list: () => Record<PackId, Pack>;

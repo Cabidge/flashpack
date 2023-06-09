@@ -62,34 +62,38 @@ pub struct FullPrompt {
     tags: BTreeSet<String>,
 }
 
-struct ScriptResult {
-    front: Option<String>,
-    back: Option<String>,
+fn context_from_script(script: &str) -> Result<tera::Context> {
+    let engine = crate::engine::create_engine();
+
+    let scope = rhai::Scope::new();
+
+    let ast = engine
+        .compile_with_scope(&scope, script)
+        .map_err(anyhow::Error::from)?;
+
+    let module = rhai::Module::eval_ast_as_new(scope, &ast, &engine)
+        .map_err(|err| err.to_string())
+        .map_err(anyhow::Error::msg)?;
+
+    let mut context = tera::Context::new();
+
+    for (ident, value) in module.iter_var() {
+        context.insert(ident, &value);
+    }
+
+    Ok(context)
 }
 
-fn run_script(script: &str, front: String, back: String) -> Result<ScriptResult> {
-    let module = {
-        let engine = crate::engine::create_engine();
+fn try_generate_prompt(script: Option<&str>, front: &str, back: &str) -> Result<Prompt> {
+    let context = script
+        .map(context_from_script)
+        .transpose()?
+        .unwrap_or_default();
 
-        let mut scope = rhai::Scope::new();
+    let front = tera::Tera::one_off(front, &context, true)?;
+    let back = tera::Tera::one_off(back, &context, true)?;
 
-        scope
-            .push_constant("FRONT", front)
-            .push_constant("BACK", back);
-
-        let ast = engine
-            .compile_with_scope(&scope, script)
-            .map_err(anyhow::Error::from)?;
-
-        rhai::Module::eval_ast_as_new(scope, &ast, &engine)
-            .map_err(|err| err.to_string())
-            .map_err(anyhow::Error::msg)?
-    };
-
-    let front = module.get_var_value::<String>("front");
-    let back = module.get_var_value::<String>("back");
-
-    Ok(ScriptResult { front, back })
+    Ok(Prompt { front, back })
 }
 
 #[tauri::command]
@@ -103,23 +107,15 @@ pub fn render_markdown(markdown: String) -> String {
 }
 
 #[tauri::command]
-pub fn generate_prompt(script: String, front: String, back: String) -> Prompt {
-    let (front, back) = {
-        match run_script(&script, front, back) {
-            Ok(ScriptResult { front, back }) => {
-                let front = front.unwrap_or_else(|| String::from("`No front defined`"));
-                let back = back.unwrap_or_else(|| String::from("`No back defined`"));
+pub fn generate_prompt(script: Option<String>, front: String, back: String) -> Prompt {
+    try_generate_prompt(script.as_deref(), &front, &back).unwrap_or_else(|err| {
+        let msg = format!("```\n{err}\n```");
 
-                (front, back)
-            }
-            Err(err) => {
-                let msg = format!("```\n{err}\n```");
-                (msg.clone(), msg)
-            }
+        Prompt {
+            front: msg.clone(),
+            back: msg,
         }
-    };
-
-    Prompt { front, back }
+    })
 }
 
 // -- pack
@@ -220,14 +216,7 @@ pub async fn card_query(
         |tags: &BTreeSet<String>| tags.is_superset(&include) && tags.is_disjoint(&exclude);
 
     fn prompt_from_card((card, tags): (CardWithId, BTreeSet<String>)) -> FullPrompt {
-        let prompt = if let Some(script) = card.script {
-            generate_prompt(script, card.front, card.back)
-        } else {
-            Prompt {
-                front: card.front,
-                back: card.back,
-            }
-        };
+        let prompt = generate_prompt(card.script, card.front, card.back);
 
         FullPrompt {
             card_id: card.id,

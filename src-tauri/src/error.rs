@@ -6,6 +6,8 @@ pub enum Error {
     Sqlx(#[from] sqlx::Error),
     #[error("[migrate] {0}")]
     Migrate(#[from] sqlx::migrate::MigrateError),
+    #[error("[tera] {0}")]
+    Tera(#[from] tera::Error),
     #[error(transparent)]
     Custom(#[from] anyhow::Error),
 }
