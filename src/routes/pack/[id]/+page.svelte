@@ -24,7 +24,7 @@
 
 <h2 class="text-lg">
     Cards
-    <button on:click={() => modals.add(AddCard, { id: $id })}>+</button>
+    <button on:click={() => modals.add(AddCard, { id: $id, cards })}>+</button>
 </h2>
 
 <div class="mb-2 border-b-2" />

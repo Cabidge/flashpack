@@ -1,15 +1,14 @@
 <script lang="ts">
     import { invoke } from '$lib/commands';
     import { getModalContext } from '$lib/modals';
-    import { cardsContext } from '$lib/stores/cards';
+    import type { CardsStore } from '$lib/stores/cards';
 
     export let id: number;
+    export let cards: CardsStore;
 
     const { close } = getModalContext();
 
     let label = '';
-
-    const cards = cardsContext.get();
 
     const submit = async () => {
         close();

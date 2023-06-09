@@ -44,7 +44,7 @@ export const createStore = () => {
     };
 };
 
-type CardsStore = ReturnType<typeof createStore>;
+export type CardsStore = ReturnType<typeof createStore>;
 
 export const cardsContext = createContext<CardsStore>(() => {
     banners.add('Cards Context not found...');
