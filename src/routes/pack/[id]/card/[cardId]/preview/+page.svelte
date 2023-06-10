@@ -3,7 +3,6 @@
     import PromptView from '$lib/PromptView.svelte';
     import { invoke } from '$lib/commands';
     import { cardsContext } from '$lib/stores/cards';
-    import type { Prompt } from '@bindings/Prompt';
     import { derived } from 'svelte/store';
 
     const cards = cardsContext.get();
@@ -17,18 +16,7 @@
     $: packHref = `/pack/${$packId}`;
     $: cardHref = `${packHref}/card/${$id}`;
 
-    let prompt: Prompt;
-
-    $: {
-        (async () => {
-            const { script, front, back } = $card;
-
-            prompt =
-                script === null
-                    ? { front, back }
-                    : await invoke('generate_prompt', { script, front, back });
-        })();
-    }
+    $: prompt = invoke('generate_prompt', $card);
 </script>
 
 <a href={packHref}>Return to Pack</a>
@@ -39,4 +27,10 @@
     Show Answer
 </label>
 
-<PromptView {prompt} {showAnswer} />
+{#await prompt}
+    <p>Generating Preview...</p>
+{:then prompt}
+    <PromptView {prompt} {showAnswer} />
+{:catch}
+    <p>Error Generating Preview</p>
+{/await}
