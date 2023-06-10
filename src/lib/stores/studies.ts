@@ -1,30 +1,43 @@
 import { invoke } from '$lib/commands';
 import type { Study } from '@bindings/Study';
-import { derived, writable, type Readable } from 'svelte/store';
+import { listen } from '@tauri-apps/api/event';
+import { derived, readable, type Readable } from 'svelte/store';
 
 export type StudyWithId = Study & {
     id: number;
 };
 
 export type StudiesStore = Readable<StudyWithId[]> & {
-    reload: () => void;
     get: (id: Readable<number>) => Readable<Study>;
 };
 
 const createStore = (): StudiesStore => {
-    const studies = writable<Record<number, Study>>({});
+    const studies = readable([] as StudyWithId[], (set) => {
+        const reload = () => {
+            invoke('study_list').then((studyMap) => {
+                const study = Object.entries(studyMap).map(([id, study]) => ({
+                    id: Number(id),
+                    ...study
+                }));
 
-    // Turn the studies into an array
-    const { subscribe } = derived(studies, ($studies) => {
-        return Object.entries($studies).map(([id, study]) => ({ id: Number(id), ...study }));
+                set(study);
+            });
+        };
+
+        reload();
+
+        const unlisten = listen('update:studies', reload);
+
+        return async () => {
+            // listen returns a Promise to a function that removes the listener
+            (await unlisten)();
+        };
     });
 
-    const reload = () => invoke('study_list').then((latest) => studies.set(latest));
-
-    const get = (id: Readable<number>) =>
+    const get = (id: Readable<number>) => 
         derived([studies, id], ([$studies, $id]) => {
             return (
-                $studies[$id] ?? {
+                $studies.find((study) => study.id === $id) ?? {
                     title: 'Deleted Study',
                     pack_id: null,
                     limit: 0
@@ -32,12 +45,8 @@ const createStore = (): StudiesStore => {
             );
         });
 
-    reload();
-
     return {
-        subscribe,
-        // Refetches the studies from the database
-        reload,
+        ...studies,
         // Creates a store pointing to the specific study
         get
     };
