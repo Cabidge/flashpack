@@ -22,8 +22,8 @@
 <a href={packHref}>Return to Pack</a>
 <a href={cardHref}>Edit</a>
 
-<label for="showAnswer">
-    <input type="checkbox" name="showAnswer" id="showAnswer" bind:checked={showAnswer} />
+<label>
+    <input type="checkbox" name="showAnswer" bind:checked={showAnswer} />
     Show Answer
 </label>
 

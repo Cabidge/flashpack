@@ -10,22 +10,23 @@
 <form action="/study/practice" class="flex max-w-xs flex-col gap-2" on:submit={close}>
     <input type="hidden" name="pack" value={packId} />
 
-    <label for="include">
+    <!-- svelte-ignore a11y-label-has-associated-control -->
+    <label>
         <span>Included Tags</span>
-        <TagInput class="w-full" id="include" name="include[]" />
+        <TagInput class="w-full" name="include[]" />
     </label>
 
-    <label for="exclude">
+    <!-- svelte-ignore a11y-label-has-associated-control -->
+    <label>
         <span>Excluded Tags</span>
-        <TagInput class="w-full" id="exclude" name="exclude[]" />
+        <TagInput class="w-full" name="exclude[]" />
     </label>
 
-    <label for="limit">
+    <label>
         <span>Max Question Count (0 for unlimited)</span>
         <input
             type="number"
             name="limit"
-            id="limit"
             min="0"
             value="0"
             class="w-full rounded border border-slate-300 p-1"
