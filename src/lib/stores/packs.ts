@@ -16,7 +16,7 @@ const createStore = (): PacksStore => {
     const trigger = writable(null);
     const runTrigger = () => trigger.set(null);
 
-    const { subscribe } = derived(
+    const packs = derived(
         trigger,
         (_$trigger, set) => {
             const reloadPacks = () =>
@@ -48,7 +48,7 @@ const createStore = (): PacksStore => {
         });
 
     return {
-        subscribe,
+        ...packs,
         // Refetches the packs from the database
         reload,
         // Creates a store pointing to the specific pack
