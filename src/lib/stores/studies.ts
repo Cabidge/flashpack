@@ -3,26 +3,13 @@ import type { Study } from '@bindings/Study';
 import { listen } from '@tauri-apps/api/event';
 import { derived, readable, type Readable } from 'svelte/store';
 
-export type StudyWithId = Study & {
-    id: number;
-};
-
-export type StudiesStore = Readable<StudyWithId[]> & {
+export type StudiesStore = Readable<Study[]> & {
     get: (id: Readable<number>) => Readable<Study>;
 };
 
 const createStore = (): StudiesStore => {
-    const studies = readable([] as StudyWithId[], (set) => {
-        const reload = () => {
-            invoke('study_list').then((studyMap) => {
-                const study = Object.entries(studyMap).map(([id, study]) => ({
-                    id: Number(id),
-                    ...study
-                }));
-
-                set(study);
-            });
-        };
+    const studies = readable([] as Study[], (set) => {
+        const reload = () => invoke('study_list').then(set);
 
         reload();
 
@@ -34,15 +21,14 @@ const createStore = (): StudiesStore => {
         };
     });
 
-    const get = (id: Readable<number>) => 
+    const get = (id: Readable<number>) =>
         derived([studies, id], ([$studies, $id]) => {
-            return (
-                $studies.find((study) => study.id === $id) ?? {
-                    title: 'Deleted Study',
-                    pack_id: null,
-                    limit: 0
-                }
-            );
+            return ($studies.find((study) => study.id === $id) ?? {
+                id: -1,
+                title: 'Deleted Study',
+                pack_id: null,
+                limit: 0
+            }) satisfies Study;
         });
 
     return {

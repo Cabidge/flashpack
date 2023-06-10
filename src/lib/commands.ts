@@ -19,8 +19,8 @@ type Commands = {
     generate_prompt: (args: { script?: string | null; front: string; back: string }) => Prompt;
     // pack
     pack_create: (args: { title: string }) => void;
-    pack_list: () => Record<PackId, Pack>;
-    pack_cards: (args: { id: PackId }) => Record<CardId, Card>;
+    pack_list: () => Pack[];
+    pack_cards: (args: { id: PackId }) => Card[];
     pack_modify: (args: { id: PackId; action: ModifyPack }) => void;
     // card
     card_create: (args: { packId: PackId; label: string }) => void;
@@ -34,7 +34,7 @@ type Commands = {
     card_modify: (args: { id: CardId; action: ModifyCard }) => void;
     // study
     study_create: (title: string) => void;
-    study_list: () => Record<StudyId, Study>;
+    study_list: () => Study[];
     study_tags: (args: { id: StudyId }) => StudyTags;
     study_modify: (args: { id: StudyId; action: ModifyStudy }) => void;
 };

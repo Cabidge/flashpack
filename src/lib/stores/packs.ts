@@ -3,25 +3,13 @@ import { invoke } from '$lib/commands';
 import type { Pack } from '@bindings/Pack';
 import { derived, readable, type Readable } from 'svelte/store';
 
-export type PackWithId = Pack & {
-    id: number;
-};
-
-export type PacksStore = Readable<PackWithId[]> & {
+export type PacksStore = Readable<Pack[]> & {
     get: (id: Readable<number>) => Readable<Pack>;
 };
 
 const createStore = (): PacksStore => {
-    const packs = readable([] as PackWithId[], (set) => {
-        const reload = () => {
-            invoke('pack_list').then((packMap) => {
-                const packs = Object.entries(packMap).map(([id, pack]) => ({
-                    id: Number(id),
-                    ...pack
-                }));
-                set(packs);
-            });
-        };
+    const packs = readable([] as Pack[], (set) => {
+        const reload = () => invoke('pack_list').then(set);
 
         reload();
 
@@ -37,9 +25,10 @@ const createStore = (): PacksStore => {
         derived([packs, id], ([$packs, $id]) => {
             return (
                 $packs.find((pack) => pack.id === $id) ?? {
-                    title: 'Deleted Pack'
+                    id: -1,
+                    title: 'Deleted Pack',
                 }
-            );
+            ) satisfies Pack;
         });
 
     return {

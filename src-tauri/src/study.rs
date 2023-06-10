@@ -8,6 +8,7 @@ use crate::{pack, prelude::*};
 #[derive(TS, Serialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
 pub struct Study {
+    pub id: Id,
     pub title: String,
     pub pack_id: Option<pack::Id>,
     pub limit: usize,

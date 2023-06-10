@@ -7,9 +7,9 @@
     import QuickStudy from './QuickStudy.svelte';
     import { modals } from '$lib/modals';
     import ConfirmDelete from './ConfirmDelete.svelte';
-    import type { PackWithId } from '$lib/stores/packs';
+    import type { Pack } from '@bindings/Pack';
 
-    export let pack: PackWithId;
+    export let pack: Pack;
 
     let hovering = false;
 

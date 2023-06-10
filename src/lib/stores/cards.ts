@@ -5,24 +5,11 @@ import type { Card } from '@bindings/Card';
 import { listen } from '@tauri-apps/api/event';
 import { derived, type Readable } from 'svelte/store';
 
-export type CardWithId = Card & {
-    id: number;
-};
-
 export const createStore = (packId: Readable<number>) => {
     const cards = derived(
         packId,
         ($packId, set) => {
-            const reloadCards = () => {
-                invoke('pack_cards', { id: $packId }).then((cardMap) => {
-                    const cards = Object.entries(cardMap).map(([id, card]) => ({
-                        id: Number(id),
-                        ...card
-                    }));
-
-                    set(cards);
-                });
-            };
+            const reloadCards = () => invoke('pack_cards', { id: $packId }).then(set);
 
             reloadCards();
 
@@ -33,19 +20,18 @@ export const createStore = (packId: Readable<number>) => {
                 (await unlisten)();
             };
         },
-        [] as CardWithId[]
+        [] as Card[]
     );
 
     const get = (id: Readable<number>) =>
         derived([cards, id], ([$cards, $id]) => {
-            return (
-                $cards.find((card) => card.id === $id) ?? {
-                    label: 'Deleted Card',
-                    script: null,
-                    front: '...',
-                    back: '...'
-                }
-            );
+            return ($cards.find((card) => card.id === $id) ?? {
+                id: -1,
+                label: 'Deleted Card',
+                script: null,
+                front: '...',
+                back: '...'
+            }) satisfies Card;
         });
 
     return {

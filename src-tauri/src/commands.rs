@@ -1,18 +1,11 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeSet;
 
-use futures::TryStreamExt;
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
 use tauri::{Manager, State, Window};
 use ts_rs::TS;
 
-use crate::{
-    card::{self, Card, CardWithId},
-    markdown::Parser,
-    pack::{self, Pack},
-    prelude::*,
-    study::{self, Study, StudyTags},
-};
+use crate::{card, markdown::Parser, pack, prelude::*, study};
 
 #[derive(TS, Deserialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
@@ -130,53 +123,33 @@ pub async fn pack_create(window: Window, pool: State<'_, SqlitePool>, title: Str
 }
 
 #[tauri::command]
-pub async fn pack_list(pool: State<'_, SqlitePool>) -> Result<BTreeMap<pack::Id, Pack>> {
-    let mut rows = sqlx::query!(
-        "
-        SELECT id, title
+pub async fn pack_list(pool: State<'_, SqlitePool>) -> Result<Vec<pack::Pack>> {
+    let packs = sqlx::query_as!(
+        pack::Pack,
+        r#"
+        SELECT id as "id: u32", title
         FROM packs
-        ",
+        "#,
     )
-    .fetch(pool.inner());
-
-    let mut packs = BTreeMap::new();
-
-    while let Some(row) = rows.try_next().await? {
-        let pack = Pack { title: row.title };
-
-        packs.insert(row.id as pack::Id, pack);
-    }
+    .fetch_all(pool.inner())
+    .await?;
 
     Ok(packs)
 }
 
 #[tauri::command]
-pub async fn pack_cards(
-    pool: State<'_, SqlitePool>,
-    id: pack::Id,
-) -> Result<BTreeMap<card::Id, Card>> {
-    let mut rows = sqlx::query!(
-        "
-        SELECT id, label, script, front, back
+pub async fn pack_cards(pool: State<'_, SqlitePool>, id: pack::Id) -> Result<Vec<card::Card>> {
+    let cards = sqlx::query_as!(
+        card::Card,
+        r#"
+        SELECT id as "id: u32", label, script, front, back
         FROM cards
         WHERE pack_id = ?
-        ",
+        "#,
         id,
     )
-    .fetch(pool.inner());
-
-    let mut cards = BTreeMap::new();
-
-    while let Some(row) = rows.try_next().await? {
-        let card = Card {
-            label: row.label,
-            script: row.script,
-            front: row.front,
-            back: row.back,
-        };
-
-        cards.insert(row.id as card::Id, card);
-    }
+    .fetch_all(pool.inner())
+    .await?;
 
     Ok(cards)
 }
@@ -227,20 +200,18 @@ pub async fn card_query(
     let tags_match =
         |tags: &BTreeSet<String>| tags.is_superset(&include) && tags.is_disjoint(&exclude);
 
-    fn prompt_from_card((card, tags): (CardWithId, BTreeSet<String>)) -> FullPrompt {
-        let prompt = generate_prompt(card.script, card.front, card.back);
-
-        FullPrompt {
-            card_id: card.id,
-            prompt,
-            tags,
-        }
-    }
-
     let prompts = card::random_by_tags(pool.inner(), pack_id, limit, tags_match)
         .await?
         .into_iter()
-        .map(prompt_from_card)
+        .map(|(card, tags)| {
+            let prompt = generate_prompt(card.script, card.front, card.back);
+
+            FullPrompt {
+                card_id: card.id,
+                prompt,
+                tags,
+            }
+        })
         .collect();
 
     Ok(prompts)
@@ -290,32 +261,27 @@ pub async fn study_create(
 }
 
 #[tauri::command]
-pub async fn study_list(pool: State<'_, SqlitePool>) -> Result<BTreeMap<study::Id, Study>> {
-    let mut rows = sqlx::query!(
-        "
+pub async fn study_list(pool: State<'_, SqlitePool>) -> Result<Vec<study::Study>> {
+    let studies = sqlx::query!(
+        r#"
         SELECT id, title, pack_id, question_count
         FROM study_queries
-        ",
+        "#,
     )
-    .fetch(pool.inner());
-
-    let mut studies = BTreeMap::new();
-
-    while let Some(row) = rows.try_next().await? {
-        let study = Study {
-            title: row.title,
-            pack_id: row.pack_id.map(|id| id as pack::Id),
-            limit: row.question_count as usize,
-        };
-
-        studies.insert(row.id as study::Id, study);
-    }
+    .map(|row| study::Study {
+        id: row.id as u32,
+        title: row.title,
+        pack_id: row.pack_id.map(|id| id as u32),
+        limit: row.question_count as usize,
+    })
+    .fetch_all(pool.inner())
+    .await?;
 
     Ok(studies)
 }
 
 #[tauri::command]
-pub async fn study_tags(pool: State<'_, SqlitePool>, id: study::Id) -> Result<StudyTags> {
+pub async fn study_tags(pool: State<'_, SqlitePool>, id: study::Id) -> Result<study::StudyTags> {
     study::list_tags(pool.inner(), id).await
 }
 

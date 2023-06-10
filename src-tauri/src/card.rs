@@ -10,13 +10,6 @@ use crate::{pack, prelude::*};
 #[derive(TS, Serialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
 pub struct Card {
-    pub label: String,
-    pub script: Option<String>,
-    pub front: String,
-    pub back: String,
-}
-
-pub struct CardWithId {
     pub id: Id,
     pub label: String,
     pub script: Option<String>,
@@ -55,11 +48,11 @@ pub async fn random_by_tags(
     pack_id: Option<pack::Id>,
     limit: Option<usize>,
     mut predicate: impl FnMut(&BTreeSet<String>) -> bool,
-) -> Result<Vec<(CardWithId, BTreeSet<String>)>> {
+) -> Result<Vec<(Card, BTreeSet<String>)>> {
     let mut queried = vec![];
 
     let mut cards = sqlx::query_as!(
-        CardWithId,
+        Card,
         r#"
         SELECT id as "id: Id",
             label,

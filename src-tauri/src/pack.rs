@@ -10,6 +10,7 @@ use crate::prelude::*;
 #[derive(TS, Serialize, Debug)]
 #[ts(rename = "Pack", export, export_to = "../src/bindings/")]
 pub struct Pack {
+    pub id: Id,
     pub title: String,
 }
 

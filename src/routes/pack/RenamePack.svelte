@@ -1,9 +1,9 @@
 <script lang="ts">
     import { invoke } from '$lib/commands';
     import { getModalContext } from '$lib/modals';
-    import type { PackWithId } from '$lib/stores/packs';
+    import type { Pack } from '@bindings/Pack';
 
-    export let pack: PackWithId;
+    export let pack: Pack;
 
     const { close } = getModalContext();
 
