@@ -16,7 +16,6 @@ const createStore = (): PacksStore => {
     const trigger = writable(null);
     const runTrigger = () => trigger.set(null);
 
-    // Turn the packs into an array
     const { subscribe } = derived(
         trigger,
         (_$trigger, set) => {
