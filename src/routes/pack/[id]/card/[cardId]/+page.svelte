@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { invalidateAll } from '$app/navigation';
     import { invoke } from '$lib/commands';
     import type { ModifyCard } from '@bindings/ModifyCard';
     import RenameInput from './RenameInput.svelte';
@@ -98,8 +97,6 @@
 
         additions = new Set();
         removals = new Set();
-
-        cards.reload();
     };
 </script>
 

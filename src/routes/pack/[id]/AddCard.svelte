@@ -4,7 +4,6 @@
     import type { CardsStore } from '$lib/stores/cards';
 
     export let id: number;
-    export let cards: CardsStore;
 
     const { close } = getModalContext();
 
@@ -12,9 +11,7 @@
 
     const submit = async () => {
         close();
-
         await invoke('card_create', { packId: id, label });
-        cards.reload();
     };
 </script>
 

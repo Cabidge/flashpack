@@ -2,33 +2,49 @@ import { banners } from '$lib/banners';
 import { invoke } from '$lib/commands';
 import { createContext } from '$lib/context';
 import type { Card } from '@bindings/Card';
+import { listen } from '@tauri-apps/api/event';
 import { derived, writable, type Readable } from 'svelte/store';
 
-export const createStore = () => {
-    const cards = writable<Record<number, Card>>({});
+export type CardWithId = Card & {
+    id: number;
+};
 
-    const { subscribe } = derived(cards, ($cards) => {
-        return Object.entries($cards).map(([id, card]) => ({ id: Number(id), ...card }));
-    });
+export const createStore = (packId: Readable<number>) => {
+    const trigger = writable(null);
+    const runTrigger = () => trigger.set(null);
 
-    let _packId: number | undefined = undefined;
+    const cards = derived(
+        [packId, trigger],
+        ([$packId], set) => {
+            const reloadCards = () => {
+                invoke('pack_cards', { id: $packId }).then((cardMap) => {
+                    const cards = Object.entries(cardMap).map(([id, card]) => ({
+                        id: Number(id),
+                        ...card
+                    }));
 
-    const reload = (packId?: number) => {
-        if (packId !== undefined) {
-            _packId = packId;
-        }
+                    set(cards);
+                });
+            };
 
-        if (_packId === undefined) {
-            return;
-        }
+            reloadCards();
 
-        invoke('pack_cards', { id: _packId }).then((latest) => cards.set(latest));
-    };
+            const unlisten = listen('update:cards', reloadCards);
+
+            return async () => {
+                // listen returns a Promise to a function that removes the listener
+                (await unlisten)();
+            };
+        },
+        [] as CardWithId[]
+    );
+
+    const reload = runTrigger;
 
     const get = (id: Readable<number>) =>
         derived([cards, id], ([$cards, $id]) => {
             return (
-                $cards[$id] ?? {
+                $cards.find((card) => card.id === $id) ?? {
                     label: 'Deleted Card',
                     script: null,
                     front: '...',
@@ -38,7 +54,7 @@ export const createStore = () => {
         });
 
     return {
-        subscribe,
+        ...cards,
         reload,
         get
     };
