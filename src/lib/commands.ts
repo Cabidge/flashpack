@@ -16,7 +16,7 @@ type StudyId = number;
 
 type Commands = {
     render_markdown: (args: { markdown: string }) => string;
-    generate_prompt: (args: { script?: string; front: string; back: string }) => Prompt;
+    generate_prompt: (args: { script?: string | null; front: string; back: string }) => Prompt;
     // pack
     pack_create: (args: { title: string }) => void;
     pack_list: () => Record<PackId, Pack>;
@@ -25,10 +25,10 @@ type Commands = {
     // card
     card_create: (args: { packId: PackId; label: string }) => void;
     card_query: (args: {
-        packId?: number;
+        packId?: number | null;
         include: string[];
         exclude: string[];
-        limit?: number;
+        limit?: number | null;
     }) => FullPrompt[];
     card_tags: (args: { id: CardId }) => string[];
     card_modify: (args: { id: CardId; action: ModifyCard }) => void;
