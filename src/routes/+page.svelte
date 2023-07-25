@@ -1,5 +1,15 @@
 <script lang="ts">
-    let count = 0;
+    export let data;
 </script>
 
-<button class="btn variant-filled" on:click={() => count++}>{count} clicks</button>
+<nav class="list-nav">
+    <ul>
+        {#each data.packs as pack (pack.id)}
+            <li>
+                <a href="/pack/{pack.id}">
+                    {pack.title}
+                </a>
+            </li>
+        {/each}
+    </ul>
+</nav>
