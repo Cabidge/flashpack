@@ -36,6 +36,18 @@ async fn main() -> Result<()> {
 
     sqlx::migrate!().run(&pool).await?;
 
+    // Populate the database with some dummy data
+    for title in ["foo", "bar", "baz"] {
+        let pack_id = pack::create(&pool, title).await?;
+
+        for i in 0..=5 {
+            let label = format!("{title} {i}");
+            const STANDARD_TEMPLATE: &str = "Question\n\n---\n\nAnswer";
+
+            card::create(&pool, pack_id, &label, "", STANDARD_TEMPLATE).await?;
+        }
+    }
+
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             generate_card_slides,
