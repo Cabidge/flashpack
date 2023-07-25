@@ -11,9 +11,12 @@
     import { listen } from '@tauri-apps/api/event';
     import { invalidate } from '$app/navigation';
     import { onMount } from 'svelte';
+    import { Modal } from '@skeletonlabs/skeleton';
 
     onMount(async () => await listen('update:packs', () => invalidate('flashpack:packs')));
     onMount(async () => await listen('update:cards', () => invalidate('flashpack:cards')));
 </script>
+
+<Modal />
 
 <slot />
