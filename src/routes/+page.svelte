@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { invoke } from '$lib/commands';
     import { AppBar, modalStore } from '@skeletonlabs/skeleton';
 
@@ -16,7 +17,10 @@
                     type: 'prompt',
                     title: 'Create a Pack',
                     valueAttr: { type: 'text', placeholder: 'Title', required: true },
-                    response: (title) => invoke('pack_create', { title })
+                    response: async (title) => {
+                        const id = await invoke('pack_create', { title });
+                        await goto(`/pack/${id}`);
+                    }
                 });
             }}
         >

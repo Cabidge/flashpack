@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { invoke } from '$lib/commands.js';
     import CardPreview from '$lib/components/CardPreview.svelte';
     import { AppBar, modalStore } from '@skeletonlabs/skeleton';
@@ -25,7 +26,10 @@
                     type: 'prompt',
                     title: 'Add a Card',
                     valueAttr: { type: 'text', placeholder: 'Label', required: true },
-                    response: (label) => invoke('card_create', { packId: data.pack.id, label })
+                    response: async (label) => {
+                        const id = await invoke('card_create', { packId: data.pack.id, label });
+                        await goto(`/card/${id}`);
+                    }
                 });
             }}
         >
