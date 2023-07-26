@@ -1,11 +1,8 @@
 <script lang="ts">
     import { invoke } from '$lib/commands.js';
-    import { Tab, TabGroup } from '@skeletonlabs/skeleton';
     import { onMount } from 'svelte';
 
     export let data;
-
-    let tabSet = 0;
 
     let script = '';
     let template = '';
@@ -41,25 +38,12 @@
     <button class="chip variant-filled" on:click={saveChanges}>Save</button>
 {/if}
 
-<TabGroup>
-    <Tab class="relative" bind:group={tabSet} name="script" value={0}>
-        {#if scriptChanged}
-            <span class="badge-icon variant-filled absolute top-0 right-0" />
-        {/if}
-        <span>Script</span>
-    </Tab>
-    <Tab class="relative" bind:group={tabSet} name="template" value={1}>
-        {#if templateChanged}
-            <span class="badge-icon variant-filled absolute top-0 right-0" />
-        {/if}
-        <span>Template</span>
-    </Tab>
+<label class="label">
+    <span>Script</span>
+    <textarea class="textarea font-mono" rows={8} bind:value={script} />
+</label>
 
-    <svelte:fragment slot="panel">
-        {#if tabSet === 0}
-            <textarea class="textarea" rows={10} bind:value={script} />
-        {:else if tabSet === 1}
-            <textarea class="textarea" rows={10} bind:value={template} />
-        {/if}
-    </svelte:fragment>
-</TabGroup>
+<label class="label">
+    <span>Template</span>
+    <textarea class="textarea font-mono" rows={8} bind:value={template} />
+</label>
