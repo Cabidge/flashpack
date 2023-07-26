@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invoke } from '$lib/commands.js';
-    import SlideView from '$lib/components/SlideView.svelte';
+    import CardPreview from '$lib/components/CardPreview.svelte';
     import { AppBar, modalStore } from '@skeletonlabs/skeleton';
 
     export let data;
@@ -45,8 +45,8 @@
                         modalStore.trigger({
                             type: 'component',
                             component: {
-                                ref: SlideView,
-                                props: { script: card.script, template: card.template }
+                                ref: CardPreview,
+                                props: { card }
                             }
                         });
                     }}
