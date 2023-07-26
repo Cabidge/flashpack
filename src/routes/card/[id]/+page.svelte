@@ -1,16 +1,25 @@
 <script lang="ts">
     import { invoke } from '$lib/commands.js';
     import { AppBar } from '@skeletonlabs/skeleton';
-    import { onMount } from 'svelte';
+    import { onMount, tick } from 'svelte';
+    import autosize from 'svelte-autosize';
 
     export let data;
 
     let script = '';
     let template = '';
 
-    onMount(() => {
+    let scriptTextarea: HTMLTextAreaElement;
+    let templateTextarea: HTMLTextAreaElement;
+
+    onMount(async () => {
         script = data.card.script;
         template = data.card.template;
+
+        await tick();
+
+        autosize.update(scriptTextarea);
+        autosize.update(templateTextarea);
     });
 
     $: scriptChanged = script !== data.card.script;
@@ -52,11 +61,23 @@
 <div class="p-4">
     <label class="label">
         <span>Script</span>
-        <textarea class="textarea font-mono" rows={8} bind:value={script} />
+        <textarea
+            class="textarea font-mono"
+            rows={1}
+            bind:this={scriptTextarea}
+            bind:value={script}
+            use:autosize
+        />
     </label>
 
     <label class="label">
         <span>Template</span>
-        <textarea class="textarea font-mono" rows={8} bind:value={template} />
+        <textarea
+            class="textarea font-mono"
+            rows={1}
+            bind:this={templateTextarea}
+            bind:value={template}
+            use:autosize
+        />
     </label>
 </div>
