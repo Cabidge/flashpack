@@ -7,12 +7,12 @@ import type { Pack } from '@bindings/Pack';
 type Commands = {
     generate_card_slides: (args: { script: string; template: string }) => CardSlides;
     // pack
-    pack_create: (args: { title: string }) => void;
+    pack_create: (args: { title: string }) => Pack['id'];
     pack_list: () => Pack[];
     pack_by_id: (args: { id: Pack['id'] }) => Pack | null;
     pack_modify: (args: { id: Pack['id']; action: ModifyPack }) => void;
     // card
-    card_create: (args: { packId: Pack['id']; label: string }) => void;
+    card_create: (args: { packId: Pack['id']; label: string }) => Card['id'];
     card_by_pack: (args: { id: Pack['id'] }) => Card[];
     card_by_id: (args: { id: Card['id'] }) => Card | null;
     card_modify: (args: { id: Card['id']; action: ModifyCard }) => void;

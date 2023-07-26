@@ -91,12 +91,15 @@ pub fn generate_card_slides(script: String, template: String) -> CardSlides {
 // -- pack
 
 #[tauri::command]
-pub async fn pack_create(window: Window, pool: State<'_, SqlitePool>, title: String) -> Result<()> {
-    pack::create(pool.inner(), &title).await?;
-
+pub async fn pack_create(
+    window: Window,
+    pool: State<'_, SqlitePool>,
+    title: String,
+) -> Result<pack::Id> {
+    let id = pack::create(pool.inner(), &title).await?;
     window.emit_all("update:packs", ()).expect("Event error");
 
-    Ok(())
+    Ok(id)
 }
 
 #[tauri::command]
@@ -156,14 +159,12 @@ pub async fn card_create(
     pool: State<'_, SqlitePool>,
     pack_id: pack::Id,
     label: String,
-) -> Result<()> {
+) -> Result<card::Id> {
     const STANDARD_TEMPLATE: &str = "Question\n\n---\n\nAnswer";
-
-    card::create(pool.inner(), pack_id, &label, "", STANDARD_TEMPLATE).await?;
-
+    let id = card::create(pool.inner(), pack_id, &label, "", STANDARD_TEMPLATE).await?;
     window.emit_all("update:cards", ()).expect("Event error");
 
-    Ok(())
+    Ok(id)
 }
 
 #[tauri::command]
