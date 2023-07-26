@@ -83,7 +83,7 @@ fn try_generate_card_slides(script: &str, template: &str) -> Result<CardSlides> 
 #[tauri::command]
 pub fn generate_card_slides(script: String, template: String) -> CardSlides {
     try_generate_card_slides(&script, &template).unwrap_or_else(|err| {
-        let msg = format!("```\n{err}\n```");
+        let msg = format!("<pre><code>Error: {err}</code></pre>");
         CardSlides(vec![msg])
     })
 }
