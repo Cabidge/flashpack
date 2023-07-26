@@ -40,7 +40,7 @@
             <li>
                 <a href="/card/{card.id}" class="chip variant-filled">edit</a>
                 <button
-                    class="btn variant-filled-surface"
+                    class="btn variant-ghost"
                     on:click={() => {
                         modalStore.trigger({
                             type: 'component',
