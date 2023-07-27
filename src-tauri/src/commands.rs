@@ -1,3 +1,4 @@
+use futures::TryStreamExt;
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
 use tauri::{Manager, State, Window};
@@ -149,6 +150,27 @@ pub async fn pack_modify(
     window.emit_all("update:packs", ()).expect("Event error");
 
     Ok(())
+}
+
+#[tauri::command]
+pub async fn pack_generate_practice(
+    pool: State<'_, SqlitePool>,
+    id: pack::Id,
+) -> Result<Vec<CardSlides>> {
+    sqlx::query!(
+        r#"
+        SELECT script, template
+        FROM cards
+        WHERE pack_id = ?
+        ORDER BY RANDOM()
+        "#,
+        id,
+    )
+    .fetch(pool.inner())
+    .map_ok(|card| generate_card_slides(card.script, card.template))
+    .try_collect::<Vec<_>>()
+    .await
+    .map_err(Error::from)
 }
 
 // -- card

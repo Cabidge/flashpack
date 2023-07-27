@@ -11,6 +11,7 @@ type Commands = {
     pack_list: () => Pack[];
     pack_by_id: (args: { id: Pack['id'] }) => Pack | null;
     pack_modify: (args: { id: Pack['id']; action: ModifyPack }) => void;
+    pack_generate_practice: (args: { id: Pack['id'] }) => CardSlides[];
     // card
     card_create: (args: { packId: Pack['id']; label: string }) => Card['id'];
     card_by_pack: (args: { id: Pack['id'] }) => Card[];

@@ -56,6 +56,7 @@ async fn main() -> Result<()> {
             pack_list,
             pack_by_id,
             pack_modify,
+            pack_generate_practice,
             // card
             card_create,
             card_by_pack,
