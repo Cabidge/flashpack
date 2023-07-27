@@ -72,7 +72,7 @@
         <span class={isLabelValid ? '' : 'text-error-500'}>Card Label</span>
         <input
             type="text"
-            class="input {isLabelValid ? '' : 'input-error'}"
+            class="input variant-form-material {isLabelValid ? '' : 'input-error'}"
             placeholder="Enter a Label..."
             bind:value={label}
         />
@@ -81,7 +81,7 @@
     <label class="label">
         <span>Script</span>
         <textarea
-            class="textarea font-mono"
+            class="textarea variant-form-material font-mono"
             rows={1}
             bind:this={scriptTextarea}
             bind:value={script}
@@ -92,7 +92,7 @@
     <label class="label">
         <span>Template</span>
         <textarea
-            class="textarea font-mono"
+            class="textarea variant-form-material font-mono"
             rows={1}
             bind:this={templateTextarea}
             bind:value={template}
