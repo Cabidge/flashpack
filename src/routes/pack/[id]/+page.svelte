@@ -5,6 +5,8 @@
     import { AppBar, modalStore } from '@skeletonlabs/skeleton';
 
     export let data;
+
+    $: hasCards = data.cards.length > 0;
 </script>
 
 <AppBar>
@@ -41,30 +43,38 @@
 <div class="space-y-4 p-4">
     <section class="space-y-4 border border-surface-500 p-4 rounded-container-token">
         <p class="font-semibold">Cards</p>
-        <nav class="list-nav">
-            <ul>
-                {#each data.cards as card (card.id)}
-                    <li>
-                        <button
-                            class="w-full"
-                            on:click={() => {
-                                modalStore.trigger({
-                                    type: 'component',
-                                    component: {
-                                        ref: CardPreview,
-                                        props: { card }
-                                    }
-                                });
-                            }}
-                        >
-                            {card.label}
-                        </button>
-                    </li>
-                {/each}
-            </ul>
-        </nav>
+
+        {#if hasCards}
+            <nav class="list-nav">
+                <ul>
+                    {#each data.cards as card (card.id)}
+                        <li>
+                            <button
+                                class="w-full"
+                                on:click={() => {
+                                    modalStore.trigger({
+                                        type: 'component',
+                                        component: {
+                                            ref: CardPreview,
+                                            props: { card }
+                                        }
+                                    });
+                                }}
+                            >
+                                {card.label}
+                            </button>
+                        </li>
+                    {/each}
+                </ul>
+            </nav>
+        {:else}
+            <p>No cards yet, click 'Add a Card.'</p>
+        {/if}
     </section>
-    <a class="btn variant-filled-primary w-full" href="/pack/{data.pack.id}/practice">
-        Begin Practice
-    </a>
+
+    {#if hasCards}
+        <a class="btn variant-filled-primary w-full" href="/pack/{data.pack.id}/practice">
+            Begin Practice
+        </a>
+    {/if}
 </div>
