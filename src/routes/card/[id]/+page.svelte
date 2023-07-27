@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { invoke } from '$lib/commands.js';
     import { AppBar } from '@skeletonlabs/skeleton';
     import { onMount, tick } from 'svelte';
@@ -45,6 +46,8 @@
                 }
             }
         });
+
+        await goto(`/pack/${data.card.pack_id}`);
     };
 </script>
 
