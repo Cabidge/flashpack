@@ -73,8 +73,14 @@
     </section>
 
     {#if hasCards}
-        <a class="btn variant-filled-primary w-full" href="/pack/{data.pack.id}/practice">
-            Begin Practice
-        </a>
+        {#if data.cards.length >= 2}
+            <a class="btn variant-filled-primary w-full" href="/pack/{data.pack.id}/practice">
+                Begin Practice
+            </a>
+        {:else}
+            <button class="btn variant-filled-primary w-full" disabled>
+                Add More Cards to Begin Practice
+            </button>
+        {/if}
     {/if}
 </div>
