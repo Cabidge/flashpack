@@ -6,6 +6,9 @@
 
     export let data;
 
+    let label = '.';
+    $: trimmedLabel = label.trim();
+
     let script = '';
     let template = '';
 
@@ -13,6 +16,7 @@
     let templateTextarea: HTMLTextAreaElement;
 
     onMount(async () => {
+        label = data.card.label;
         script = data.card.script;
         template = data.card.template;
 
@@ -22,18 +26,22 @@
         autosize.update(templateTextarea);
     });
 
-    $: scriptChanged = script !== data.card.script;
-    $: templateChanged = template !== data.card.template;
-    $: canSave = scriptChanged || templateChanged;
+    $: isLabelChanged = trimmedLabel !== data.card.label;
+    $: isLabelValid = trimmedLabel.length > 0;
+
+    $: isScriptChanged = script !== data.card.script;
+    $: isTemplateChanged = template !== data.card.template;
+
+    $: canSave = (isLabelChanged || isScriptChanged || isTemplateChanged) && isLabelValid;
 
     const saveChanges = async () => {
         await invoke('card_modify', {
             id: data.card.id,
             action: {
                 Edit: {
-                    label: null,
-                    script: scriptChanged ? script : null,
-                    template: templateChanged ? template : null
+                    label: isLabelChanged ? trimmedLabel : null,
+                    script: isScriptChanged ? script : null,
+                    template: isTemplateChanged ? template : null
                 }
             }
         });
@@ -47,9 +55,7 @@
         </a>
     </svelte:fragment>
 
-    <h1 class="text-xl font-semibold">
-        {data.card.label}
-    </h1>
+    <h1 class="text-xl font-semibold">Edit Card</h1>
 
     <svelte:fragment slot="trail">
         {#if canSave}
@@ -58,7 +64,17 @@
     </svelte:fragment>
 </AppBar>
 
-<div class="p-4">
+<div class="space-y-4 p-4">
+    <label class="label">
+        <span class={isLabelValid ? '' : 'text-error-500'}>Card Label</span>
+        <input
+            type="text"
+            class="input {isLabelValid ? '' : 'input-error'}"
+            placeholder="Enter a Label..."
+            bind:value={label}
+        />
+    </label>
+
     <label class="label">
         <span>Script</span>
         <textarea
