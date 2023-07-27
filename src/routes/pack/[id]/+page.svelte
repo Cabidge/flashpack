@@ -39,24 +39,26 @@
 </AppBar>
 
 <div class="p-4">
-    <ul class="list">
-        {#each data.cards as card (card.id)}
-            <li>
-                <button
-                    class="btn variant-ghost"
-                    on:click={() => {
-                        modalStore.trigger({
-                            type: 'component',
-                            component: {
-                                ref: CardPreview,
-                                props: { card }
-                            }
-                        });
-                    }}
-                >
-                    {card.label}
-                </button>
-            </li>
-        {/each}
-    </ul>
+    <nav class="list-nav">
+        <ul>
+            {#each data.cards as card (card.id)}
+                <li>
+                    <button
+                        class="w-full"
+                        on:click={() => {
+                            modalStore.trigger({
+                                type: 'component',
+                                component: {
+                                    ref: CardPreview,
+                                    props: { card }
+                                }
+                            });
+                        }}
+                    >
+                        {card.label}
+                    </button>
+                </li>
+            {/each}
+        </ul>
+    </nav>
 </div>
