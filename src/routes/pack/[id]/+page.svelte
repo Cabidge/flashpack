@@ -38,27 +38,31 @@
     </svelte:fragment>
 </AppBar>
 
-<div class="p-4">
-    <nav class="list-nav">
-        <ul>
-            {#each data.cards as card (card.id)}
-                <li>
-                    <button
-                        class="w-full"
-                        on:click={() => {
-                            modalStore.trigger({
-                                type: 'component',
-                                component: {
-                                    ref: CardPreview,
-                                    props: { card }
-                                }
-                            });
-                        }}
-                    >
-                        {card.label}
-                    </button>
-                </li>
-            {/each}
-        </ul>
-    </nav>
+<div class="space-y-4 p-4">
+    <section class="space-y-4 border border-surface-500 p-4 rounded-container-token">
+        <p class="font-semibold">Cards</p>
+        <nav class="list-nav">
+            <ul>
+                {#each data.cards as card (card.id)}
+                    <li>
+                        <button
+                            class="w-full"
+                            on:click={() => {
+                                modalStore.trigger({
+                                    type: 'component',
+                                    component: {
+                                        ref: CardPreview,
+                                        props: { card }
+                                    }
+                                });
+                            }}
+                        >
+                            {card.label}
+                        </button>
+                    </li>
+                {/each}
+            </ul>
+        </nav>
+    </section>
+    <button class="btn variant-filled-primary w-full">Begin Practice</button>
 </div>
