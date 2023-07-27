@@ -64,5 +64,7 @@
             </ul>
         </nav>
     </section>
-    <button class="btn variant-filled-primary w-full">Begin Practice</button>
+    <a class="btn variant-filled-primary w-full" href="/pack/{data.pack.id}/practice">
+        Begin Practice
+    </a>
 </div>
