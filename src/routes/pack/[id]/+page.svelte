@@ -42,7 +42,6 @@
     <ul class="list">
         {#each data.cards as card (card.id)}
             <li>
-                <a href="/card/{card.id}" class="chip variant-filled">edit</a>
                 <button
                     class="btn variant-ghost"
                     on:click={() => {

@@ -2,6 +2,8 @@
     import { invoke } from '$lib/commands';
     import type { Card } from '@bindings/Card';
 
+    export let parent: any;
+
     export let card: Card;
 
     let rendered: string = '';
@@ -17,9 +19,9 @@
         <span class="text-xl font-semibold">
             {card.label}
         </span>
-        <button class="chip variant-filled float-right" on:click={() => (card = card)}>
-            refresh
-        </button>
+        <a class="chip variant-filled float-right" href="/card/{card.id}" on:click={parent.onClose}>
+            edit
+        </a>
     </header>
 
     <div class="border border-surface-500 p-4 rounded-container-token">
