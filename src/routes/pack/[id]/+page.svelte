@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { invoke } from '$lib/commands.js';
-    import CardPreview from '$lib/components/CardPreview.svelte';
+    import ModalCardPreview from '$lib/components/ModalCardPreview.svelte';
     import { AppBar, modalStore } from '@skeletonlabs/skeleton';
 
     export let data;
@@ -55,7 +55,7 @@
                                     modalStore.trigger({
                                         type: 'component',
                                         component: {
-                                            ref: CardPreview,
+                                            ref: ModalCardPreview,
                                             props: { card }
                                         }
                                     });
