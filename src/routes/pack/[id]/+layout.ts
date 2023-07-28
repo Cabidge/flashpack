@@ -1,6 +1,6 @@
 import { invoke } from '$lib/commands';
 import { redirect } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
+import type { LayoutLoad } from './$types';
 
 export const load = (async ({ depends, params }) => {
     depends('flashpack:packs', 'flashpack:cards');
@@ -15,4 +15,4 @@ export const load = (async ({ depends, params }) => {
         pack,
         cards: invoke('card_by_pack', { id })
     };
-}) satisfies PageLoad;
+}) satisfies LayoutLoad;

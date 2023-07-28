@@ -1,12 +1,11 @@
 import { invoke } from '$lib/commands';
 import type { PageLoad } from './$types';
 
-export const load = (async ({ params }) => {
+export const load = (async ({ parent }) => {
     // TODO: change accepted id type to a plain string
-    const id = parseInt(params.id) as unknown as bigint;
+    const id = (await parent()).pack.id;
 
     return {
-        id,
         questions: invoke('pack_generate_practice', { id })
     };
 }) satisfies PageLoad;

@@ -10,7 +10,7 @@
 
 <AppBar>
     <svelte:fragment slot="lead">
-        <a href="/pack/{data.id}">
+        <a href="/pack/{data.pack.id}">
             <i class="fa-solid fa-arrow-left fa-lg" />
         </a>
     </svelte:fragment>
@@ -19,7 +19,7 @@
 </AppBar>
 
 <div class="p-4">
-    <Stepper on:complete={() => goto(`/pack/${data.id}`)} stepTerm="Question">
+    <Stepper on:complete={() => goto(`/pack/${data.pack.id}`)} stepTerm="Question">
         {#each questions as question}
             <Step
                 locked={question.currentSlide < question.slides.length - 1}
