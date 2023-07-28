@@ -75,7 +75,10 @@
     {#if hasCards}
         {#if data.cards.length >= 2}
             <a class="btn variant-filled-primary w-full" href="/pack/{data.pack.id}/practice">
-                Begin Practice
+                Flash Study
+            </a>
+            <a class="btn variant-ghost w-full" href="/pack/{data.pack.id}/endless">
+                Endless Study
             </a>
         {:else}
             <button class="btn variant-filled-primary w-full" disabled>
