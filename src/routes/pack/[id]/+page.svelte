@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { invoke } from '$lib/commands.js';
     import ModalCardPreview from '$lib/components/ModalCardPreview.svelte';
-    import { AppBar, modalStore } from '@skeletonlabs/skeleton';
+    import { AppBar, modalStore, popup } from '@skeletonlabs/skeleton';
 
     export let data;
 
@@ -61,9 +61,78 @@
                                     });
                                 }}
                             >
-                                {card.label}
+                                <span class="flex-auto text-left">
+                                    {card.label}
+                                </span>
+                                <button
+                                    class="btn-icon btn-icon-sm text-xs"
+                                    on:click|stopPropagation={() => {}}
+                                    use:popup={{
+                                        event: 'click',
+                                        target: `popup-${card.id}`,
+                                        placement: 'bottom'
+                                    }}
+                                >
+                                    :
+                                </button>
                             </button>
                         </li>
+
+                        <div class="card z-10 p-4" data-popup="popup-{card.id}">
+                            <div class="arrow bg-surface-100-800-token" />
+                            <div class="flex flex-col">
+                                <a href="/card/{card.id}" class="btn">Edit</a>
+                                <button
+                                    class="btn"
+                                    on:click={() => {
+                                        modalStore.trigger({
+                                            type: 'prompt',
+                                            title: 'Rename Card',
+                                            value: card.label,
+                                            valueAttr: {
+                                                type: 'text',
+                                                placeholder: 'New Label',
+                                                required: true
+                                            },
+                                            response: (newLabel) => {
+                                                invoke('card_modify', {
+                                                    id: card.id,
+                                                    action: {
+                                                        Edit: {
+                                                            label: newLabel,
+                                                            script: null,
+                                                            template: null
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }}
+                                >
+                                    Rename
+                                </button>
+                                <button
+                                    class="btn"
+                                    on:click={() => {
+                                        modalStore.trigger({
+                                            type: 'confirm',
+                                            title: 'Delete Card',
+                                            body: `Are you sure you want to delete '${card.label}'?`,
+                                            response: (doDelete) => {
+                                                if (doDelete) {
+                                                    invoke('card_modify', {
+                                                        id: card.id,
+                                                        action: 'Delete'
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    }}
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
                     {/each}
                 </ul>
             </nav>
