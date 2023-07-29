@@ -13,6 +13,11 @@
     import { onMount } from 'svelte';
     import { Modal } from '@skeletonlabs/skeleton';
 
+    import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
+    import { storePopup } from '@skeletonlabs/skeleton';
+
+    storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+
     onMount(async () => await listen('update:packs', () => invalidate('flashpack:packs')));
     onMount(async () => await listen('update:cards', () => invalidate('flashpack:cards')));
 </script>
