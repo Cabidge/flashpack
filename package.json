@@ -39,12 +39,8 @@
     },
     "type": "module",
     "dependencies": {
-        "@codemirror/lang-javascript": "^6.1.6",
         "@tailwindcss/forms": "^0.5.3",
         "@tauri-apps/api": "^1.2.0",
-        "@types/katex": "^0.16.0",
-        "katex": "^0.16.4",
-        "svelte-autosize": "^1.1.0",
-        "svelte-codemirror-editor": "^1.1.0"
+        "svelte-autosize": "^1.1.0"
     }
 }
