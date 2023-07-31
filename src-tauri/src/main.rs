@@ -32,21 +32,9 @@ macro_rules! bail {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let pool = SqlitePool::connect("sqlite::memory:").await?;
+    let pool = get_database_pool().await?;
 
     sqlx::migrate!().run(&pool).await?;
-
-    // Populate the database with some dummy data
-    for title in ["foo", "bar", "baz"] {
-        let pack_id = pack::create(&pool, title).await?;
-
-        for i in 0..=5 {
-            let label = format!("{title} {i}");
-            const STANDARD_TEMPLATE: &str = "Question\n\n---\n\nAnswer";
-
-            card::create(&pool, pack_id, &label, "", STANDARD_TEMPLATE).await?;
-        }
-    }
 
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
@@ -68,4 +56,28 @@ async fn main() -> Result<()> {
         .expect("error while running tauri application");
 
     Ok(())
+}
+
+async fn get_database_pool() -> Result<SqlitePool> {
+    use std::fs;
+
+    let Some(proj_dirs) = directories::ProjectDirs::from("com", "Cabidge", "Flashpack") else {
+        bail!("Could not find home directory")
+    };
+
+    let data_root_path = proj_dirs.data_local_dir();
+    fs::create_dir_all(data_root_path)?;
+
+    let mut db_path = data_root_path.to_path_buf();
+    db_path.push("database.db");
+
+    fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .open(&db_path)?;
+
+    let pool = SqlitePool::connect(&db_path.to_string_lossy()).await?;
+
+    Ok(pool)
 }

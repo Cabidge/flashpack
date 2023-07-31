@@ -8,6 +8,8 @@ pub enum Error {
     Migrate(#[from] sqlx::migrate::MigrateError),
     #[error("[tera] {0}")]
     Tera(#[from] tera::Error),
+    #[error("[io] {0}")]
+    Io(#[from] std::io::Error),
     #[error(transparent)]
     Custom(#[from] anyhow::Error),
 }
