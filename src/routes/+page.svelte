@@ -64,6 +64,7 @@
                                     modalStore.trigger({
                                         type: 'prompt',
                                         title: 'Rename Pack',
+                                        buttonTextSubmit: 'Save',
                                         value: pack.title,
                                         valueAttr: {
                                             type: 'text',
@@ -88,6 +89,7 @@
                                         type: 'confirm',
                                         title: 'Delete Pack',
                                         body: `Are you sure you want to delete '${pack.title}'?`,
+                                        buttonTextConfirm: 'Delete',
                                         response: (doDelete) => {
                                             if (doDelete) {
                                                 invoke('pack_modify', {

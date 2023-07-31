@@ -88,6 +88,7 @@
                                         modalStore.trigger({
                                             type: 'prompt',
                                             title: 'Rename Card',
+                                            buttonTextSubmit: 'Save',
                                             value: card.label,
                                             valueAttr: {
                                                 type: 'text',
@@ -118,6 +119,7 @@
                                             type: 'confirm',
                                             title: 'Delete Card',
                                             body: `Are you sure you want to delete '${card.label}'?`,
+                                            buttonTextConfirm: 'Delete',
                                             response: (doDelete) => {
                                                 if (doDelete) {
                                                     invoke('card_modify', {
