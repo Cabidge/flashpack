@@ -1,0 +1,60 @@
+<script lang="ts">
+    import { invoke } from '$lib/commands';
+    import type { Card } from '@bindings/Card';
+    import { modalStore } from '@skeletonlabs/skeleton';
+
+    export let card: Card;
+    export let popup: string;
+
+    const handleRename = () => {
+        modalStore.trigger({
+            type: 'prompt',
+            title: 'Rename Card',
+            buttonTextSubmit: 'Save',
+            value: card.label,
+            valueAttr: {
+                type: 'text',
+                placeholder: 'New Label',
+                required: true
+            },
+            response: (newLabel) => {
+                invoke('card_modify', {
+                    id: card.id,
+                    action: {
+                        Edit: {
+                            label: newLabel,
+                            script: null,
+                            template: null
+                        }
+                    }
+                });
+            }
+        });
+    };
+
+    const handleDelete = () => {
+        modalStore.trigger({
+            type: 'confirm',
+            title: 'Delete Card',
+            body: `Are you sure you want to delete '${card.label}'?`,
+            buttonTextConfirm: 'Delete',
+            response: (doDelete) => {
+                if (doDelete) {
+                    invoke('card_modify', {
+                        id: card.id,
+                        action: 'Delete'
+                    });
+                }
+            }
+        });
+    };
+</script>
+
+<div class="card z-10 p-4" data-popup={popup}>
+    <div class="arrow bg-surface-100-800-token" />
+    <div class="flex flex-col">
+        <a href="/card/{card.id}" class="btn">Edit</a>
+        <button class="btn" on:click={handleRename}>Rename</button>
+        <button class="btn" on:click={handleDelete}>Delete</button>
+    </div>
+</div>
