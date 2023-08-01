@@ -4,6 +4,6 @@
     export let href: string | undefined | null = undefined;
 </script>
 
-<a class="btn-icon btn-icon-sm variant-soft-surface" {href}>
+<a class="btn-icon btn-icon-sm hover:variant-soft" {href}>
     <LeftArrow class="text-lg" />
 </a>
