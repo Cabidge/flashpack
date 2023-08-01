@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { invoke } from '$lib/commands.js';
+    import ReturnLinkButton from '$lib/components/ReturnLinkButton.svelte';
     import { AppBar } from '@skeletonlabs/skeleton';
     import { onMount, tick } from 'svelte';
     import autosize from 'svelte-autosize';
@@ -53,9 +54,7 @@
 
 <AppBar>
     <svelte:fragment slot="lead">
-        <a href="/pack/{data.card.pack_id}">
-            <i class="fa-solid fa-arrow-left fa-lg" />
-        </a>
+        <ReturnLinkButton href="/pack/{data.card.pack_id}" />
     </svelte:fragment>
 
     <h1 class="text-xl font-semibold">Edit Card</h1>

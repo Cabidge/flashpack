@@ -4,6 +4,7 @@
     import ModalCardPreview from '$lib/components/ModalCardPreview.svelte';
     import { AppBar, modalStore, popup } from '@skeletonlabs/skeleton';
     import CardContextMenu from './CardContextMenu.svelte';
+    import ReturnLinkButton from '$lib/components/ReturnLinkButton.svelte';
 
     export let data;
 
@@ -12,9 +13,7 @@
 
 <AppBar>
     <svelte:fragment slot="lead">
-        <a href="/">
-            <i class="fa-solid fa-arrow-left fa-lg" />
-        </a>
+        <ReturnLinkButton href="/" />
     </svelte:fragment>
 
     <h1 class="text-xl font-semibold">
