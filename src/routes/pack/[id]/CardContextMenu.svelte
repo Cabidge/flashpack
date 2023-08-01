@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { invoke } from '$lib/commands';
     import type { Card } from '@bindings/Card';
     import { modalStore } from '@skeletonlabs/skeleton';
@@ -32,6 +33,37 @@
         });
     };
 
+    const handleDuplicate = async () => {
+        const shouldDuplicate = await new Promise((resolve) => {
+            modalStore.trigger({
+                type: 'confirm',
+                title: 'Duplicate Card',
+                body: `Do you want to make a copy of '${card.label}'?`,
+                response: resolve
+            });
+        });
+
+        if (!shouldDuplicate) {
+            return;
+        }
+
+        const id = await invoke('card_create', {
+            packId: card.pack_id,
+            label: `${card.label} (Copy)`
+        });
+
+        await invoke('card_modify', {
+            id,
+            action: {
+                Edit: {
+                    label: null,
+                    script: card.script,
+                    template: card.template
+                }
+            }
+        });
+    };
+
     const handleDelete = () => {
         modalStore.trigger({
             type: 'confirm',
@@ -55,6 +87,7 @@
     <div class="flex flex-col">
         <a href="/card/{card.id}" class="btn">Edit</a>
         <button class="btn" on:click={handleRename}>Rename</button>
+        <button class="btn" on:click={handleDuplicate}>Duplicate</button>
         <button class="btn" on:click={handleDelete}>Delete</button>
     </div>
 </div>
