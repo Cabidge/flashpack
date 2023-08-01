@@ -6,6 +6,7 @@
     import '@skeletonlabs/skeleton/styles/skeleton.css';
 
     // Finally, your application's global stylesheet (sometimes labeled 'app.css')
+    import '../katex.css';
     import '../app.postcss';
 
     import { listen } from '@tauri-apps/api/event';
