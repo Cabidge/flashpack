@@ -5,6 +5,7 @@
     import { AppBar, modalStore, popup } from '@skeletonlabs/skeleton';
     import CardContextMenu from './CardContextMenu.svelte';
     import ReturnLinkButton from '$lib/components/ReturnLinkButton.svelte';
+    import VerticalDots from '~icons/mdi/dots-vertical';
 
     export let data;
 
@@ -65,7 +66,7 @@
                                     {card.label}
                                 </span>
                                 <button
-                                    class="btn-icon btn-icon-sm text-xs"
+                                    class="btn-icon"
                                     on:click|stopPropagation={() => {}}
                                     use:popup={{
                                         event: 'click',
@@ -73,7 +74,7 @@
                                         placement: 'bottom'
                                     }}
                                 >
-                                    :
+                                    <VerticalDots class="scale-150" />
                                 </button>
                             </button>
                         </li>

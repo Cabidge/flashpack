@@ -3,6 +3,7 @@
     import { invoke } from '$lib/commands';
     import { AppBar, modalStore, popup } from '@skeletonlabs/skeleton';
     import PackContextMenu from './PackContextMenu.svelte';
+    import VerticalDots from '~icons/mdi/dots-vertical';
 
     export let data;
 </script>
@@ -43,7 +44,7 @@
                                 {pack.title}
                             </span>
                             <button
-                                class="btn-icon btn-icon-sm text-xs"
+                                class="btn-icon"
                                 on:click|preventDefault={() => {}}
                                 use:popup={{
                                     event: 'click',
@@ -51,7 +52,7 @@
                                     placement: 'bottom'
                                 }}
                             >
-                                :
+                                <VerticalDots class="scale-150" />
                             </button>
                         </a>
                     </li>
