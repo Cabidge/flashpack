@@ -75,6 +75,7 @@
         />
     </label>
 
+    <!--TODO: handle overflowed text for text areas-->
     <label class="label">
         <span>Script</span>
         <textarea
@@ -88,12 +89,16 @@
 
     <label class="label">
         <span>Template</span>
-        <textarea
-            class="textarea variant-form-material font-mono"
-            rows={1}
-            bind:this={templateTextarea}
-            bind:value={template}
-            use:autosize
-        />
+        <div class="relative">
+            <textarea
+                class="textarea variant-form-material font-mono text-transparent caret-white backdrop-blur-0"
+                rows={1}
+                bind:this={templateTextarea}
+                bind:value={template}
+                use:autosize
+            />
+            <!--TODO: apply syntax highlighting to the content of this-->
+            <pre class="pointer-events-none absolute top-2 left-3 text-red-500">{template}</pre>
+        </div>
     </label>
 </div>
