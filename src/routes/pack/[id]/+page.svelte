@@ -28,7 +28,7 @@
                 modalStore.trigger({
                     type: 'prompt',
                     title: 'Add a Card',
-                    valueAttr: { type: 'text', placeholder: 'Label', required: true },
+                    valueAttr: { type: 'text', placeholder: 'Label' },
                     response: async (label) => {
                         const id = await invoke('card_create', { packId: data.pack.id, label });
                         await goto(`/card/${id}`);
@@ -49,6 +49,7 @@
             <nav class="list-nav">
                 <ul>
                     {#each data.cards as card (card.id)}
+                        {@const hasLabel = card.label.length > 0}
                         <li>
                             <button
                                 class="w-full"
@@ -62,8 +63,8 @@
                                     });
                                 }}
                             >
-                                <span class="flex-auto text-left">
-                                    {card.label}
+                                <span class="flex-auto text-left {hasLabel ? '' : 'italic'}">
+                                    {hasLabel ? card.label : card.template}
                                 </span>
                                 <button
                                     class="btn-icon"

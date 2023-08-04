@@ -29,12 +29,10 @@
     });
 
     $: isLabelChanged = trimmedLabel !== data.card.label;
-    $: isLabelValid = trimmedLabel.length > 0;
-
     $: isScriptChanged = script !== data.card.script;
     $: isTemplateChanged = template !== data.card.template;
 
-    $: canSave = (isLabelChanged || isScriptChanged || isTemplateChanged) && isLabelValid;
+    $: canSave = isLabelChanged || isScriptChanged || isTemplateChanged;
 
     const saveChanges = async () => {
         await invoke('card_modify', {
@@ -68,10 +66,10 @@
 
 <div class="space-y-4 p-4">
     <label class="label">
-        <span class={isLabelValid ? '' : 'text-error-500'}>Card Label</span>
+        <span>Card Label</span>
         <input
             type="text"
-            class="input variant-form-material {isLabelValid ? '' : 'input-error'}"
+            class="input variant-form-material"
             placeholder="Enter a Label..."
             bind:value={label}
         />

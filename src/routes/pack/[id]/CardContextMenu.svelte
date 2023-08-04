@@ -15,8 +15,7 @@
             value: card.label,
             valueAttr: {
                 type: 'text',
-                placeholder: 'New Label',
-                required: true
+                placeholder: 'New Label'
             },
             response: (newLabel) => {
                 invoke('card_modify', {
