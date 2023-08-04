@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { invoke } from '$lib/commands';
     import type { Card } from '@bindings/Card';
     import { modalStore } from '@skeletonlabs/skeleton';
