@@ -9,6 +9,8 @@
     import '../katex.css';
     import '../app.postcss';
 
+    import 'highlight.js/styles/atom-one-dark-reasonable.css';
+
     import { listen } from '@tauri-apps/api/event';
     import { invalidate } from '$app/navigation';
     import { onMount } from 'svelte';

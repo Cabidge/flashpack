@@ -5,6 +5,7 @@
     import { AppBar } from '@skeletonlabs/skeleton';
     import { onMount, tick } from 'svelte';
     import autosize from 'svelte-autosize';
+    import HighlightTextArea from './HighlightTextArea.svelte';
 
     export let data;
 
@@ -75,30 +76,23 @@
         />
     </label>
 
-    <!--TODO: handle overflowed text for text areas-->
-    <label class="label">
+    <!--TODO: custom highlighter for rhai-->
+    <label class="label" for={undefined}>
         <span>Script</span>
-        <textarea
-            class="textarea variant-form-material font-mono"
-            rows={1}
-            bind:this={scriptTextarea}
+        <HighlightTextArea
+            bind:textarea={scriptTextarea}
             bind:value={script}
-            use:autosize
+            language="javascript"
         />
     </label>
 
-    <label class="label">
+    <!--TODO: custom highlighter for the custom templating language-->
+    <label class="label" for={undefined}>
         <span>Template</span>
-        <div class="relative">
-            <textarea
-                class="textarea variant-form-material font-mono text-transparent caret-white backdrop-blur-0"
-                rows={1}
-                bind:this={templateTextarea}
-                bind:value={template}
-                use:autosize
-            />
-            <!--TODO: apply syntax highlighting to the content of this-->
-            <pre class="pointer-events-none absolute top-2 left-3 text-red-500">{template}</pre>
-        </div>
+        <HighlightTextArea
+            bind:textarea={templateTextarea}
+            bind:value={template}
+            language="jinja"
+        />
     </label>
 </div>
