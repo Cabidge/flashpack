@@ -1,6 +1,6 @@
 # Flashpack - A Flash Card Desktop App
 
-Flashpack is a passion project born out of the desire to create a studying tool that not only encompasses traditional flashcards, but also caters to the unique challenges of math-based questions.
+Flashpack is a project that set out to create a studying tool that not only encompasses traditional flashcards, but also caters to the unique challenges of math-based questions.
 
 ## Features
 
