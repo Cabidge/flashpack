@@ -55,28 +55,24 @@ fn try_generate_card_slides(script: &str, template: &str) -> Result<CardSlides> 
 
     let rendered = tera::Tera::one_off(template, &context, true)?;
 
-    // TODO: optimize this absolute mess
-    let mut grouped_events = vec![];
-    let mut current_group = vec![];
-    for event in Parser::new(&rendered) {
-        if matches!(event, pulldown_cmark::Event::Rule) {
-            grouped_events.push(current_group);
-            current_group = vec![];
-        } else {
-            current_group.push(event);
+    // TODO: create a custom mark up language
+    let mut slides = vec![];
+    let mut events = Parser::new(&rendered);
+    loop {
+        let slide_events = events
+            .by_ref()
+            .take_while(|event| !matches!(event, pulldown_cmark::Event::Rule));
+
+        let mut slide = String::new();
+        pulldown_cmark::html::push_html(&mut slide, slide_events);
+
+        slides.push(slide);
+
+        // this is guaranteed to be a horizontal rule event or none because of the take_while
+        if events.next().is_none() {
+            break;
         }
     }
-
-    grouped_events.push(current_group);
-
-    let slides = grouped_events
-        .into_iter()
-        .map(|events| {
-            let mut html = String::new();
-            pulldown_cmark::html::push_html(&mut html, events.into_iter());
-            html
-        })
-        .collect();
 
     Ok(CardSlides(slides))
 }
