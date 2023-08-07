@@ -1,5 +1,4 @@
 <script lang="ts">
-    // TODO: try out prism.js instead of highlight.js -- their jinja syntax highlighting seems nicer
     import hljs from 'highlight.js';
     import autosize from 'svelte-autosize';
 
