@@ -26,11 +26,13 @@ sqlx = { version = "0.6", features = ["runtime-tokio-rustls", "sqlite", "migrate
 rand = "0.8.5"
 futures = "0.3.27"
 nom = "7.1"
-rhai = "1.13"
+rhai = { version = "1.13", features = ["serde"] }
 rhai-rand = "0.1.5"
 pulldown-cmark = "0.9.2"
 katex = { version = "0.4.6", features = ["duktape"], default-features = false }
 js-sandbox = "0.1.6"
+tera = "1.19.0"
+directories = "5.0.1"
 
 [features]
 # by default Tauri runs in production mode

@@ -12,9 +12,11 @@
         "format": "prettier --plugin-search-dir . --write ."
     },
     "devDependencies": {
+        "@iconify-json/mdi": "^1.1.53",
+        "@skeletonlabs/skeleton": "^1.10.0",
         "@sveltejs/adapter-auto": "^2.0.0",
         "@sveltejs/adapter-static": "^1.0.0-next.50",
-        "@sveltejs/kit": "^1.5.0",
+        "@sveltejs/kit": "^1.22.3",
         "@tailwindcss/typography": "^0.5.9",
         "@typescript-eslint/eslint-plugin": "^5.45.0",
         "@typescript-eslint/parser": "^5.45.0",
@@ -29,20 +31,20 @@
         "prettier-plugin-svelte": "^2.8.1",
         "prettier-plugin-tailwindcss": "^0.2.3",
         "svelte": "^3.54.0",
-        "svelte-check": "^3.0.1",
+        "svelte-check": "^3.4.6",
         "svelte-preprocess": "^4.10.7",
         "tailwindcss": "^3.1.5",
         "tslib": "^2.4.1",
         "typescript": "^4.9.3",
+        "unplugin-icons": "^0.16.5",
         "vite": "^4.0.0"
     },
     "type": "module",
     "dependencies": {
-        "@codemirror/lang-javascript": "^6.1.6",
+        "@floating-ui/dom": "^1.5.0",
         "@tailwindcss/forms": "^0.5.3",
         "@tauri-apps/api": "^1.2.0",
-        "@types/katex": "^0.16.0",
-        "katex": "^0.16.4",
-        "svelte-codemirror-editor": "^1.1.0"
+        "highlight.js": "^11.8.0",
+        "svelte-autosize": "^1.1.0"
     }
 }

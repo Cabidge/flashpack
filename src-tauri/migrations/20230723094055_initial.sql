@@ -1,0 +1,14 @@
+CREATE TABLE packs (
+    id INTEGER NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL
+);
+
+CREATE TABLE cards (
+    id INTEGER NOT NULL PRIMARY KEY,
+    label TEXT NOT NULL,
+    script TEXT NOT NULL,
+    template TEXT NOT NULL,
+    pack_id INTEGER NOT NULL REFERENCES packs(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);

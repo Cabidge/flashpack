@@ -1,42 +1,22 @@
 import type { Card } from '@bindings/Card';
-import type { FullPrompt } from '@bindings/FullPrompt';
+import type { CardSlides } from '@bindings/CardSlides';
 import type { ModifyCard } from '@bindings/ModifyCard';
 import type { ModifyPack } from '@bindings/ModifyPack';
-import type { ModifyStudy } from '@bindings/ModifyStudy';
 import type { Pack } from '@bindings/Pack';
-import type { Prompt } from '@bindings/Prompt';
-import type { Study } from '@bindings/Study';
-import type { StudyTags } from '@bindings/StudyTags';
-
-import { banners } from './banners';
-
-type PackId = number;
-type CardId = number;
-type StudyId = number;
 
 type Commands = {
-    render_markdown: (args: { markdown: string }) => string;
-    generate_prompt: (args: { script: string; front: string; back: string }) => Prompt;
+    generate_card_slides: (args: { script: string; template: string }) => CardSlides;
     // pack
-    pack_create: (args: { title: string }) => void;
-    pack_list: () => Record<PackId, Pack>;
-    pack_cards: (args: { id: PackId }) => Record<CardId, Card>;
-    pack_modify: (args: { id: PackId; action: ModifyPack }) => void;
+    pack_create: (args: { title: string }) => Pack['id'];
+    pack_list: () => Pack[];
+    pack_by_id: (args: { id: Pack['id'] }) => Pack | null;
+    pack_modify: (args: { id: Pack['id']; action: ModifyPack }) => void;
+    pack_generate_practice: (args: { id: Pack['id'] }) => CardSlides[];
     // card
-    card_create: (args: { packId: PackId; label: string }) => void;
-    card_query: (args: {
-        packId?: number;
-        include: string[];
-        exclude: string[];
-        limit?: number;
-    }) => FullPrompt[];
-    card_tags: (args: { id: CardId }) => string[];
-    card_modify: (args: { id: CardId; action: ModifyCard }) => void;
-    // study
-    study_create: (title: string) => void;
-    study_list: () => Record<StudyId, Study>;
-    study_tags: (args: { id: StudyId }) => StudyTags;
-    study_modify: (args: { id: StudyId; action: ModifyStudy }) => void;
+    card_create: (args: { packId: Pack['id']; label: string }) => Card['id'];
+    card_by_pack: (args: { id: Pack['id'] }) => Card[];
+    card_by_id: (args: { id: Card['id'] }) => Card | null;
+    card_modify: (args: { id: Card['id']; action: ModifyCard }) => void;
 };
 
 type Invoke = <T extends keyof Commands>(
@@ -52,11 +32,5 @@ type Window = {
 
 export const invoke: Invoke = async (cmd, ...args) => {
     const invoke = (window as unknown as Window).__TAURI__.invoke;
-
-    try {
-        return await invoke(cmd, ...args);
-    } catch (err) {
-        banners.add(`${cmd} Error`, String(err));
-        throw err;
-    }
+    return await invoke(cmd, ...args);
 };

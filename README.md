@@ -1,38 +1,46 @@
-# create-svelte
+# Flashpack - A Flash Card Desktop App
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+Flashpack is a project that set out to create a studying tool that not only encompasses traditional flashcards, but also caters to the unique challenges of math-based questions.
 
-## Creating a project
+## Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+- **Scriptable Cards**: One of Flashpack's key features is its ability to generate question cards with variable content through user-made scripts. This is particularly beneficial for subjects like math, where randomized variations of numeric answers aid in better understanding and prevent memorization of specific values.
+- **AsciiMath Support**: Flashpack supports rendering complex math expressions through [AsciiMath](http://asciimath.org/), which allows for a more readable source text.
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+## Screenshots
 
-# create a new project in my-app
-npm create svelte@latest my-app
+TODO
+
+## Installation
+
+*No releases yet*
+
+## Usage
+
+To run this locally from source, first make sure to complete the [Tauri prerequesites](https://tauri.app/v1/guides/getting-started/prerequisites) and install the Tauri cli:
+
+```
+$ cargo install tauri-cli
 ```
 
-## Developing
+Next, clone this repo and install the necessary npm modules:
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```
+$ git clone git@github.com:Cabidge/flashpack.git
+$ cd flashpack
+$ npm i
 ```
 
-## Building
+Once that's done, use the Tauri cli to run in debug mode:
 
-To create a production version of your app:
-
-```bash
-npm run build
+```
+$ cargo tauri dev
 ```
 
-You can preview the production build with `npm run preview`.
+Or, build an executable in release mode:
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+```
+$ cargo tauri build
+$ cd ./src-tauri/target/release
+$ ls
+```
