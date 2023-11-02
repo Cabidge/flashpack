@@ -107,7 +107,6 @@ dependencies = [
  "directories",
  "flashmark",
  "futures",
- "nom",
  "rand 0.8.5",
  "serde",
  "serde_json",
