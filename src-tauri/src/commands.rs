@@ -4,7 +4,7 @@ use sqlx::SqlitePool;
 use tauri::{Manager, State, Window};
 use ts_rs::TS;
 
-use crate::{card, markdown::Parser, pack, prelude::*};
+use crate::{card, pack, prelude::*};
 
 #[derive(TS, Deserialize, Debug)]
 #[ts(export, export_to = "../src/bindings/")]
@@ -28,61 +28,9 @@ pub enum ModifyCard {
 #[ts(export, export_to = "../src/bindings/")]
 pub struct CardSlides(Vec<String>);
 
-fn context_from_script(script: &str) -> Result<tera::Context> {
-    let engine = crate::engine::create_engine();
-
-    let scope = rhai::Scope::new();
-
-    let ast = engine
-        .compile_with_scope(&scope, script)
-        .map_err(anyhow::Error::from)?;
-
-    let module = rhai::Module::eval_ast_as_new(scope, &ast, &engine)
-        .map_err(|err| err.to_string())
-        .map_err(anyhow::Error::msg)?;
-
-    let mut context = tera::Context::new();
-
-    for (ident, value) in module.iter_var() {
-        context.insert(ident, &value);
-    }
-
-    Ok(context)
-}
-
-fn try_generate_card_slides(script: &str, template: &str) -> Result<CardSlides> {
-    let context = context_from_script(script)?;
-
-    let rendered = tera::Tera::one_off(template, &context, true)?;
-
-    // TODO: create a custom mark up language
-    let mut slides = vec![];
-    let mut events = Parser::new(&rendered);
-    loop {
-        let slide_events = events
-            .by_ref()
-            .take_while(|event| !matches!(event, pulldown_cmark::Event::Rule));
-
-        let mut slide = String::new();
-        pulldown_cmark::html::push_html(&mut slide, slide_events);
-
-        slides.push(slide);
-
-        // this is guaranteed to be a horizontal rule event or none because of the take_while
-        if events.next().is_none() {
-            break;
-        }
-    }
-
-    Ok(CardSlides(slides))
-}
-
 #[tauri::command]
-pub fn generate_card_slides(script: String, template: String) -> CardSlides {
-    try_generate_card_slides(&script, &template).unwrap_or_else(|err| {
-        let msg = format!("<pre><code>Error: {err}</code></pre>");
-        CardSlides(vec![msg])
-    })
+pub fn generate_card_slides(_script: String, template: String) -> CardSlides {
+    CardSlides(flashmark::render(&template))
 }
 
 // -- pack
