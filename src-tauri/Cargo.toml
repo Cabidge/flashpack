@@ -22,17 +22,16 @@ tokio = { version = "1", features = ["full"] }
 anyhow = "1.0.69"
 thiserror = "1.0.38"
 ts-rs = "6.2.1"
-sqlx = { version = "0.6", features = ["runtime-tokio-rustls", "sqlite", "migrate"] }
+sqlx = { version = "0.6", features = [
+    "runtime-tokio-rustls",
+    "sqlite",
+    "migrate",
+] }
 rand = "0.8.5"
 futures = "0.3.27"
 nom = "7.1"
-rhai = { version = "1.13", features = ["serde"] }
-rhai-rand = "0.1.5"
-pulldown-cmark = "0.9.2"
-katex = { version = "0.4.6", features = ["duktape"], default-features = false }
-js-sandbox = "0.1.6"
-tera = "1.19.0"
 directories = "5.0.1"
+flashmark = { git = "https://github.com/Cabidge/flashmark" }
 
 [features]
 # by default Tauri runs in production mode
