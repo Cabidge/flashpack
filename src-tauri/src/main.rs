@@ -42,8 +42,11 @@ fn list_packs(collection: State<CollectionState>) -> Vec<String> {
             entry
                 .metadata()
                 .ok()?
+                // packs can only be directories
                 .is_dir()
-                .then(|| entry.file_name().to_string_lossy().into_owned())
+                .then(|| entry.file_name())
+                // the accepted pack name should only contain valid String characters
+                .and_then(|name| name.into_string().ok())
         })
         .collect()
 }
