@@ -1,17 +1,36 @@
 use leptos::*;
-use wasm_bindgen::prelude::*;
+use serde::Serialize;
 
-#[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "tauri"])]
-    async fn invoke(cmd: &str, args: JsValue) -> JsValue;
-}
+use crate::commands::invoke;
 
 #[component]
 pub fn App() -> impl IntoView {
+    #[derive(Serialize)]
+    struct Args {
+        name: String,
+    }
+
+    let greetings = ["foo", "bar", "baz"]
+        .into_iter()
+        .map(|x| {
+            let greeting = create_resource(
+                || (),
+                move |_| {
+                    let name = String::from(x);
+                    let args = Args { name };
+                    async move { invoke::<String>("greet", &args).await.unwrap() }
+                },
+            );
+
+            view! {
+                <p>{move || greeting.get()}</p>
+            }
+        })
+        .collect_view();
+
     view! {
         <main>
-            "Foo"
+            {greetings}
         </main>
     }
 }
