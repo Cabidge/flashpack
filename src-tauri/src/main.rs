@@ -15,9 +15,9 @@ async fn open_collection(collection: State<'_, CollectionState>) -> Result<Optio
         return Ok(None);
     };
 
-    let name = match path.file_name().and_then(|name| name.to_str()) {
-        Some(name) => name.to_owned(),
-        None => String::from("Unknown"),
+    let name = match path.file_name() {
+        Some(name) => name.to_string_lossy().into_owned(),
+        None => String::from("*Unknown*"),
     };
 
     *collection.lock().unwrap() = Some(Collection(path));
