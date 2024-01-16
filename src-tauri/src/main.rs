@@ -25,10 +25,33 @@ async fn open_collection(collection: State<'_, CollectionState>) -> Result<Optio
     Ok(Some(name))
 }
 
+#[tauri::command]
+fn list_packs(collection: State<CollectionState>) -> Vec<String> {
+    let collection = collection.lock().unwrap();
+
+    let Some(collection_contents) = collection
+        .as_ref()
+        .and_then(|collection| collection.0.read_dir().ok())
+    else {
+        return vec![];
+    };
+
+    collection_contents
+        .filter_map(|entry| {
+            let entry = entry.ok()?;
+            entry
+                .metadata()
+                .ok()?
+                .is_dir()
+                .then(|| entry.file_name().to_string_lossy().into_owned())
+        })
+        .collect()
+}
+
 fn main() {
     tauri::Builder::default()
         .manage(CollectionState::default())
-        .invoke_handler(tauri::generate_handler![open_collection])
+        .invoke_handler(tauri::generate_handler![open_collection, list_packs])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
