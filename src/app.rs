@@ -1,15 +1,35 @@
 use leptos::*;
 
+use crate::commands::invoke;
+
 #[component]
 pub fn App() -> impl IntoView {
+    let open_collection_action = create_action(|_: &()| async {
+        invoke::<Option<String>>("open_collection", &())
+            .await
+            .unwrap()
+    });
+
     let card_slides = vec![
         String::from("Hello"),
         String::from("Foo"),
         String::from("Bar"),
     ];
 
+    let title = move || {
+        open_collection_action.value().get().map(|name| {
+            view! {
+                <h1>{name}</h1>
+            }
+        })
+    };
+
     view! {
         <main>
+            {title}
+            <button on:click=move |_| open_collection_action.dispatch(())>
+                "Foo"
+            </button>
             <Card card_slides/>
         </main>
     }

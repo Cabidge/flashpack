@@ -1,15 +1,34 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+use std::{path::PathBuf, sync::Mutex};
+
+use tauri::{api::dialog::blocking::FileDialogBuilder, State};
+
+struct Collection(PathBuf);
+
+type CollectionState = Mutex<Option<Collection>>;
+
 #[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
+async fn open_collection(collection: State<'_, CollectionState>) -> Result<Option<String>, ()> {
+    let Some(path) = FileDialogBuilder::new().pick_folder() else {
+        return Ok(None);
+    };
+
+    let name = match path.file_name().and_then(|name| name.to_str()) {
+        Some(name) => name.to_owned(),
+        None => String::from("Unknown"),
+    };
+
+    *collection.lock().unwrap() = Some(Collection(path));
+
+    Ok(Some(name))
 }
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
+        .manage(CollectionState::default())
+        .invoke_handler(tauri::generate_handler![open_collection])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
