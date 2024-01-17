@@ -66,10 +66,12 @@ fn Collection(name: String) -> impl IntoView {
 
             let cards = create_resource(
                 move || {
-                    save_action.version().get(); // reload on save
-                    name.get()
+                    (
+                        name.get(),
+                        save_action.version().get(), // reload on save
+                    )
                 },
-                |name| async move {
+                |(name, _)| async move {
                     #[derive(Serialize)]
                     struct Args {
                         packName: String,
