@@ -194,6 +194,34 @@ fn Pack(
 }
 
 #[component]
+fn AddInput(#[prop(into)] on_add: Callback<String>) -> impl IntoView {
+    let (input, set_input) = create_signal(String::new());
+
+    let on_submit = move |ev: leptos::ev::SubmitEvent| {
+        ev.prevent_default();
+        on_add.call(input.get());
+        set_input.update(|input| input.clear());
+    };
+
+    let on_input = move |ev: leptos::ev::Event| {
+        set_input.set(event_target_value(&ev));
+    };
+
+    view! {
+        <form on:submit=on_submit>
+            <input
+                type="text"
+                prop:value=input
+                on:input=on_input
+            />
+            <button type="submit">
+                "Add"
+            </button>
+        </form>
+    }
+}
+
+#[component]
 fn CardSlides(card_slides: Vec<String>) -> impl IntoView {
     let (visible_count, set_visible_count) = create_signal(1);
     let slide_count = card_slides.len();
