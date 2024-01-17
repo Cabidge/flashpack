@@ -92,9 +92,10 @@ fn list_cards(collection: State<CollectionState>, pack_name: String) -> Vec<Stri
     cards
         .filter_map(|entry| {
             let entry = entry.ok()?;
-            (entry.path().extension()? == CARD_EXTENSION)
-                .then(|| entry.file_name())
-                .and_then(|name| name.into_string().ok())
+            let path = entry.path();
+            (path.extension()? == CARD_EXTENSION && entry.file_type().ok()?.is_file())
+                .then_some(path)
+                .and_then(|path| path.file_stem()?.to_str().map(String::from))
         })
         .collect()
 }
