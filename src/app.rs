@@ -156,10 +156,7 @@ fn Pack(
                 <h3>{card_name}</h3>
                 <textarea
                     prop:value=move || contents.get()
-                    on:input=move |ev| {
-                        ev.prevent_default();
-                        set_contents.set(event_target_value(&ev));
-                    }
+                    on:input=move |ev| set_contents.set(event_target_value(&ev));
                 >
                     {contents.get_untracked()}
                 </textarea>
