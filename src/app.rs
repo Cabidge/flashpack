@@ -40,64 +40,161 @@ fn Collection(name: String) -> impl IntoView {
 
     let open_pack = move |name| set_pack_name.set(Some(name));
 
-    let contents = move || match pack_name.get() {
-        Some(name) => view! {
-            <button on:click=move |_| set_pack_name.set(None)>
-                "Back"
-            </button>
-            <Pack name/>
-        }
-        .into_view(),
-        None => view! {
-            <h2>"Packs"</h2>
-            <ul>
-                <li>
-                    <button on:click=move |_| open_pack(String::from("Foo"))>
-                        "Foo"
-                    </button>
-                </li>
-            </ul>
-        }
-        .into_view(),
+    let pack_view = move || {
+        pack_name.get().map(|pack_name| {
+            let name = (move || pack_name.clone()).into_signal();
+            let save_action = create_action(move |input: &(String, String)| {
+                let (card_name, contents) = input.clone();
+                async move {
+                    #[derive(Serialize)]
+                    struct Args {
+                        packName: String,
+                        cardName: String,
+                        contents: String,
+                    }
+
+                    let args = Args {
+                        packName: name.get(),
+                        cardName: card_name,
+                        contents,
+                    };
+
+                    invoke::<()>("add_card", &args).await.unwrap();
+                }
+            });
+
+            let cards = create_resource(
+                move || name.get(),
+                |name| async move {
+                    #[derive(Serialize)]
+                    struct Args {
+                        packName: String,
+                    }
+
+                    let args = Args {
+                        packName: name.clone(),
+                    };
+
+                    invoke::<Vec<String>>("list_cards", &args).await.unwrap()
+                },
+            );
+
+            view! {
+                <button on:click=move |_| set_pack_name.set(None)>
+                    "Back"
+                </button>
+                <Transition>
+                    {move || {
+                        let cards = move || cards.get().unwrap_or_default();
+                        view! {
+                            <Pack name cards on_save=move |input| save_action.dispatch(input)/>
+                        }
+                    }}
+                </Transition>
+            }
+        })
     };
 
     view! {
         <h1>{name}</h1>
-        {contents}
+        <h2>"Packs"</h2>
+        <ul>
+            <li>
+                <button on:click=move |_| open_pack(String::from("Foo"))>
+                    "Foo"
+                </button>
+            </li>
+        </ul>
+        {pack_view}
     }
 }
 
 #[component]
-fn Pack(name: String) -> impl IntoView {
-    async fn list_cards(name: String) -> Vec<String> {
-        #[derive(Serialize)]
-        struct Args {
-            packName: String,
+fn Pack(
+    #[prop(into)] name: Signal<String>,
+    #[prop(into)] cards: Signal<Vec<String>>,
+    #[prop(into)] on_save: Callback<(String, String)>,
+) -> impl IntoView {
+    let selected_card = create_rw_signal(None::<String>);
+
+    #[component]
+    fn CardListItem(selected_card: RwSignal<Option<String>>, name: String) -> impl IntoView {
+        let name = (move || name.clone()).into_signal();
+        let is_selected = with!(|selected_card, name| selected_card.as_ref() == Some(name));
+
+        let select = move || selected_card.set(Some(name.get()));
+
+        view! {
+            <li>
+                <button class:selected=is_selected on:click=move |_| select()>
+                    {name}
+                </button>
+            </li>
         }
-
-        let args = Args { packName: name };
-
-        invoke("list_cards", &args).await.unwrap()
     }
 
-    let cards = create_resource(move || (), {
-        let name = name.clone();
-        move |_| list_cards(name.clone())
-    });
+    let card_contents = create_resource(
+        move || selected_card.get(),
+        move |selected_card| async move {
+            let card_name = selected_card?;
+            Some(String::from("Foo bar baz"))
+        },
+    );
 
-    let card_slides = vec![
-        String::from("Hello"),
-        String::from("Foo"),
-        String::from("Bar"),
-    ];
+    let card_editor = move || {
+        let data = selected_card
+            .get()
+            .and_then(|card| Some((card, card_contents.get().flatten()?)));
+
+        if let Some((card_name, contents)) = data {
+            let card_name = (move || card_name.clone()).into_signal();
+            let (contents, set_contents) = create_signal(contents);
+
+            let save = move |_| on_save.call((card_name.get(), contents.get()));
+
+            view! {
+                <h3>{card_name}</h3>
+                <textarea
+                    prop:value=move || contents.get()
+                    on:input=move |ev| {
+                        ev.prevent_default();
+                        set_contents.set(event_target_value(&ev));
+                    }
+                >
+                    {contents.get_untracked()}
+                </textarea>
+                <button on:click=save>
+                    "Save"
+                </button>
+            }
+            .into_view()
+        } else {
+            view! {
+                <p>"No card selected..."</p>
+            }
+            .into_view()
+        }
+    };
 
     view! {
-        <Card card_slides/>
+        <h1>{name}</h1>
+        <ul>
+            <For
+                each=move || cards.get()
+                key=|card| card.clone()
+                let:name
+            >
+                <CardListItem selected_card name/>
+            </For>
+        </ul>
+        <Transition>
+            {card_editor}
+        </Transition>
     }
 }
 
 #[component]
-fn Card(card_slides: Vec<String>) -> impl IntoView {
+fn CardSlides(card_slides: Vec<String>) -> impl IntoView {
     let (visible_count, set_visible_count) = create_signal(1);
     let slide_count = card_slides.len();
 
