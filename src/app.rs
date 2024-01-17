@@ -184,6 +184,7 @@ fn Pack(
                 <CardListItem selected_card name/>
             </For>
         </ul>
+        <AddInput on_add=move |new_card| selected_card.set(Some(new_card))/>
         <Transition>
             {card_editor}
         </Transition>
