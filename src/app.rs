@@ -40,31 +40,35 @@ fn Collection(name: String) -> impl IntoView {
 
     let open_pack = move |name| set_pack_name.set(Some(name));
 
+    let save_action = create_action(move |input: &(String, String, String)| {
+        let (pack_name, card_name, contents) = input.clone();
+        async move {
+            #[derive(Serialize)]
+            struct Args {
+                packName: String,
+                cardName: String,
+                contents: String,
+            }
+
+            let args = Args {
+                packName: pack_name,
+                cardName: card_name,
+                contents,
+            };
+
+            invoke::<()>("add_card", &args).await.unwrap();
+        }
+    });
+
     let pack_view = move || {
         pack_name.get().map(|pack_name| {
             let name = (move || pack_name.clone()).into_signal();
-            let save_action = create_action(move |input: &(String, String)| {
-                let (card_name, contents) = input.clone();
-                async move {
-                    #[derive(Serialize)]
-                    struct Args {
-                        packName: String,
-                        cardName: String,
-                        contents: String,
-                    }
-
-                    let args = Args {
-                        packName: name.get(),
-                        cardName: card_name,
-                        contents,
-                    };
-
-                    invoke::<()>("add_card", &args).await.unwrap();
-                }
-            });
 
             let cards = create_resource(
-                move || name.get(),
+                move || {
+                    save_action.version().get(); // reload on save
+                    name.get()
+                },
                 |name| async move {
                     #[derive(Serialize)]
                     struct Args {
@@ -79,6 +83,10 @@ fn Collection(name: String) -> impl IntoView {
                 },
             );
 
+            let on_save = move |(card_name, contents)| {
+                save_action.dispatch((name.get(), card_name, contents));
+            };
+
             view! {
                 <button on:click=move |_| set_pack_name.set(None)>
                     "Back"
@@ -87,7 +95,7 @@ fn Collection(name: String) -> impl IntoView {
                     {move || {
                         let cards = move || cards.get().unwrap_or_default();
                         view! {
-                            <Pack name cards on_save=move |input| save_action.dispatch(input)/>
+                            <Pack name cards on_save/>
                         }
                     }}
                 </Transition>
