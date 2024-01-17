@@ -80,6 +80,26 @@ fn list_packs(collection: State<CollectionState>) -> Vec<String> {
 }
 
 #[tauri::command]
+fn list_cards(collection: State<CollectionState>, pack_name: String) -> Vec<String> {
+    let collection = collection.lock().unwrap();
+    let Some(cards) = collection
+        .as_ref()
+        .and_then(|collection| collection.pack(&pack_name).0.read_dir().ok())
+    else {
+        return vec![];
+    };
+
+    cards
+        .filter_map(|entry| {
+            let entry = entry.ok()?;
+            (entry.path().extension()? == CARD_EXTENSION)
+                .then(|| entry.file_name())
+                .and_then(|name| name.into_string().ok())
+        })
+        .collect()
+}
+
+#[tauri::command]
 fn add_card(
     collection: State<CollectionState>,
     pack_name: String,
@@ -103,6 +123,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             open_collection,
             list_packs,
+            list_cards,
             add_card
         ])
         .run(tauri::generate_context!())

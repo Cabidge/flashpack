@@ -1,4 +1,5 @@
 use leptos::*;
+use serde::Serialize;
 
 use crate::commands::invoke;
 
@@ -68,6 +69,22 @@ fn Collection(name: String) -> impl IntoView {
 
 #[component]
 fn Pack(name: String) -> impl IntoView {
+    async fn list_cards(name: String) -> Vec<String> {
+        #[derive(Serialize)]
+        struct Args {
+            packName: String,
+        }
+
+        let args = Args { packName: name };
+
+        invoke("list_cards", &args).await.unwrap()
+    }
+
+    let cards = create_resource(move || (), {
+        let name = name.clone();
+        move |_| list_cards(name.clone())
+    });
+
     let card_slides = vec![
         String::from("Hello"),
         String::from("Foo"),
