@@ -128,7 +128,7 @@ fn Pack(
     #[component]
     fn CardListItem(selected_card: RwSignal<Option<String>>, name: String) -> impl IntoView {
         let name = (move || name.clone()).into_signal();
-        let is_selected = with!(|selected_card, name| selected_card.as_ref() == Some(name));
+        let is_selected = move || with!(|selected_card, name| selected_card.as_ref() == Some(name));
 
         let select = move || selected_card.set(Some(name.get()));
 
