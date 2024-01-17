@@ -10,28 +10,72 @@ pub fn App() -> impl IntoView {
             .unwrap()
     });
 
+    let collection_name = create_memo(move |prev| {
+        open_collection_action
+            .value()
+            .get()
+            .flatten()
+            .or_else(|| prev.cloned().flatten())
+    });
+
+    let collection_view = move || match collection_name.get() {
+        Some(name) => view! { <Collection name/> }.into_view(),
+        None => view! { <h1>"No Collection Selected..."</h1> }.into_view(),
+    };
+
+    view! {
+        <main>
+            <button on:click=move |_| open_collection_action.dispatch(())>
+                "Open Collection"
+            </button>
+            {collection_view}
+        </main>
+    }
+}
+
+#[component]
+fn Collection(name: String) -> impl IntoView {
+    let (pack_name, set_pack_name) = create_signal(None::<String>);
+
+    let open_pack = move |name| set_pack_name.set(Some(name));
+
+    let contents = move || match pack_name.get() {
+        Some(name) => view! {
+            <button on:click=move |_| set_pack_name.set(None)>
+                "Back"
+            </button>
+            <Pack name/>
+        }
+        .into_view(),
+        None => view! {
+            <h2>"Packs"</h2>
+            <ul>
+                <li>
+                    <button on:click=move |_| open_pack(String::from("Foo"))>
+                        "Foo"
+                    </button>
+                </li>
+            </ul>
+        }
+        .into_view(),
+    };
+
+    view! {
+        <h1>{name}</h1>
+        {contents}
+    }
+}
+
+#[component]
+fn Pack(name: String) -> impl IntoView {
     let card_slides = vec![
         String::from("Hello"),
         String::from("Foo"),
         String::from("Bar"),
     ];
 
-    let title = move || {
-        open_collection_action.value().get().map(|name| {
-            view! {
-                <h1>{name}</h1>
-            }
-        })
-    };
-
     view! {
-        <main>
-            {title}
-            <button on:click=move |_| open_collection_action.dispatch(())>
-                "Foo"
-            </button>
-            <Card card_slides/>
-        </main>
+        <Card card_slides/>
     }
 }
 
