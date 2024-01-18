@@ -166,11 +166,11 @@ fn Pack(
     );
 
     let card_editor = move || {
-        let data = selected_card
-            .get()
-            .and_then(|card| Some((card, card_contents.get().flatten()?)));
-
-        if let Some((card_name, contents)) = data {
+        if let Some((card_name, contents)) = selected_card.with(|card| {
+            let card = card.as_ref()?;
+            let contents = card_contents.get().flatten()?;
+            Some((card.clone(), contents))
+        }) {
             let card_name = (move || card_name.clone()).into_signal();
             let (contents, set_contents) = create_signal(contents);
 
