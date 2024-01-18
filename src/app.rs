@@ -85,23 +85,21 @@ fn Collection(name: String) -> impl IntoView {
 
     let pack_view = move || {
         pack_name.get().map(|pack_name| {
-            let name = (move || pack_name.clone()).into_signal();
+            let name = store_value(pack_name);
 
             let cards = create_resource(
                 move || {
-                    (
-                        name.get(),
-                        save_action.version().get(), // reload on save
-                    )
+                    // reload on save
+                    save_action.version().get()
                 },
-                |(name, _)| async move {
+                move |_| async move {
                     #[derive(Serialize)]
                     struct Args {
                         packName: String,
                     }
 
                     let args = Args {
-                        packName: name.clone(),
+                        packName: name.get_value(),
                     };
 
                     invoke::<Vec<String>>("list_cards", &args).await.unwrap()
@@ -109,7 +107,7 @@ fn Collection(name: String) -> impl IntoView {
             );
 
             let on_save = move |(card_name, contents)| {
-                save_action.dispatch((name.get(), card_name, contents));
+                save_action.dispatch((name.get_value(), card_name, contents));
             };
 
             view! {
@@ -142,7 +140,7 @@ fn Collection(name: String) -> impl IntoView {
 
 #[component]
 fn Pack(
-    #[prop(into)] name: Signal<String>,
+    name: StoredValue<String>,
     #[prop(into)] cards: Signal<Vec<String>>,
     #[prop(into)] on_save: Callback<(String, String)>,
 ) -> impl IntoView {
@@ -174,7 +172,7 @@ fn Pack(
             }
 
             let args = Args {
-                packName: name.get(),
+                packName: name.get_value(),
                 cardName: selected_card?,
             };
 
@@ -215,7 +213,7 @@ fn Pack(
     };
 
     view! {
-        <h1>{name}</h1>
+        <h1>{name.get_value()}</h1>
         <ul>
             <For
                 each=move || cards.get()
