@@ -237,7 +237,7 @@ fn AddInput(#[prop(into)] on_add: Callback<String>) -> impl IntoView {
 
     let on_submit = move |ev: leptos::ev::SubmitEvent| {
         ev.prevent_default();
-        if input.with(|input| input.is_empty()) {
+        if input.with(|input| input.chars().all(char::is_whitespace)) {
             return;
         }
 
