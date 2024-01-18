@@ -147,22 +147,6 @@ fn Pack(
 ) -> impl IntoView {
     let selected_card = create_rw_signal(None::<String>);
 
-    #[component]
-    fn CardListItem(selected_card: RwSignal<Option<String>>, name: String) -> impl IntoView {
-        let name = (move || name.clone()).into_signal();
-        let is_selected = move || with!(|selected_card, name| selected_card.as_ref() == Some(name));
-
-        let select = move || selected_card.set(Some(name.get()));
-
-        view! {
-            <li>
-                <button class:selected=is_selected on:click=move |_| select()>
-                    {name}
-                </button>
-            </li>
-        }
-    }
-
     let card_contents = create_resource(
         move || selected_card.get(),
         move |selected_card| async move {
@@ -215,6 +199,35 @@ fn Pack(
 
     view! {
         <h1>{name.get_value()}</h1>
+        <CardList cards selected_card/>
+        <Transition>
+            {card_editor}
+        </Transition>
+    }
+}
+
+#[component]
+fn CardList(
+    #[prop(into)] cards: Signal<Vec<String>>,
+    #[prop(into)] selected_card: RwSignal<Option<String>>,
+) -> impl IntoView {
+    #[component]
+    fn CardListItem(selected_card: RwSignal<Option<String>>, name: String) -> impl IntoView {
+        let name = (move || name.clone()).into_signal();
+        let is_selected = move || with!(|selected_card, name| selected_card.as_ref() == Some(name));
+
+        let select = move || selected_card.set(Some(name.get()));
+
+        view! {
+            <li>
+                <button class:selected=is_selected on:click=move |_| select()>
+                    {name}
+                </button>
+            </li>
+        }
+    }
+
+    view! {
         <ul>
             <For
                 each=move || cards.get()
@@ -225,9 +238,6 @@ fn Pack(
             </For>
         </ul>
         <AddInput on_add=move |new_card| selected_card.set(Some(new_card))/>
-        <Transition>
-            {card_editor}
-        </Transition>
     }
 }
 
