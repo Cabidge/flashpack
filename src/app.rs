@@ -146,8 +146,18 @@ fn Pack(
     let card_contents = create_resource(
         move || selected_card.get(),
         move |selected_card| async move {
-            let card_name = selected_card?;
-            Some(String::from("Foo bar baz"))
+            #[derive(Serialize)]
+            struct Args {
+                packName: String,
+                cardName: String,
+            }
+
+            let args = Args {
+                packName: name.get(),
+                cardName: selected_card?,
+            };
+
+            invoke::<Option<String>>("get_card", &args).await.unwrap()
         },
     );
 

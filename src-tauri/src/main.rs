@@ -118,6 +118,18 @@ fn add_card(
     card.set_contents(&contents).unwrap();
 }
 
+#[tauri::command]
+fn get_card(
+    collection: State<CollectionState>,
+    pack_name: String,
+    card_name: String,
+) -> Option<String> {
+    let collection = collection.lock().unwrap();
+    let card = collection.as_ref()?.pack(&pack_name).open_card(&card_name);
+
+    std::fs::read_to_string(card.0).ok()
+}
+
 fn main() {
     tauri::Builder::default()
         .manage(CollectionState::default())
@@ -125,7 +137,8 @@ fn main() {
             open_collection,
             list_packs,
             list_cards,
-            add_card
+            add_card,
+            get_card,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
