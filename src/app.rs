@@ -60,6 +60,29 @@ fn Collection(name: String) -> impl IntoView {
         }
     });
 
+    let packs = create_resource(
+        || (),
+        |_| async { invoke::<Vec<String>>("list_packs", &()).await.unwrap() },
+    );
+
+    let pack_list_view = move || {
+        packs.get().map(move |packs| {
+            packs
+                .into_iter()
+                .map(move |pack| {
+                    let pack = store_value(pack);
+                    view! {
+                        <li>
+                            <button on:click=move |_| open_pack(pack.get_value())>
+                                {move || pack.get_value()}
+                            </button>
+                        </li>
+                    }
+                })
+                .collect_view()
+        })
+    };
+
     let pack_view = move || {
         pack_name.get().map(|pack_name| {
             let name = (move || pack_name.clone()).into_signal();
@@ -109,11 +132,9 @@ fn Collection(name: String) -> impl IntoView {
         <h1>{name}</h1>
         <h2>"Packs"</h2>
         <ul>
-            <li>
-                <button on:click=move |_| open_pack(String::from("Foo"))>
-                    "Foo"
-                </button>
-            </li>
+            <Transition>
+                {pack_list_view}
+            </Transition>
         </ul>
         {pack_view}
     }
