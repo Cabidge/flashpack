@@ -134,6 +134,7 @@ fn Collection(name: String) -> impl IntoView {
                 {pack_list_view}
             </Transition>
         </ul>
+        <AddInput on_add=move |name| set_pack_name.set(Some(name))/>
         {pack_view}
     }
 }
@@ -236,6 +237,10 @@ fn AddInput(#[prop(into)] on_add: Callback<String>) -> impl IntoView {
 
     let on_submit = move |ev: leptos::ev::SubmitEvent| {
         ev.prevent_default();
+        if input.with(|input| input.is_empty()) {
+            return;
+        }
+
         on_add.call(input.get());
         set_input.update(|input| input.clear());
     };
