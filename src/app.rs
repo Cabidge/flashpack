@@ -1,7 +1,11 @@
 use leptos::*;
+use leptos_router::*;
 use serde::Serialize;
 
 use crate::commands::invoke;
+
+#[derive(Clone)]
+struct CollectionName(Signal<Option<String>>);
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -19,26 +23,48 @@ pub fn App() -> impl IntoView {
             .or_else(|| prev.cloned().flatten())
     });
 
-    let collection_view = move || match collection_name.get() {
-        Some(name) => view! { <Collection name/> }.into_view(),
-        None => view! { <h1>"No Collection Selected..."</h1> }.into_view(),
+    provide_context(CollectionName(collection_name.into()));
+
+    let title = move || {
+        collection_name
+            .get()
+            .unwrap_or_else(|| String::from("No Collection Selected..."))
     };
 
     view! {
-        <main>
-            <button on:click=move |_| open_collection_action.dispatch(())>
-                "Open Collection"
-            </button>
-            {collection_view}
-        </main>
+        <Router>
+            <main>
+                <button on:click=move |_| open_collection_action.dispatch(())>
+                    "Open Collection"
+                </button>
+                <h1>{title}</h1>
+                <Routes>
+                    <Route path="" view=PackList/>
+                    <Route path="/pack/:pack_name" view=Pack>
+                        <Route path="/" view=NoCard/>
+                        <Route path="/card/:card_name" view=CardEditor/>
+                    </Route>
+                </Routes>
+            </main>
+        </Router>
     }
 }
 
-#[component]
-fn Collection(name: String) -> impl IntoView {
-    let (pack_name, set_pack_name) = create_signal(None::<String>);
+#[derive(Params, PartialEq, Default, Clone)]
+struct PackParams {
+    pack_name: Option<String>,
+    card_name: Option<String>,
+}
 
-    let open_pack = move |name| set_pack_name.set(Some(name));
+#[component]
+fn PackList() -> impl IntoView {
+    let collection_name =
+        use_context::<CollectionName>().unwrap_or(CollectionName((|| None).into()));
+
+    let packs = create_resource(
+        move || collection_name.0.get(), // TODO: make save actoin a dependency
+        |_| async { invoke::<Vec<String>>("list_packs", &()).await.unwrap() },
+    );
 
     let save_action = create_action(move |input: &(String, String, String)| {
         let (pack_name, card_name, contents) = input.clone();
@@ -60,22 +86,16 @@ fn Collection(name: String) -> impl IntoView {
         }
     });
 
-    let packs = create_resource(
-        move || save_action.version().get(),
-        |_| async { invoke::<Vec<String>>("list_packs", &()).await.unwrap() },
-    );
-
     let pack_list_view = move || {
         packs.get().map(move |packs| {
             packs
                 .into_iter()
-                .map(move |pack| {
-                    let pack = store_value(pack);
+                .map(move |pack_name| {
+                    let href = format!("pack/{pack_name}");
+
                     view! {
                         <li>
-                            <button on:click=move |_| open_pack(pack.get_value())>
-                                {move || pack.get_value()}
-                            </button>
+                            <A href>{pack_name}</A>
                         </li>
                     }
                 })
@@ -83,156 +103,112 @@ fn Collection(name: String) -> impl IntoView {
         })
     };
 
-    let pack_view = move || {
-        pack_name.get().map(|pack_name| {
-            let name = store_value(pack_name);
-
-            let cards = create_resource(
-                move || {
-                    // reload on save
-                    save_action.version().get()
-                },
-                move |_| async move {
-                    #[derive(Serialize)]
-                    struct Args {
-                        packName: String,
-                    }
-
-                    let args = Args {
-                        packName: name.get_value(),
-                    };
-
-                    invoke::<Vec<String>>("list_cards", &args).await.unwrap()
-                },
-            );
-
-            let save_card = move |(card_name, contents)| {
-                save_action.dispatch((name.get_value(), card_name, contents));
-            };
-
-            view! {
-                <button on:click=move |_| set_pack_name.set(None)>
-                    "Back"
-                </button>
-                <Transition>
-                    {move || {
-                        let cards = move || cards.get().unwrap_or_default();
-                        view! {
-                            <Pack name cards save_card/>
-                        }
-                    }}
-                </Transition>
-            }
-        })
-    };
-
     view! {
-        <h1>{name}</h1>
         <h2>"Packs"</h2>
         <ul>
             <Transition>
                 {pack_list_view}
             </Transition>
         </ul>
-        <AddInput on_add=move |name| set_pack_name.set(Some(name))/>
-        {pack_view}
+        <AddInput on_add=move |_name| todo!()/>
+        <Outlet/>
     }
 }
 
 #[component]
-fn Pack(
-    name: StoredValue<String>,
-    #[prop(into)] cards: Signal<Vec<String>>,
-    #[prop(into)] save_card: Callback<(String, String)>,
-) -> impl IntoView {
-    let selected_card = create_rw_signal(None::<String>);
+fn Pack() -> impl IntoView {
+    let params = use_params::<PackParams>();
+    let params = move || params.get().unwrap_or_default();
 
-    let card_selection = move || {
-        if let Some(card_name) = selected_card.get() {
-            let card_name = store_value(card_name);
+    let name = move || params().pack_name;
+    let selected_card = move || params().card_name;
 
-            let get_card_contents = move || async move {
-                #[derive(Serialize)]
-                struct Args {
-                    packName: String,
-                    cardName: String,
-                }
-
-                let args = Args {
-                    packName: name.get_value(),
-                    cardName: card_name.get_value(),
-                };
-
-                invoke::<Option<String>>("get_card", &args)
-                    .await
-                    .unwrap()
-                    .unwrap_or_default()
+    let cards = create_resource(
+        || {
+            // TODO: reload on save
+        },
+        move |_| async move {
+            let Some(packName) = name() else {
+                return vec![];
             };
 
-            let on_save = move |contents| save_card.call((card_name.get_value(), contents));
+            #[derive(Serialize)]
+            struct Args {
+                packName: String,
+            }
 
-            view! {
-                <h3>{card_name.get_value()}</h3>
-                <Await
-                    future=get_card_contents
-                    let:initial_contents
-                >
-                    <CardEditor initial_contents on_save/>
-                </Await>
-            }
-            .into_view()
-        } else {
-            view! {
-                <p>"No card selected..."</p>
-            }
-            .into_view()
-        }
+            let args = Args { packName };
+
+            invoke::<Vec<String>>("list_cards", &args).await.unwrap()
+        },
+    );
+
+    let card_list = move || {
+        cards
+            .get()
+            .map(|cards| view! { <CardList cards selected_card/> })
     };
 
     view! {
-        <h1>{name.get_value()}</h1>
-        <CardList cards selected_card/>
-        {card_selection}
+        <a href="/">"Back"</a>
+        <h2>{name}</h2>
+        <Transition>
+            {card_list}
+        </Transition>
+        <Outlet/>
     }
 }
 
 #[component]
-fn CardEditor(
-    #[prop(into)] initial_contents: String,
-    #[prop(into)] on_save: Callback<String>,
-) -> impl IntoView {
-    let (contents, set_contents) = create_signal(initial_contents);
+fn CardEditor() -> impl IntoView {
+    #[component]
+    fn Editor(
+        #[prop(into)] initial_contents: String,
+        #[prop(into)] on_save: Callback<String>,
+    ) -> impl IntoView {
+        let (contents, set_contents) = create_signal(initial_contents);
+
+        view! {
+            <textarea
+                prop:value=move || contents.get()
+                on:input=move |ev| set_contents.set(event_target_value(&ev))
+            >
+                {contents.get_untracked()}
+            </textarea>
+            <button on:click=move |_| on_save.call(contents.get())>
+                "Save"
+            </button>
+        }
+    }
 
     view! {
-        <textarea
-            prop:value=move || contents.get()
-            on:input=move |ev| set_contents.set(event_target_value(&ev))
-        >
-            {contents.get_untracked()}
-        </textarea>
-        <button on:click=move |_| on_save.call(contents.get())>
-            "Save"
-        </button>
+        <h3>{"[Card Name]"}</h3>
+    }
+}
+
+#[component]
+fn NoCard() -> impl IntoView {
+    view! {
+        <h3>"No Card Selected"</h3>
     }
 }
 
 #[component]
 fn CardList(
-    #[prop(into)] cards: Signal<Vec<String>>,
-    #[prop(into)] selected_card: RwSignal<Option<String>>,
+    #[prop(into)] cards: MaybeSignal<Vec<String>>,
+    #[prop(into)] selected_card: Signal<Option<String>>,
 ) -> impl IntoView {
     #[component]
-    fn CardListItem(selected_card: RwSignal<Option<String>>, name: String) -> impl IntoView {
-        let name = (move || name.clone()).into_signal();
-        let is_selected = move || with!(|selected_card, name| selected_card.as_ref() == Some(name));
-
-        let select = move || selected_card.set(Some(name.get()));
-
+    fn CardListItem(
+        #[prop(into)] is_selected: Signal<bool>,
+        #[prop(into)] name: String,
+    ) -> impl IntoView {
+        let href = format!("card/{name}");
         view! {
-            <li>
-                <button class:selected=is_selected on:click=move |_| select()>
+            <li class:selected=is_selected>
+                <A href>
                     {name}
-                </button>
+                </A>
             </li>
         }
     }
@@ -242,12 +218,19 @@ fn CardList(
             <For
                 each=move || cards.get()
                 key=|card| card.clone()
-                let:name
-            >
-                <CardListItem selected_card name/>
-            </For>
+                children=move |name| {
+                    let card_name = name.clone();
+                    let is_selected = move || {
+                        selected_card.with(|selected| selected.as_ref() == Some(&card_name))
+                    };
+
+                    view! {
+                        <CardListItem is_selected name/>
+                    }
+                }
+            />
         </ul>
-        <AddInput on_add=move |new_card| selected_card.set(Some(new_card))/>
+        <AddInput on_add=move |_new_card| todo!()/>
     }
 }
 
