@@ -1,6 +1,6 @@
 mod app;
-mod commands;
 mod context;
+mod invoke;
 
 use app::*;
 use leptos::*;

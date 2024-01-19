@@ -2,17 +2,12 @@ mod params;
 
 use leptos::*;
 use leptos_router::*;
-use serde::Serialize;
 
-use crate::{commands::invoke, context::CollectionName};
+use crate::{context::CollectionName, invoke};
 
 #[component]
 pub fn App() -> impl IntoView {
-    let open_collection_action = create_action(|_: &()| async {
-        invoke::<Option<String>>("open_collection", &())
-            .await
-            .unwrap()
-    });
+    let open_collection_action = create_action(|_: &()| invoke::open_collection());
 
     let collection_name = create_memo(move |prev| {
         open_collection_action
@@ -55,27 +50,12 @@ fn PackList() -> impl IntoView {
 
     let packs = create_resource(
         move || collection_name.get(), // TODO: make save actoin a dependency
-        |_| async { invoke::<Vec<String>>("list_packs", &()).await.unwrap() },
+        |_| invoke::list_packs(),
     );
 
     let save_action = create_action(move |input: &(String, String, String)| {
         let (pack_name, card_name, contents) = input.clone();
-        async move {
-            #[derive(Serialize)]
-            struct Args {
-                packName: String,
-                cardName: String,
-                contents: String,
-            }
-
-            let args = Args {
-                packName: pack_name,
-                cardName: card_name,
-                contents,
-            };
-
-            invoke::<()>("add_card", &args).await.unwrap();
-        }
+        invoke::add_card(pack_name, card_name, contents)
     });
 
     let pack_list_view = move || {
@@ -122,18 +102,11 @@ fn Pack() -> impl IntoView {
             name()
         },
         move |pack_name| async move {
-            let Some(packName) = pack_name else {
+            let Some(pack_name) = pack_name else {
                 return vec![];
             };
 
-            #[derive(Serialize)]
-            struct Args {
-                packName: String,
-            }
-
-            let args = Args { packName };
-
-            invoke::<Vec<String>>("list_cards", &args).await.unwrap()
+            invoke::list_cards(pack_name).await
         },
     );
 
@@ -186,20 +159,8 @@ fn CardEditor() -> impl IntoView {
                 return String::new();
             };
 
-            #[derive(Serialize)]
-            struct Args {
-                packName: String,
-                cardName: String,
-            }
-
-            let args = Args {
-                packName: pack_name,
-                cardName: card_name,
-            };
-
-            invoke::<Option<String>>("get_card", &args)
+            invoke::get_card(pack_name, card_name)
                 .await
-                .unwrap()
                 .unwrap_or_default()
         },
     );
