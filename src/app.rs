@@ -1,3 +1,5 @@
+mod params;
+
 use leptos::*;
 use leptos_router::*;
 use serde::Serialize;
@@ -45,29 +47,6 @@ pub fn App() -> impl IntoView {
             </main>
         </Router>
     }
-}
-
-#[derive(Params, PartialEq, Default, Clone)]
-struct PackParams {
-    pack_name: Option<String>,
-    card_name: Option<String>,
-}
-
-fn use_pack_params() -> Memo<Option<(String, Option<String>)>> {
-    let params = use_params::<PackParams>();
-
-    create_memo(move |_| {
-        let PackParams {
-            pack_name,
-            card_name,
-        } = params.get().ok()?;
-
-        let pack_name = urlencoding::decode(&pack_name?).unwrap().into_owned();
-        let card_name =
-            card_name.map(|card_name| urlencoding::decode(&card_name).unwrap().into_owned());
-
-        Some((pack_name, card_name))
-    })
 }
 
 #[component]
@@ -132,11 +111,10 @@ fn PackList() -> impl IntoView {
 
 #[component]
 fn Pack() -> impl IntoView {
-    let params = use_pack_params();
+    let params = params::use_pack_params();
 
-    let name = move || params.get().map(|(pack_name, _)| pack_name);
-    let selected_card =
-        move || params.with(|params| params.as_ref().and_then(|(_, card_name)| card_name.clone()));
+    let name = move || params.with(|params| params.pack().map(str::to_string));
+    let selected_card = move || params.with(|params| params.card().map(str::to_string));
 
     let cards = create_resource(
         move || {
@@ -177,10 +155,9 @@ fn Pack() -> impl IntoView {
 
 #[component]
 fn CardEditor() -> impl IntoView {
-    let params = use_pack_params();
+    let params = params::use_pack_params();
 
-    let card_name =
-        move || params.with(|params| params.as_ref().and_then(|(_, card)| card.clone()));
+    let card_name = move || params.with(|params| params.card().map(str::to_string));
 
     #[component]
     fn Editor(
@@ -203,7 +180,7 @@ fn CardEditor() -> impl IntoView {
     }
 
     let contents = create_resource(
-        move || params.get().and_then(|(pack, card)| Some((pack, card?))),
+        move || params.with(|params| params.both().map(|(a, b)| (a.to_string(), b.to_string()))),
         |params| async move {
             let Some((pack_name, card_name)) = params else {
                 return String::new();
