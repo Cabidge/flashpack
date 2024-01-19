@@ -53,6 +53,23 @@ struct PackParams {
     card_name: Option<String>,
 }
 
+fn use_pack_params() -> Memo<Option<(String, Option<String>)>> {
+    let params = use_params::<PackParams>();
+
+    create_memo(move |_| {
+        let PackParams {
+            pack_name,
+            card_name,
+        } = params.get().ok()?;
+
+        let pack_name = urlencoding::decode(&pack_name?).unwrap().into_owned();
+        let card_name =
+            card_name.map(|card_name| urlencoding::decode(&card_name).unwrap().into_owned());
+
+        Some((pack_name, card_name))
+    })
+}
+
 #[component]
 fn PackList() -> impl IntoView {
     let CollectionName(collection_name) = use_context::<CollectionName>().unwrap_or_default();
@@ -115,11 +132,11 @@ fn PackList() -> impl IntoView {
 
 #[component]
 fn Pack() -> impl IntoView {
-    let params = use_params::<PackParams>();
-    let params = move || params.get().unwrap_or_default();
+    let params = use_pack_params();
 
-    let name = move || params().pack_name;
-    let selected_card = move || params().card_name;
+    let name = move || params.get().map(|(pack_name, _)| pack_name);
+    let selected_card =
+        move || params.with(|params| params.as_ref().and_then(|(_, card_name)| card_name.clone()));
 
     let cards = create_resource(
         move || {
@@ -160,17 +177,10 @@ fn Pack() -> impl IntoView {
 
 #[component]
 fn CardEditor() -> impl IntoView {
-    let params = use_params::<PackParams>();
+    let params = use_pack_params();
 
-    let card_name = move || {
-        params.with(|params| {
-            params
-                .as_ref()
-                .ok()
-                .and_then(|params| params.card_name.clone())
-                .unwrap_or_default()
-        })
-    };
+    let card_name =
+        move || params.with(|params| params.as_ref().and_then(|(_, card)| card.clone()));
 
     #[component]
     fn Editor(
@@ -193,13 +203,7 @@ fn CardEditor() -> impl IntoView {
     }
 
     let contents = create_resource(
-        move || {
-            params
-                .get()
-                .ok()
-                .map(|params| Some((params.pack_name?, params.card_name?)))
-                .unwrap_or_default()
-        },
+        move || params.get().and_then(|(pack, card)| Some((pack, card?))),
         |params| async move {
             let Some((pack_name, card_name)) = params else {
                 return String::new();
