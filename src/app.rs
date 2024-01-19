@@ -104,13 +104,15 @@ fn PackList() -> impl IntoView {
     };
 
     view! {
-        <h2>"Packs"</h2>
-        <ul>
-            <Transition>
-                {pack_list_view}
-            </Transition>
-        </ul>
-        <AddInput on_add=move |_name| todo!()/>
+        <Show when=move || collection_name.0.get().is_some()>
+            <h2>"Packs"</h2>
+            <ul>
+                <Transition>
+                    {pack_list_view}
+                </Transition>
+            </ul>
+            <AddInput on_add=move |_name| todo!()/>
+        </Show>
         <Outlet/>
     }
 }
