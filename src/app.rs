@@ -41,7 +41,7 @@ pub fn App() -> impl IntoView {
                 <Routes>
                     <Route path="" view=PackList/>
                     <Route path="/pack/:pack_name" view=Pack>
-                        <Route path="/" view=NoCard/>
+                        <Route path="/" view=|| view! { <h2>"No Card Selected..."</h2> }/>
                         <Route path="/card/:card_name" view=CardEditor/>
                     </Route>
                 </Routes>
@@ -185,13 +185,6 @@ fn CardEditor() -> impl IntoView {
 
     view! {
         <h3>{"[Card Name]"}</h3>
-    }
-}
-
-#[component]
-fn NoCard() -> impl IntoView {
-    view! {
-        <h3>"No Card Selected"</h3>
     }
 }
 
