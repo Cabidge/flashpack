@@ -2,16 +2,7 @@ use leptos::*;
 use leptos_router::*;
 use serde::Serialize;
 
-use crate::commands::invoke;
-
-#[derive(Clone)]
-struct CollectionName(Signal<Option<String>>);
-
-impl Default for CollectionName {
-    fn default() -> Self {
-        Self((|| None).into())
-    }
-}
+use crate::{commands::invoke, context::CollectionName};
 
 #[component]
 pub fn App() -> impl IntoView {
