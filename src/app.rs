@@ -7,6 +7,12 @@ use crate::commands::invoke;
 #[derive(Clone)]
 struct CollectionName(Signal<Option<String>>);
 
+impl Default for CollectionName {
+    fn default() -> Self {
+        Self((|| None).into())
+    }
+}
+
 #[component]
 pub fn App() -> impl IntoView {
     let open_collection_action = create_action(|_: &()| async {
@@ -58,11 +64,10 @@ struct PackParams {
 
 #[component]
 fn PackList() -> impl IntoView {
-    let collection_name =
-        use_context::<CollectionName>().unwrap_or(CollectionName((|| None).into()));
+    let CollectionName(collection_name) = use_context::<CollectionName>().unwrap_or_default();
 
     let packs = create_resource(
-        move || collection_name.0.get(), // TODO: make save actoin a dependency
+        move || collection_name.get(), // TODO: make save actoin a dependency
         |_| async { invoke::<Vec<String>>("list_packs", &()).await.unwrap() },
     );
 
@@ -104,7 +109,7 @@ fn PackList() -> impl IntoView {
     };
 
     view! {
-        <Show when=move || collection_name.0.get().is_some()>
+        <Show when=move || collection_name.get().is_some()>
             <h2>"Packs"</h2>
             <ul>
                 <Transition>
