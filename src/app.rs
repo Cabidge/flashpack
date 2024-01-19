@@ -126,11 +126,12 @@ fn Pack() -> impl IntoView {
     let selected_card = move || params().card_name;
 
     let cards = create_resource(
-        || {
+        move || {
             // TODO: reload on save
+            name()
         },
-        move |_| async move {
-            let Some(packName) = name() else {
+        move |pack_name| async move {
+            let Some(packName) = pack_name else {
                 return vec![];
             };
 
