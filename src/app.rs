@@ -147,35 +147,40 @@ fn Pack(
 ) -> impl IntoView {
     let selected_card = create_rw_signal(None::<String>);
 
-    let card_contents = create_resource(
-        move || selected_card.get(),
-        move |selected_card| async move {
-            #[derive(Serialize)]
-            struct Args {
-                packName: String,
-                cardName: String,
-            }
-
-            let args = Args {
-                packName: name.get_value(),
-                cardName: selected_card?,
-            };
-
-            invoke::<Option<String>>("get_card", &args).await.unwrap()
-        },
-    );
-
-    let card_editor = move || {
-        if let Some((card_name, contents)) = selected_card.with(|card| {
-            let card = card.as_ref()?;
-            let contents = card_contents.get().flatten()?;
-            Some((card.clone(), contents))
-        }) {
+    let card_selection = move || {
+        if let Some(card_name) = selected_card.get() {
             let card_name = store_value(card_name);
+
+            let get_card_contents = move || async move {
+                #[derive(Serialize)]
+                struct Args {
+                    packName: String,
+                    cardName: String,
+                }
+
+                let args = Args {
+                    packName: name.get_value(),
+                    cardName: card_name.get_value(),
+                };
+
+                invoke::<Option<String>>("get_card", &args)
+                    .await
+                    .unwrap()
+                    .unwrap_or_default()
+            };
 
             let on_save = move |contents| save_card.call((card_name.get_value(), contents));
 
-            view! { <CardEditor card_name initial_contents=contents on_save/> }.into_view()
+            view! {
+                <h3>{card_name.get_value()}</h3>
+                <Await
+                    future=get_card_contents
+                    let:initial_contents
+                >
+                    <CardEditor initial_contents on_save/>
+                </Await>
+            }
+            .into_view()
         } else {
             view! {
                 <p>"No card selected..."</p>
@@ -187,22 +192,18 @@ fn Pack(
     view! {
         <h1>{name.get_value()}</h1>
         <CardList cards selected_card/>
-        <Transition>
-            {card_editor}
-        </Transition>
+        {card_selection}
     }
 }
 
 #[component]
 fn CardEditor(
-    card_name: StoredValue<String>,
-    initial_contents: String,
+    #[prop(into)] initial_contents: String,
     #[prop(into)] on_save: Callback<String>,
 ) -> impl IntoView {
     let (contents, set_contents) = create_signal(initial_contents);
 
     view! {
-        <h3>{card_name.get_value()}</h3>
         <textarea
             prop:value=move || contents.get()
             on:input=move |ev| set_contents.set(event_target_value(&ev))
