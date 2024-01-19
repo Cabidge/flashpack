@@ -106,7 +106,7 @@ fn Collection(name: String) -> impl IntoView {
                 },
             );
 
-            let on_save = move |(card_name, contents)| {
+            let save_card = move |(card_name, contents)| {
                 save_action.dispatch((name.get_value(), card_name, contents));
             };
 
@@ -118,7 +118,7 @@ fn Collection(name: String) -> impl IntoView {
                     {move || {
                         let cards = move || cards.get().unwrap_or_default();
                         view! {
-                            <Pack name cards on_save/>
+                            <Pack name cards save_card/>
                         }
                     }}
                 </Transition>
@@ -143,7 +143,7 @@ fn Collection(name: String) -> impl IntoView {
 fn Pack(
     name: StoredValue<String>,
     #[prop(into)] cards: Signal<Vec<String>>,
-    #[prop(into)] on_save: Callback<(String, String)>,
+    #[prop(into)] save_card: Callback<(String, String)>,
 ) -> impl IntoView {
     let selected_card = create_rw_signal(None::<String>);
 
@@ -171,24 +171,11 @@ fn Pack(
             let contents = card_contents.get().flatten()?;
             Some((card.clone(), contents))
         }) {
-            let card_name = (move || card_name.clone()).into_signal();
-            let (contents, set_contents) = create_signal(contents);
+            let card_name = store_value(card_name);
 
-            let save = move |_| on_save.call((card_name.get(), contents.get()));
+            let on_save = move |contents| save_card.call((card_name.get_value(), contents));
 
-            view! {
-                <h3>{card_name}</h3>
-                <textarea
-                    prop:value=move || contents.get()
-                    on:input=move |ev| set_contents.set(event_target_value(&ev))
-                >
-                    {contents.get_untracked()}
-                </textarea>
-                <button on:click=save>
-                    "Save"
-                </button>
-            }
-            .into_view()
+            view! { <CardEditor card_name initial_contents=contents on_save/> }.into_view()
         } else {
             view! {
                 <p>"No card selected..."</p>
@@ -203,6 +190,28 @@ fn Pack(
         <Transition>
             {card_editor}
         </Transition>
+    }
+}
+
+#[component]
+fn CardEditor(
+    card_name: StoredValue<String>,
+    initial_contents: String,
+    #[prop(into)] on_save: Callback<String>,
+) -> impl IntoView {
+    let (contents, set_contents) = create_signal(initial_contents);
+
+    view! {
+        <h3>{card_name.get_value()}</h3>
+        <textarea
+            prop:value=move || contents.get()
+            on:input=move |ev| set_contents.set(event_target_value(&ev))
+        >
+            {contents.get_untracked()}
+        </textarea>
+        <button on:click=move |_| on_save.call(contents.get())>
+            "Save"
+        </button>
     }
 }
 
