@@ -61,7 +61,7 @@ fn Collection(name: String) -> impl IntoView {
     });
 
     let packs = create_resource(
-        || (),
+        move || save_action.version().get(),
         |_| async { invoke::<Vec<String>>("list_packs", &()).await.unwrap() },
     );
 
