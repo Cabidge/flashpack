@@ -163,6 +163,18 @@ fn Pack() -> impl IntoView {
 
 #[component]
 fn CardEditor() -> impl IntoView {
+    let params = use_params::<PackParams>();
+
+    let card_name = move || {
+        params.with(|params| {
+            params
+                .as_ref()
+                .ok()
+                .and_then(|params| params.card_name.clone())
+                .unwrap_or_default()
+        })
+    };
+
     #[component]
     fn Editor(
         #[prop(into)] initial_contents: String,
@@ -183,8 +195,50 @@ fn CardEditor() -> impl IntoView {
         }
     }
 
+    let contents = create_resource(
+        move || {
+            params
+                .get()
+                .ok()
+                .map(|params| Some((params.pack_name?, params.card_name?)))
+                .unwrap_or_default()
+        },
+        |params| async move {
+            let Some((pack_name, card_name)) = params else {
+                return String::new();
+            };
+
+            #[derive(Serialize)]
+            struct Args {
+                packName: String,
+                cardName: String,
+            }
+
+            let args = Args {
+                packName: pack_name,
+                cardName: card_name,
+            };
+
+            invoke::<Option<String>>("get_card", &args)
+                .await
+                .unwrap()
+                .unwrap_or_default()
+        },
+    );
+
+    let editor = move || {
+        contents.get().map(|initial_contents| {
+            view! {
+                <Editor initial_contents on_save=|_| ()/>
+            }
+        })
+    };
+
     view! {
-        <h3>{"[Card Name]"}</h3>
+        <h3>{card_name}</h3>
+        <Transition>
+            {editor}
+        </Transition>
     }
 }
 
