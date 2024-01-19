@@ -93,22 +93,16 @@ fn PackList() -> impl IntoView {
 fn Pack() -> impl IntoView {
     let params = params::use_pack_params();
 
-    let name = move || params.with(|params| params.pack().map(str::to_string));
+    let name = move || {
+        params
+            .with(|params| params.pack().map(str::to_string))
+            .expect(":pack_name")
+    };
+
     let selected_card = move || params.with(|params| params.card().map(str::to_string));
 
-    let cards = create_resource(
-        move || {
-            // TODO: reload on save
-            name()
-        },
-        move |pack_name| async move {
-            let Some(pack_name) = pack_name else {
-                return vec![];
-            };
-
-            invoke::list_cards(pack_name).await
-        },
-    );
+    // TODO: reload on save
+    let cards = create_resource(name, invoke::list_cards);
 
     let card_list = move || {
         cards
