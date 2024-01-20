@@ -1,5 +1,7 @@
 mod params;
 
+use std::collections::BTreeSet;
+
 use leptos::*;
 use leptos_router::*;
 
@@ -207,7 +209,7 @@ fn CardEditor() -> impl IntoView {
 
 #[component]
 fn CardList(
-    #[prop(into)] cards: MaybeSignal<Vec<String>>,
+    #[prop(into)] cards: MaybeSignal<BTreeSet<String>>,
     #[prop(into)] selected_card: Signal<Option<String>>,
 ) -> impl IntoView {
     #[component]

@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 use serde::{de::DeserializeOwned, Serialize};
 use wasm_bindgen::prelude::*;
 
@@ -48,8 +50,8 @@ macro_rules! define_commands {
 
 define_commands! {
     open_collection() -> Option<String>;
-    list_packs() -> Vec<String>;
-    list_cards(pack_name: String) -> Vec<String>;
+    list_packs() -> BTreeSet<String>;
+    list_cards(pack_name: String) -> BTreeSet<String>;
     add_card(pack_name: String, card_name: String, contents: String);
     get_card(pack_name: String, card_name: String) -> Option<String>;
 }
