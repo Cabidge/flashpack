@@ -212,21 +212,6 @@ fn CardList(
     #[prop(into)] cards: MaybeSignal<BTreeSet<String>>,
     #[prop(into)] selected_card: Signal<Option<String>>,
 ) -> impl IntoView {
-    #[component]
-    fn CardListItem(
-        #[prop(into)] is_selected: Signal<bool>,
-        #[prop(into)] name: String,
-    ) -> impl IntoView {
-        let href = format!("card/{name}");
-        view! {
-            <li class:selected=is_selected>
-                <A href>
-                    {name}
-                </A>
-            </li>
-        }
-    }
-
     let route = use_route();
     let path = route.path();
     let navigate = use_navigate();
@@ -235,21 +220,26 @@ fn CardList(
         navigate(&format!("{path}/card/{card_name}"), Default::default());
     };
 
+    let card_list_item = move |name: String| {
+        let card_name = name.clone();
+        let is_selected =
+            move || selected_card.with(|selected| selected.as_ref() == Some(&card_name));
+
+        view! {
+            <li class:selected=is_selected>
+                <A href=format!("card/{name}")>
+                    {name}
+                </A>
+            </li>
+        }
+    };
+
     view! {
         <ul>
             <For
                 each=move || cards.get()
                 key=|card| card.clone()
-                children=move |name| {
-                    let card_name = name.clone();
-                    let is_selected = move || {
-                        selected_card.with(|selected| selected.as_ref() == Some(&card_name))
-                    };
-
-                    view! {
-                        <CardListItem is_selected name/>
-                    }
-                }
+                children=card_list_item
             />
         </ul>
         <AddInput on_add=add_card/>
