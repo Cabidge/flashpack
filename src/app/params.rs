@@ -1,7 +1,7 @@
 use leptos::*;
 use leptos_router::*;
 
-#[derive(Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum PackParams {
     None,
     Pack(String),

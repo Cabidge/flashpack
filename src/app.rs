@@ -3,7 +3,10 @@ mod params;
 use leptos::*;
 use leptos_router::*;
 
-use crate::{context::CollectionName, invoke};
+use crate::{
+    context::{CollectionName, SaveAction},
+    invoke,
+};
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -24,6 +27,13 @@ pub fn App() -> impl IntoView {
             .get()
             .unwrap_or_else(|| String::from("No Collection Selected..."))
     };
+
+    let save_action = create_action(|input: &(String, String, String)| {
+        let (pack_name, card_name, contents) = input.clone();
+        invoke::add_card(pack_name, card_name, contents)
+    });
+
+    provide_context(SaveAction(save_action));
 
     view! {
         <Router>
@@ -48,15 +58,12 @@ pub fn App() -> impl IntoView {
 fn PackList() -> impl IntoView {
     let CollectionName(collection_name) = use_context::<CollectionName>().unwrap_or_default();
 
+    let SaveAction(save_action) = use_context().unwrap_or_default();
+
     let packs = create_resource(
-        move || collection_name.get(), // TODO: make save actoin a dependency
+        move || (save_action.version().get(), collection_name.get()),
         |_| invoke::list_packs(),
     );
-
-    let save_action = create_action(move |input: &(String, String, String)| {
-        let (pack_name, card_name, contents) = input.clone();
-        invoke::add_card(pack_name, card_name, contents)
-    });
 
     let pack_list_view = move || {
         packs.get().map(move |packs| {
@@ -75,6 +82,14 @@ fn PackList() -> impl IntoView {
         })
     };
 
+    let navigate = use_navigate();
+
+    // need to create a Callback here because otherwise the compiler
+    // complains for some reason, and i don't care enough to figure out why
+    let add_pack = Callback::new(move |pack_name| {
+        navigate(&format!("/pack/{pack_name}"), Default::default());
+    });
+
     view! {
         <Show when=move || collection_name.get().is_some()>
             <h2>"Packs"</h2>
@@ -83,7 +98,7 @@ fn PackList() -> impl IntoView {
                     {pack_list_view}
                 </Transition>
             </ul>
-            <AddInput on_add=move |_name| todo!()/>
+            <AddInput on_add=add_pack/>
         </Show>
         <Outlet/>
     }
@@ -101,8 +116,12 @@ fn Pack() -> impl IntoView {
 
     let selected_card = move || params.with(|params| params.card().map(str::to_string));
 
-    // TODO: reload on save
-    let cards = create_resource(name, invoke::list_cards);
+    let SaveAction(save_action) = use_context().unwrap_or_default();
+
+    let cards = create_resource(
+        move || (name(), save_action.version().get()),
+        |(name, _)| invoke::list_cards(name),
+    );
 
     let card_list = move || {
         cards
@@ -159,10 +178,21 @@ fn CardEditor() -> impl IntoView {
         },
     );
 
+    let SaveAction(save_action) = use_context().unwrap_or_default();
+
+    let save = move |contents| {
+        let params = params.get();
+        let Some((pack_name, card_name)) = params.both() else {
+            return;
+        };
+
+        save_action.dispatch((pack_name.to_string(), card_name.to_string(), contents));
+    };
+
     let editor = move || {
         contents.get().map(|initial_contents| {
             view! {
-                <Editor initial_contents on_save=|_| ()/>
+                <Editor initial_contents on_save=save/>
             }
         })
     };
@@ -195,6 +225,14 @@ fn CardList(
         }
     }
 
+    let route = use_route();
+    let path = route.path();
+    let navigate = use_navigate();
+
+    let add_card = move |card_name| {
+        navigate(&format!("{path}/card/{card_name}"), Default::default());
+    };
+
     view! {
         <ul>
             <For
@@ -212,7 +250,7 @@ fn CardList(
                 }
             />
         </ul>
-        <AddInput on_add=move |_new_card| todo!()/>
+        <AddInput on_add=add_card/>
     }
 }
 
