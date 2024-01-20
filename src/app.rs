@@ -221,14 +221,13 @@ fn CardList(
     };
 
     let card_list_item = move |name: String| {
-        let card_name = name.clone();
-        let is_selected =
-            move || selected_card.with(|selected| selected.as_ref() == Some(&card_name));
+        let name = store_value(name);
+        let is_selected = with!(|selected_card, name| selected_card.as_ref() == Some(name));
 
         view! {
             <li class:selected=is_selected>
-                <A href=format!("card/{name}")>
-                    {name}
+                <A href=format!("card/{}", name.get_value())>
+                    {name.get_value()}
                 </A>
             </li>
         }
