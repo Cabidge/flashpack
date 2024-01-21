@@ -100,7 +100,6 @@ fn PackList() -> impl IntoView {
             </ul>
             <AddInput on_add=add_pack/>
         </Show>
-        <Outlet/>
     }
 }
 
