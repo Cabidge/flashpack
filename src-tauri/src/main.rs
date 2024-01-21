@@ -85,6 +85,17 @@ fn list_packs(collection: State<CollectionState>) -> Vec<String> {
 }
 
 #[tauri::command]
+fn delete_pack(collection: State<CollectionState>, pack_name: String) {
+    let collection = collection.lock().unwrap();
+    let Some(collection) = collection.as_ref() else {
+        return;
+    };
+
+    let pack = collection.pack(&pack_name);
+    let _ = std::fs::remove_dir_all(pack.0).ok();
+}
+
+#[tauri::command]
 fn list_cards(collection: State<CollectionState>, pack_name: String) -> Vec<String> {
     let collection = collection.lock().unwrap();
     let Some(cards) = collection
@@ -135,6 +146,17 @@ fn get_card(
     std::fs::read_to_string(card.0).ok()
 }
 
+#[tauri::command]
+fn delete_card(collection: State<CollectionState>, pack_name: String, card_name: String) {
+    let collection = collection.lock().unwrap();
+    let Some(collection) = collection.as_ref() else {
+        return;
+    };
+
+    let card = collection.pack(&pack_name).open_card(&card_name);
+    let _ = std::fs::remove_file(card.0).ok();
+}
+
 fn main() {
     tauri::Builder::default()
         .manage(CollectionState::default())
@@ -142,9 +164,11 @@ fn main() {
             open_collection,
             get_collection_name,
             list_packs,
+            delete_pack,
             list_cards,
             add_card,
             get_card,
+            delete_card,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
