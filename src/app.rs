@@ -48,6 +48,8 @@ pub fn App() -> impl IntoView {
                         <Route path="/" view=|| view! { <h2>"No Card Selected..."</h2> }/>
                         <Route path="/card/:card_name" view=CardEditor/>
                     </Route>
+                    // We don't want to show the CardList when in study mode
+                    <Route path="/pack/:pack_name/study" view=Study/>
                 </Routes>
             </main>
         </Router>
@@ -131,6 +133,7 @@ fn Pack() -> impl IntoView {
     view! {
         <a href="/">"Back"</a>
         <h2>{name}</h2>
+        <A href="study">"Begin study"</A>
         <Transition>
             {card_list}
         </Transition>
@@ -275,14 +278,68 @@ fn AddInput(#[prop(into)] on_add: Callback<String>) -> impl IntoView {
 }
 
 #[component]
-fn CardSlides(card_slides: Vec<String>) -> impl IntoView {
+fn Study() -> impl IntoView {
+    let params = params::use_pack_params();
+    let name = move || {
+        params
+            .with(|params| params.pack().map(str::to_string))
+            .expect(":pack_name")
+    };
+
+    let card_contents = create_resource(name, invoke::deal_cards);
+
+    view! {
+        <Transition>
+            {move || card_contents.get().map(|card_contents| {
+                view! {
+                    <StudyCardSlides card_contents/>
+                }
+            })}
+        </Transition>
+    }
+}
+
+#[component]
+fn StudyCardSlides(card_contents: Vec<String>) -> impl IntoView {
+    let (card_index, set_card_index) = create_signal(0);
+
+    let next_card = move |_| set_card_index.update(|i| *i += 1);
+
+    let cards = card_contents
+        .into_iter()
+        .map(|contents| {
+            // TODO: proper parsing
+            vec![contents]
+        })
+        .collect::<Vec<_>>();
+
+    let current_card = move || cards.get(card_index.get()).cloned();
+
+    move || {
+        if let Some(card_sections) = current_card() {
+            view! { <CardSlides card_sections on_complete=next_card/> }.into_view()
+        } else {
+            view! {
+                <p>"You're done!"</p>
+                <A href="/">"Return to packs"</A>
+            }
+            .into_view()
+        }
+    }
+}
+
+#[component]
+fn CardSlides(
+    card_sections: Vec<String>,
+    #[prop(into)] on_complete: Callback<()>,
+) -> impl IntoView {
     let (visible_count, set_visible_count) = create_signal(1);
-    let slide_count = card_slides.len();
+    let section_count = card_sections.len();
 
-    let advance_slides = move || set_visible_count.update(|count| *count += 1);
+    let next_section = move || set_visible_count.update(|count| *count += 1);
 
-    let visible_cards = move || {
-        card_slides
+    let visible_sections = move || {
+        card_sections
             .iter()
             .take(visible_count.get())
             .map(|slide| {
@@ -297,10 +354,19 @@ fn CardSlides(card_slides: Vec<String>) -> impl IntoView {
 
     view! {
         <ul>
-            {visible_cards}
-            <Show when=move || visible_count.get() < slide_count>
+            {visible_sections}
+            <Show
+                when=move || visible_count.get() < section_count
+                fallback=move || view! {
+                    <li>
+                        <button on:click=move |_| on_complete.call(())>
+                            "Finish Card"
+                        </button>
+                    </li>
+                }
+            >
                 <li>
-                    <button on:click=move |_| advance_slides()>
+                    <button on:click=move |_| next_section()>
                         "Next"
                     </button>
                 </li>

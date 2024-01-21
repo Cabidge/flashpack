@@ -10,6 +10,7 @@ macros::define_commands! {
     list_cards(pack_name: String) -> BTreeSet<String>;
     add_card(pack_name: String, card_name: String, contents: String);
     get_card(pack_name: String, card_name: String) -> Option<String>;
+    deal_cards(pack_name: String) -> Vec<String>;
 }
 
 #[wasm_bindgen]
