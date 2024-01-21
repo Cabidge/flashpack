@@ -38,19 +38,24 @@ impl Card {
 const CARD_EXTENSION: &str = "flashmark";
 
 #[tauri::command]
-async fn open_collection(collection: State<'_, CollectionState>) -> Result<Option<String>, ()> {
+async fn open_collection(collection: State<'_, CollectionState>) -> Result<bool, ()> {
     let Some(path) = FileDialogBuilder::new().pick_folder() else {
-        return Ok(None);
-    };
-
-    let name = match path.file_name() {
-        Some(name) => name.to_string_lossy().into_owned(),
-        None => String::from("*Unknown*"),
+        return Ok(false);
     };
 
     *collection.lock().unwrap() = Some(Collection(path));
 
-    Ok(Some(name))
+    Ok(true)
+}
+
+#[tauri::command]
+fn get_collection_name(collection: State<CollectionState>) -> Option<String> {
+    collection
+        .lock()
+        .unwrap()
+        .as_ref()
+        .and_then(|Collection(path)| path.file_name())
+        .map(|name| name.to_string_lossy().into_owned())
 }
 
 #[tauri::command]
@@ -135,6 +140,7 @@ fn main() {
         .manage(CollectionState::default())
         .invoke_handler(tauri::generate_handler![
             open_collection,
+            get_collection_name,
             list_packs,
             list_cards,
             add_card,

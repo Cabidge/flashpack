@@ -4,7 +4,8 @@ use serde::{de::DeserializeOwned, Serialize};
 use wasm_bindgen::prelude::*;
 
 macros::define_commands! {
-    open_collection() -> Option<String>;
+    open_collection() -> bool;
+    get_collection_name() -> Option<String>;
     list_packs() -> BTreeSet<String>;
     list_cards(pack_name: String) -> BTreeSet<String>;
     add_card(pack_name: String, card_name: String, contents: String);

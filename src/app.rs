@@ -14,19 +14,17 @@ use crate::{
 pub fn App() -> impl IntoView {
     let open_collection_action = create_action(|_: &()| invoke::open_collection());
 
-    let collection_name = create_memo(move |prev| {
-        open_collection_action
-            .value()
-            .get()
-            .flatten()
-            .or_else(|| prev.cloned().flatten())
-    });
+    let collection_name = create_resource(
+        move || open_collection_action.version().get(),
+        |_| invoke::get_collection_name(),
+    );
 
-    provide_context(CollectionName(collection_name.into()));
+    provide_context(CollectionName(collection_name));
 
     let title = move || {
         collection_name
             .get()
+            .flatten()
             .unwrap_or_else(|| String::from("No Collection Selected..."))
     };
 
@@ -93,7 +91,7 @@ fn PackList() -> impl IntoView {
     });
 
     view! {
-        <Show when=move || collection_name.get().is_some()>
+        <Show when=move || collection_name.with(|name| matches!(name, Some(Some(_))))>
             <h2>"Packs"</h2>
             <ul>
                 <Transition>
