@@ -157,6 +157,33 @@ fn delete_card(collection: State<CollectionState>, pack_name: String, card_name:
     let _ = std::fs::remove_file(card.0).ok();
 }
 
+#[tauri::command]
+fn deal_cards(collection: State<CollectionState>, pack_name: String) -> Vec<String> {
+    let collection = collection.lock().unwrap();
+
+    let Some(cards) = collection
+        .as_ref()
+        .map(|collection| collection.pack(&pack_name))
+        .and_then(|Pack(path)| path.read_dir().ok())
+    else {
+        return vec![];
+    };
+
+    let card_contents = cards
+        .filter_map(|entry| {
+            let entry = entry.ok()?;
+            let path = entry.path();
+            (path.extension()? == CARD_EXTENSION && entry.file_type().ok()?.is_file())
+                .then_some(path)
+                .and_then(|path| std::fs::read_to_string(path).ok())
+        })
+        .collect();
+
+    // TODO: shuffle cards
+
+    card_contents
+}
+
 fn main() {
     tauri::Builder::default()
         .manage(CollectionState::default())
@@ -169,6 +196,7 @@ fn main() {
             add_card,
             get_card,
             delete_card,
+            deal_cards,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
