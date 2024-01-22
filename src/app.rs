@@ -5,10 +5,7 @@ use std::collections::BTreeSet;
 use leptos::*;
 use leptos_router::*;
 
-use crate::{
-    context::{CollectionName, SaveAction},
-    invoke,
-};
+use crate::{context, invoke};
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -19,7 +16,7 @@ pub fn App() -> impl IntoView {
         |_| invoke::get_collection_name(),
     );
 
-    provide_context(CollectionName(collection_name));
+    context::CollectionName::provide(collection_name);
 
     let title = move || {
         collection_name
@@ -33,7 +30,7 @@ pub fn App() -> impl IntoView {
         invoke::add_card(pack_name, card_name, contents)
     });
 
-    provide_context(SaveAction(save_action));
+    context::SaveAction::provide(save_action);
 
     view! {
         <Router>
@@ -58,9 +55,9 @@ pub fn App() -> impl IntoView {
 
 #[component]
 fn PackList() -> impl IntoView {
-    let CollectionName(collection_name) = use_context::<CollectionName>().unwrap_or_default();
+    let collection_name = context::CollectionName::use_context().unwrap();
 
-    let SaveAction(save_action) = use_context().unwrap_or_default();
+    let save_action = context::SaveAction::use_context().unwrap();
 
     let packs = create_resource(
         move || (save_action.version().get(), collection_name.get()),
@@ -117,7 +114,7 @@ fn Pack() -> impl IntoView {
 
     let selected_card = move || params.with(|params| params.card().map(str::to_string));
 
-    let SaveAction(save_action) = use_context().unwrap_or_default();
+    let save_action = context::SaveAction::use_context().unwrap();
 
     let cards = create_resource(
         move || (name(), save_action.version().get()),
@@ -180,7 +177,7 @@ fn CardEditor() -> impl IntoView {
         },
     );
 
-    let SaveAction(save_action) = use_context().unwrap_or_default();
+    let save_action = context::SaveAction::use_context().unwrap();
 
     let save = move |contents| {
         let params = params.get();

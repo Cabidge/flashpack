@@ -1,19 +1,27 @@
+use macros::define_context;
+
 use leptos::*;
 
-#[derive(Clone)]
-pub struct CollectionName(pub Resource<usize, Option<String>>);
+define_context!(CollectionName: Resource<usize, Option<String>>);
+define_context!(SaveAction: Action<(String, String, String), ()>);
 
-#[derive(Clone)]
-pub struct SaveAction(pub Action<(String, String, String), ()>);
+mod macros {
+    macro_rules! define_context {
+        ($name:ident: $ty:ty) => {
+            #[derive(Clone)]
+            pub struct $name($ty);
 
-impl Default for CollectionName {
-    fn default() -> Self {
-        Self(create_resource(|| 0, |_| std::future::pending()))
+            impl $name {
+                pub fn provide(value: $ty) {
+                    leptos::provide_context(Self(value));
+                }
+
+                pub fn use_context() -> Option<$ty> {
+                    leptos::use_context().map(|Self(value)| value)
+                }
+            }
+        };
     }
-}
 
-impl Default for SaveAction {
-    fn default() -> Self {
-        Self(create_action(|_| async {}))
-    }
+    pub(crate) use define_context;
 }
