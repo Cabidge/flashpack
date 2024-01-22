@@ -64,7 +64,7 @@ fn PackList() -> impl IntoView {
                     let href = format!("pack/{pack_name}");
 
                     view! {
-                        <li>
+                        <li class="pack-list-item">
                             <A href>{pack_name}</A>
                         </li>
                     }
@@ -88,7 +88,7 @@ fn PackList() -> impl IntoView {
         </button>
         <Show when=move || collection_name.with(|name| matches!(name, Some(Some(_))))>
             <h2>"Packs"</h2>
-            <ul>
+            <ul class="pack-list">
                 <Transition>
                     {pack_list_view}
                 </Transition>
