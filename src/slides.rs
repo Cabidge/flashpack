@@ -80,3 +80,34 @@ fn strip_indent(source: &str) -> Option<&str> {
 
     (indentation.len() < 4 && indentation.chars().all(|ch| ch == ' ')).then_some(trimmed)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn strip_nothing() {
+        let input = "12 3456     ";
+        let stripped = strip_indent(input);
+        assert_eq!(stripped, Some(input));
+    }
+
+    #[test]
+    fn strip_spaces() {
+        assert_eq!(strip_indent(" foo"), Some("foo"));
+        assert_eq!(strip_indent("  foo"), Some("foo"));
+        assert_eq!(strip_indent("   foo"), Some("foo"));
+        assert_eq!(strip_indent("    foo"), None);
+    }
+
+    #[test]
+    fn strip_tabs() {
+        assert_eq!(strip_indent("\tfoo"), None);
+    }
+
+    #[test]
+    fn thematic_empty() {
+        let mut sections = ThematicBreaks::new("");
+        assert_eq!(sections.next(), None);
+    }
+}
