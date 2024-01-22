@@ -294,16 +294,15 @@ fn Study() -> impl IntoView {
 
 #[component]
 fn StudyCardSlides(card_contents: Vec<String>) -> impl IntoView {
+    use crate::slides::ThematicBreaks;
+
     let (card_index, set_card_index) = create_signal(0);
 
     let next_card = move |_| set_card_index.update(|i| *i += 1);
 
     let cards = card_contents
         .into_iter()
-        .map(|contents| {
-            // TODO: proper parsing
-            vec![contents]
-        })
+        .map(|contents| ThematicBreaks::new(&contents).map(str::to_string).collect())
         .collect::<Vec<_>>();
 
     let current_card = move || cards.get(card_index.get()).cloned();

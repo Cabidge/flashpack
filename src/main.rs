@@ -2,6 +2,8 @@ mod app;
 mod context;
 mod invoke;
 
+mod slides;
+
 use app::*;
 use leptos::*;
 
