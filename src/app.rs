@@ -282,6 +282,7 @@ fn Study() -> impl IntoView {
     let card_contents = create_resource(name, invoke::deal_cards);
 
     view! {
+        <h1>"Practicing " {name}</h1>
         <Transition>
             {move || card_contents.get().map(|card_contents| {
                 view! {
@@ -298,6 +299,8 @@ fn StudyCardSlides(card_contents: Vec<String>) -> impl IntoView {
 
     let (card_index, set_card_index) = create_signal(0);
 
+    let card_count = card_contents.len();
+
     let next_card = move |_| set_card_index.update(|i| *i += 1);
 
     let cards = card_contents
@@ -309,7 +312,11 @@ fn StudyCardSlides(card_contents: Vec<String>) -> impl IntoView {
 
     move || {
         if let Some(card_sections) = current_card() {
-            view! { <CardSlides card_sections on_complete=next_card/> }.into_view()
+            view! {
+                <h2>{move || card_index.get() + 1} "/" {card_count}</h2>
+                <CardSlides card_sections on_complete=next_card/>
+            }
+            .into_view()
         } else {
             view! {
                 <p>"You're done!"</p>
