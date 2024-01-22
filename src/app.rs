@@ -125,7 +125,7 @@ fn Pack() -> impl IntoView {
 
     view! {
         <a href="/">"Back"</a>
-        <h2>{name}</h2>
+        <h1>{name}</h1>
         <A href="study">"Begin study"</A>
         <Transition>
             {card_list}
@@ -193,7 +193,7 @@ fn CardEditor() -> impl IntoView {
     };
 
     view! {
-        <h3>{card_name}</h3>
+        <h2>{card_name}</h2>
         <Transition>
             {editor}
         </Transition>
