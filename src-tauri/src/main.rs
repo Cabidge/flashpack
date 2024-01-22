@@ -35,7 +35,7 @@ impl Card {
     }
 }
 
-const CARD_EXTENSION: &str = "flashmark";
+const CARD_EXTENSION: &str = "fmark";
 
 #[tauri::command]
 async fn open_collection(collection: State<'_, CollectionState>) -> Result<bool, ()> {
