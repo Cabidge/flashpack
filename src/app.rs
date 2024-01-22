@@ -9,22 +9,6 @@ use crate::{context, invoke};
 
 #[component]
 pub fn App() -> impl IntoView {
-    let open_collection_action = create_action(|_: &()| invoke::open_collection());
-
-    let collection_name = create_resource(
-        move || open_collection_action.version().get(),
-        |_| invoke::get_collection_name(),
-    );
-
-    context::CollectionName::provide(collection_name);
-
-    let title = move || {
-        collection_name
-            .get()
-            .flatten()
-            .unwrap_or_else(|| String::from("No Collection Selected..."))
-    };
-
     let save_action = create_action(|input: &(String, String, String)| {
         let (pack_name, card_name, contents) = input.clone();
         invoke::add_card(pack_name, card_name, contents)
@@ -35,10 +19,6 @@ pub fn App() -> impl IntoView {
     view! {
         <Router>
             <main>
-                <button on:click=move |_| open_collection_action.dispatch(())>
-                    "Open Collection"
-                </button>
-                <h1>{title}</h1>
                 <Routes>
                     <Route path="" view=PackList/>
                     <Route path="/pack/:pack_name" view=Pack>
@@ -55,9 +35,21 @@ pub fn App() -> impl IntoView {
 
 #[component]
 fn PackList() -> impl IntoView {
-    let collection_name = context::CollectionName::use_context().unwrap();
-
     let save_action = context::SaveAction::use_context().unwrap();
+
+    let open_collection_action = create_action(|_: &()| invoke::open_collection());
+
+    let collection_name = create_resource(
+        move || open_collection_action.version().get(),
+        |_| invoke::get_collection_name(),
+    );
+
+    let title = move || {
+        collection_name
+            .get()
+            .flatten()
+            .unwrap_or_else(|| String::from("No Collection Selected..."))
+    };
 
     let packs = create_resource(
         move || (save_action.version().get(), collection_name.get()),
@@ -90,6 +82,10 @@ fn PackList() -> impl IntoView {
     });
 
     view! {
+        <h1>{title}</h1>
+        <button on:click=move |_| open_collection_action.dispatch(())>
+            "Open Collection"
+        </button>
         <Show when=move || collection_name.with(|name| matches!(name, Some(Some(_))))>
             <h2>"Packs"</h2>
             <ul>

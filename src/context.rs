@@ -2,7 +2,7 @@ use macros::define_context;
 
 use leptos::*;
 
-define_context!(CollectionName: Resource<usize, Option<String>>);
+//define_context!(CollectionName: Resource<usize, Option<String>>);
 define_context!(SaveAction: Action<(String, String, String), ()>);
 
 mod macros {
