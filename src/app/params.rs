@@ -2,30 +2,19 @@ use leptos::*;
 use leptos_router::*;
 
 pub fn use_pack_name() -> Signal<String> {
-    #[derive(Params, PartialEq, Clone)]
-    struct UrlParam {
-        pack_name: Option<String>,
-    }
-
-    derive_param::<UrlParam>(|params| params.pack_name.as_ref())
+    use_param_decoded("pack_name")
 }
 
 pub fn use_card_name() -> Signal<String> {
-    #[derive(Params, PartialEq, Clone)]
-    struct UrlParam {
-        card_name: Option<String>,
-    }
-
-    derive_param::<UrlParam>(|params| params.card_name.as_ref())
+    use_param_decoded("card_name")
 }
 
-// this is a little dumb looking, but it just removes a lot of repetitive code
-fn derive_param<T: Params + PartialEq + 'static>(map: fn(&T) -> Option<&String>) -> Signal<String> {
-    let param = use_params::<T>();
+pub fn use_param_decoded(name: &'static str) -> Signal<String> {
+    let params = use_params_map();
 
     Signal::derive(move || {
-        param.with(move |param| {
-            let Some(name) = param.as_ref().ok().and_then(map) else {
+        params.with(|params| {
+            let Some(name) = params.get(name) else {
                 return String::new();
             };
 
