@@ -108,7 +108,20 @@ fn Pack() -> impl IntoView {
             .expect(":pack_name")
     };
 
-    let selected_card = move || params.with(|params| params.card().map(str::to_string));
+    // this works, but is VERY hacky...
+    // TODO: find a better way of doing this if possible
+    let location = use_location();
+    let selected_card = move || {
+        let path = location.pathname.get();
+        let rest = path.strip_prefix("/pack/")?;
+        let (_pack_name, rest) = rest.split_once('/')?;
+        let rest = rest.strip_prefix("card/")?;
+        let (card_name, _rest) = rest.split_once('/').unwrap_or((rest, ""));
+        Some(urlencoding::decode(card_name).ok()?.into_owned())
+    };
+
+    // this doesn't work
+    // let selected_card = move || params.with(|params| params.card().map(str::to_string));
 
     let save_action = context::SaveAction::use_context().unwrap();
 
@@ -215,7 +228,7 @@ fn CardList(
 
     let card_list_item = move |name: String| {
         let name = store_value(name);
-        let is_selected = with!(|selected_card, name| selected_card.as_ref() == Some(name));
+        let is_selected = move || with!(|selected_card, name| selected_card.as_ref() == Some(name));
 
         view! {
             <li class="card-list-item" class:selected=is_selected>
