@@ -2,21 +2,22 @@ use leptos::*;
 use leptos_router::*;
 
 pub fn use_pack_name() -> Signal<String> {
-    #[derive(Params, PartialEq, Default, Clone)]
-    struct PackNameParam {
+    #[derive(Params, PartialEq, Clone)]
+    struct UrlParam {
         pack_name: Option<String>,
     }
 
-    let param = use_params::<PackNameParam>();
+    let param = use_params::<UrlParam>();
 
     Signal::derive(move || {
         param.with(|params| {
-            let name = params
+            let Some(name) = params
                 .as_ref()
-                .unwrap()
-                .pack_name
-                .as_ref()
-                .expect(":pack_name");
+                .ok()
+                .and_then(|params| params.pack_name.as_ref())
+            else {
+                return String::from(":pack_name");
+            };
 
             percent_encoding::percent_decode_str(name)
                 .decode_utf8_lossy()
@@ -26,21 +27,22 @@ pub fn use_pack_name() -> Signal<String> {
 }
 
 pub fn use_card_name() -> Signal<String> {
-    #[derive(Params, PartialEq, Default, Clone)]
-    struct CardNameParam {
+    #[derive(Params, PartialEq, Clone)]
+    struct UrlParam {
         card_name: Option<String>,
     }
 
-    let param = use_params::<CardNameParam>();
+    let param = use_params::<UrlParam>();
 
     Signal::derive(move || {
         param.with(|params| {
-            let name = params
+            let Some(name) = params
                 .as_ref()
-                .unwrap()
-                .card_name
-                .as_ref()
-                .expect(":card_name");
+                .ok()
+                .and_then(|params| params.card_name.as_ref())
+            else {
+                return String::from(":card_name");
+            };
 
             percent_encoding::percent_decode_str(name)
                 .decode_utf8_lossy()
