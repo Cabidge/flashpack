@@ -108,21 +108,6 @@ fn Pack() -> impl IntoView {
             .expect(":pack_name")
     };
 
-    // this works, but is VERY hacky...
-    // TODO: find a better way of doing this if possible
-    let location = use_location();
-    let selected_card = move || {
-        let path = location.pathname.get();
-        let rest = path.strip_prefix("/pack/")?;
-        let (_pack_name, rest) = rest.split_once('/')?;
-        let rest = rest.strip_prefix("card/")?;
-        let (card_name, _rest) = rest.split_once('/').unwrap_or((rest, ""));
-        Some(urlencoding::decode(card_name).ok()?.into_owned())
-    };
-
-    // this doesn't work
-    // let selected_card = move || params.with(|params| params.card().map(str::to_string));
-
     let save_action = context::SaveAction::use_context().unwrap();
 
     let cards = create_resource(
@@ -130,11 +115,7 @@ fn Pack() -> impl IntoView {
         |(name, _)| invoke::list_cards(name),
     );
 
-    let card_list = move || {
-        cards
-            .get()
-            .map(|cards| view! { <CardList cards selected_card/> })
-    };
+    let card_list = move || cards.get().map(|cards| view! { <CardList cards/> });
 
     view! {
         <a href="/">"Back"</a>
@@ -214,10 +195,7 @@ fn CardEditor() -> impl IntoView {
 }
 
 #[component]
-fn CardList(
-    #[prop(into)] cards: MaybeSignal<BTreeSet<String>>,
-    #[prop(into)] selected_card: Signal<Option<String>>,
-) -> impl IntoView {
+fn CardList(#[prop(into)] cards: MaybeSignal<BTreeSet<String>>) -> impl IntoView {
     let route = use_route();
     let path = route.path();
     let navigate = use_navigate();
@@ -227,13 +205,13 @@ fn CardList(
     };
 
     let card_list_item = move |name: String| {
-        let name = store_value(name);
-        let is_selected = move || with!(|selected_card, name| selected_card.as_ref() == Some(name));
+        let href_name = urlencoding::encode(&name);
+        let href = format!("card/{href_name}");
 
         view! {
-            <li class="card-list-item" class:selected=is_selected>
-                <A href=format!("card/{}", name.get_value())>
-                    {name.get_value()}
+            <li class="card-list-item">
+                <A exact=true active_class="selected" href>
+                    {name}
                 </A>
             </li>
         }
