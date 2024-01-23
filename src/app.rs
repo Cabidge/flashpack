@@ -192,8 +192,10 @@ fn CardList(#[prop(into)] cards: MaybeSignal<BTreeSet<String>>) -> impl IntoView
     };
 
     let card_list_item = move |name: String| {
-        let href_name = urlencoding::encode(&name);
-        let href = format!("card/{href_name}");
+        let href = format!(
+            "card/{}",
+            percent_encoding::utf8_percent_encode(&name, percent_encoding::NON_ALPHANUMERIC)
+        );
 
         view! {
             <li class="card-list-item">

@@ -18,7 +18,9 @@ pub fn use_pack_name() -> Signal<String> {
                 .as_ref()
                 .expect(":pack_name");
 
-            urlencoding::decode(name).unwrap().into_owned()
+            percent_encoding::percent_decode_str(name)
+                .decode_utf8_lossy()
+                .into_owned()
         })
     })
 }
@@ -40,7 +42,9 @@ pub fn use_card_name() -> Signal<String> {
                 .as_ref()
                 .expect(":card_name");
 
-            urlencoding::decode(name).unwrap().into_owned()
+            percent_encoding::percent_decode_str(name)
+                .decode_utf8_lossy()
+                .into_owned()
         })
     })
 }
