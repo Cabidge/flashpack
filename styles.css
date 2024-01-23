@@ -39,3 +39,36 @@ a {
   font-size: 1.5rem;
   padding: 1.5rem;
 }
+
+.card-list {
+  /* Remove bullet list */
+  margin: 0;
+  padding: 1rem;
+  list-style: none;
+
+  background-color: #dadada;
+
+  display: flex;
+  gap: 0.25rem;
+  flex-direction: column;
+  justify-content: stretch;
+}
+
+.card-list-item a {
+  display: block;
+
+  vertical-align: middle;
+  color: #101010;
+  background-color: #fafafa;
+
+  padding: 0.25rem 0.75rem;
+}
+
+.card-list-item.selected a {
+  color: black;
+  background-color: white;
+}
+
+.card-list-item.selected a::before {
+  content: "> "
+}

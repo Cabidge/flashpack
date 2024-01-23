@@ -218,7 +218,7 @@ fn CardList(
         let is_selected = with!(|selected_card, name| selected_card.as_ref() == Some(name));
 
         view! {
-            <li class:selected=is_selected>
+            <li class="card-list-item" class:selected=is_selected>
                 <A href=format!("card/{}", name.get_value())>
                     {name.get_value()}
                 </A>
@@ -227,7 +227,7 @@ fn CardList(
     };
 
     view! {
-        <ul>
+        <ul class="card-list">
             <For
                 each=move || cards.get()
                 key=|card| card.clone()
