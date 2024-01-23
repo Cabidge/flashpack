@@ -1,59 +1,46 @@
 use leptos::*;
 use leptos_router::*;
 
-#[derive(Debug, Clone, PartialEq)]
-pub enum PackParams {
-    None,
-    Pack(String),
-    PackAndCard(String, String),
-}
-
-pub fn use_pack_params() -> Memo<PackParams> {
+pub fn use_pack_name() -> Signal<String> {
     #[derive(Params, PartialEq, Default, Clone)]
-    struct UrlParams {
+    struct PackNameParam {
         pack_name: Option<String>,
-        card_name: Option<String>,
     }
 
-    let params = use_params::<UrlParams>();
+    let param = use_params::<PackNameParam>();
 
-    create_memo(move |_| {
-        fn decode(name: &str) -> Option<String> {
-            let decoded = urlencoding::decode(name).ok()?;
-            Some(decoded.into_owned())
-        }
+    Signal::derive(move || {
+        param.with(|params| {
+            let name = params
+                .as_ref()
+                .unwrap()
+                .pack_name
+                .as_ref()
+                .expect(":pack_name");
 
-        let Ok(params) = params.get() else {
-            return PackParams::None;
-        };
-
-        let Some(pack_name) = params.pack_name.as_deref().and_then(decode) else {
-            return PackParams::None;
-        };
-
-        match params.card_name.as_deref().and_then(decode) {
-            Some(card_name) => PackParams::PackAndCard(pack_name, card_name),
-            None => PackParams::Pack(pack_name),
-        }
+            urlencoding::decode(name).unwrap().into_owned()
+        })
     })
 }
 
-impl PackParams {
-    pub fn pack(&self) -> Option<&str> {
-        match self {
-            Self::Pack(name) | Self::PackAndCard(name, _) => Some(name),
-            _ => None,
-        }
+pub fn use_card_name() -> Signal<String> {
+    #[derive(Params, PartialEq, Default, Clone)]
+    struct CardNameParam {
+        card_name: Option<String>,
     }
 
-    pub fn card(&self) -> Option<&str> {
-        self.both().map(|(_, card)| card)
-    }
+    let param = use_params::<CardNameParam>();
 
-    pub fn both(&self) -> Option<(&str, &str)> {
-        match self {
-            Self::PackAndCard(pack, card) => Some((pack, card)),
-            _ => None,
-        }
-    }
+    Signal::derive(move || {
+        param.with(|params| {
+            let name = params
+                .as_ref()
+                .unwrap()
+                .card_name
+                .as_ref()
+                .expect(":card_name");
+
+            urlencoding::decode(name).unwrap().into_owned()
+        })
+    })
 }

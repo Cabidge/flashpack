@@ -33,6 +33,7 @@ pub fn App() -> impl IntoView {
     }
 }
 
+// "/"
 #[component]
 fn PackList() -> impl IntoView {
     let save_action = context::SaveAction::use_context().unwrap();
@@ -98,20 +99,15 @@ fn PackList() -> impl IntoView {
     }
 }
 
+// "/pack/:pack_name"
 #[component]
 fn Pack() -> impl IntoView {
-    let params = params::use_pack_params();
-
-    let name = move || {
-        params
-            .with(|params| params.pack().map(str::to_string))
-            .expect(":pack_name")
-    };
+    let name = params::use_pack_name();
 
     let save_action = context::SaveAction::use_context().unwrap();
 
     let cards = create_resource(
-        move || (name(), save_action.version().get()),
+        move || (name.get(), save_action.version().get()),
         |(name, _)| invoke::list_cards(name),
     );
 
@@ -128,11 +124,11 @@ fn Pack() -> impl IntoView {
     }
 }
 
+// "/pack/:pack_name/card/:card_name"
 #[component]
 fn CardEditor() -> impl IntoView {
-    let params = params::use_pack_params();
-
-    let card_name = move || params.with(|params| params.card().map(str::to_string));
+    let pack_name = params::use_pack_name();
+    let card_name = params::use_card_name();
 
     #[component]
     fn Editor(
@@ -155,12 +151,8 @@ fn CardEditor() -> impl IntoView {
     }
 
     let contents = create_resource(
-        move || params.with(|params| params.both().map(|(a, b)| (a.to_string(), b.to_string()))),
-        |params| async move {
-            let Some((pack_name, card_name)) = params else {
-                return String::new();
-            };
-
+        move || (pack_name.get(), card_name.get()),
+        |(pack_name, card_name)| async move {
             invoke::get_card(pack_name, card_name)
                 .await
                 .unwrap_or_default()
@@ -170,12 +162,7 @@ fn CardEditor() -> impl IntoView {
     let save_action = context::SaveAction::use_context().unwrap();
 
     let save = move |contents| {
-        let params = params.get();
-        let Some((pack_name, card_name)) = params.both() else {
-            return;
-        };
-
-        save_action.dispatch((pack_name.to_string(), card_name.to_string(), contents));
+        save_action.dispatch((pack_name.get(), card_name.get(), contents));
     };
 
     let editor = move || {
@@ -261,16 +248,12 @@ fn AddInput(#[prop(into)] on_add: Callback<String>) -> impl IntoView {
     }
 }
 
+// "/pack/:pack_name/study"
 #[component]
 fn Study() -> impl IntoView {
-    let params = params::use_pack_params();
-    let name = move || {
-        params
-            .with(|params| params.pack().map(str::to_string))
-            .expect(":pack_name")
-    };
+    let name = params::use_pack_name();
 
-    let card_contents = create_resource(name, invoke::deal_cards);
+    let card_contents = create_resource(move || name.get(), invoke::deal_cards);
 
     view! {
         <h1>"Practicing " {name}</h1>
