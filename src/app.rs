@@ -175,15 +175,17 @@ fn CardEditor() -> impl IntoView {
         let (contents, set_contents) = create_signal(initial_contents);
 
         view! {
-            <textarea
-                prop:value=move || contents.get()
-                on:input=move |ev| set_contents.set(event_target_value(&ev))
-            >
-                {contents.get_untracked()}
-            </textarea>
-            <button on:click=move |_| on_save.call(contents.get())>
-                "Save"
-            </button>
+            <div class="editor">
+                <textarea
+                    prop:value=move || contents.get()
+                    on:input=move |ev| set_contents.set(event_target_value(&ev))
+                >
+                    {contents.get_untracked()}
+                </textarea>
+                <button class="save-button" on:click=move |_| on_save.call(contents.get())>
+                    "Save"
+                </button>
+            </div>
         }
     }
 

@@ -20,6 +20,10 @@ body {
   min-height: 100vh;
 }
 
+button:hover {
+  cursor: pointer;
+}
+
 #header {
   /* Tailwind slate-700 */
   background-color: #334155;
@@ -124,4 +128,25 @@ a:hover {
 
 .card-list-item a.selected::before {
   content: "> "
+}
+
+.editor textarea {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+
+  font-family: "monospace";
+  color: inherit;
+  /* Tailwind slate-700 */
+  background-color: #334155;
+}
+
+.save-button {
+  width: 100%;
+  padding: 0.5rem;
+  border: none;
+
+  color: inherit;
+  /* Tailwind slate-700 */
+  background-color: #334155;
 }
