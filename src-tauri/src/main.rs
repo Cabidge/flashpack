@@ -3,6 +3,7 @@
 
 use std::{path::PathBuf, sync::Mutex};
 
+use rand::seq::SliceRandom;
 use tauri::{api::dialog::blocking::FileDialogBuilder, State};
 
 struct Collection(PathBuf);
@@ -169,7 +170,7 @@ fn deal_cards(collection: State<CollectionState>, pack_name: String) -> Vec<Stri
         return vec![];
     };
 
-    let card_contents = cards
+    let mut card_contents: Vec<_> = cards
         .filter_map(|entry| {
             let entry = entry.ok()?;
             let path = entry.path();
@@ -179,7 +180,9 @@ fn deal_cards(collection: State<CollectionState>, pack_name: String) -> Vec<Stri
         })
         .collect();
 
-    // TODO: shuffle cards
+    let mut rng = rand::thread_rng();
+
+    card_contents.shuffle(&mut rng);
 
     card_contents
 }
