@@ -73,6 +73,12 @@ a:hover {
   padding: 1.5rem;
 }
 
+.pack-view {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr 3fr;
+}
+
 .card-list {
   /* Remove bullet list */
   margin: 0;
