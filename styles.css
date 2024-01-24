@@ -50,6 +50,21 @@ a:hover {
   text-decoration: underline;
 }
 
+.back-button {
+  color: inherit;
+  border-radius: 9999px;
+
+  height: 1.5rem;
+  text-align: center;
+  aspect-ratio: 1/1;
+}
+
+.back-button:hover {
+  text-decoration: none;
+  /* Tailwind slate-700 */
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
 .pack-list {
   /* Remove bullet list */
   margin: 0;

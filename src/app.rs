@@ -144,7 +144,7 @@ fn Pack() -> impl IntoView {
 
     view! {
         <Header>
-            <a href="/">"Back"</a>
+            <a class="back-button" href="/">"<"</a>
             <h1>{name}</h1>
             <A href="study">"Begin study"</A>
         </Header>
