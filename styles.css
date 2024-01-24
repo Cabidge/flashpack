@@ -4,8 +4,8 @@
   line-height: 24px;
   font-weight: 400;
 
-  color: #0f0f0f;
-  background-color: #f6f6f6;
+  background-color: #262533;
+  color: #f0f0f0;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -14,8 +14,23 @@
   -webkit-text-size-adjust: 100%;
 }
 
+body {
+  min-height: 100vh;
+
+  padding: 1rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
 a {
+  color: #b49af5;
   text-decoration: inherit;
+}
+
+a:hover {
+  color: #efdfff;
 }
 
 .pack-list {
@@ -43,13 +58,13 @@ a {
 .card-list {
   /* Remove bullet list */
   margin: 0;
-  padding: 1rem;
+  padding: 0;
   list-style: none;
 
-  background-color: #dadada;
+  /*background-color: #3f3f50;*/
 
   display: flex;
-  gap: 0.25rem;
+  /* gap: 0.25rem; */
   flex-direction: column;
   justify-content: stretch;
 }
@@ -57,16 +72,15 @@ a {
 .card-list-item a {
   display: block;
 
-  vertical-align: middle;
-  color: #101010;
-  background-color: #f0f0f0;
+  color: inherit;
+  font-weight: 600;
 
-  padding: 0.25rem 0.75rem;
+  padding: 0.5rem 0.75rem;
 }
 
+.card-list-item a:hover,
 .card-list-item a.selected {
-  color: black;
-  background-color: white;
+  background-color: #4a4a5f;
 }
 
 .card-list-item a.selected::before {
