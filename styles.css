@@ -4,8 +4,10 @@
   line-height: 24px;
   font-weight: 400;
 
-  background-color: #262533;
-  color: #f0f0f0;
+  /* Tailwind slate-800 */
+  background-color: #1e293b;
+  /* Tailwind slate-200 */
+  color: #e2e8f0;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -25,12 +27,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 a {
-  color: #b49af5;
-  text-decoration: inherit;
+  /* Tailwind cyan-300 */
+  color: #67e8f9;
+  text-decoration: none;
 }
 
 a:hover {
-  color: #efdfff;
+  text-decoration: underline;
 }
 
 .pack-list {
@@ -48,8 +51,9 @@ a:hover {
   display: block;
 
   text-align: center;
-  color: black;
-  background-color: white;
+  /* Tailwind slate-700 */
+  background-color: #334155;
+  color: inherit;
 
   font-size: 1.5rem;
   padding: 1.5rem;
@@ -78,9 +82,9 @@ a:hover {
   padding: 0.5rem 0.75rem;
 }
 
-.card-list-item a:hover,
 .card-list-item a.selected {
-  background-color: #4a4a5f;
+  /* Tailwind slate-700 */
+  background-color: #334155;
 }
 
 .card-list-item a.selected::before {
