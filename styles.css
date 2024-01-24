@@ -135,6 +135,8 @@ a:hover {
   padding: 1rem;
   border: none;
 
+  resize: none;
+
   font-family: "monospace";
   color: inherit;
   /* Tailwind slate-700 */
