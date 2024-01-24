@@ -20,6 +20,12 @@ body {
   min-height: 100vh;
 }
 
+#header {
+  /* Tailwind slate-700 */
+  background-color: #334155;
+  padding: 1rem;
+}
+
 main {
   padding: 1rem;
 }
