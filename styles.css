@@ -26,6 +26,12 @@ body {
   padding: 1rem;
 }
 
+#header div {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
 main {
   padding: 1rem;
 }
