@@ -16,47 +16,18 @@ pub fn App() -> impl IntoView {
 
     context::SaveAction::provide(save_action);
 
-    let (header, set_header) = create_signal(None::<web_sys::Element>);
-
-    create_effect(move |_| {
-        let header = document().get_element_by_id("header").expect("#header");
-        set_header.set(Some(header));
-    });
-
-    context::Header::provide(header.into());
-
     view! {
-        <header id="header"></header>
         <Router>
-            <main>
-                <Routes>
-                    <Route path="" view=PackList/>
-                    <Route path="/pack/:pack_name" view=Pack>
-                        <Route path="/" view=|| view! { <h2>"No Card Selected..."</h2> }/>
-                        <Route path="/card/:card_name" view=CardEditor/>
-                    </Route>
-                    // We don't want to show the CardList when in study mode
-                    <Route path="/pack/:pack_name/study" view=Study/>
-                </Routes>
-            </main>
+            <Routes>
+                <Route path="" view=PackList/>
+                <Route path="/pack/:pack_name" view=Pack>
+                    <Route path="/" view=|| view! { <h2>"No Card Selected..."</h2> }/>
+                    <Route path="/card/:card_name" view=CardEditor/>
+                </Route>
+                // We don't want to show the CardList when in study mode
+                <Route path="/pack/:pack_name/study" view=Study/>
+            </Routes>
         </Router>
-    }
-}
-
-#[component]
-fn Header(children: ChildrenFn) -> impl IntoView {
-    let header = context::Header::use_context().expect("Header context");
-
-    let children = store_value(children);
-
-    move || {
-        header.get().map(|header| {
-            view! {
-                <Portal mount=header>
-                    {children.get_value()()}
-                </Portal>
-            }
-        })
     }
 }
 
@@ -110,21 +81,23 @@ fn PackList() -> impl IntoView {
     });
 
     view! {
-        <Header>
+        <header>
             <h1>{title}</h1>
             <button on:click=move |_| open_collection_action.dispatch(())>
                 "Open Collection"
             </button>
-        </Header>
-        <Show when=move || collection_name.with(|name| matches!(name, Some(Some(_))))>
-            <h2>"Packs"</h2>
-            <ul class="pack-list">
-                <Transition>
-                    {pack_list_view}
-                </Transition>
-            </ul>
-            <AddInput on_add=add_pack/>
-        </Show>
+        </header>
+        <main>
+            <Show when=move || collection_name.with(|name| matches!(name, Some(Some(_))))>
+                <h2>"Packs"</h2>
+                <ul class="pack-list">
+                    <Transition>
+                        {pack_list_view}
+                    </Transition>
+                </ul>
+                <AddInput on_add=add_pack/>
+            </Show>
+        </main>
     }
 }
 
@@ -143,12 +116,12 @@ fn Pack() -> impl IntoView {
     let card_list = move || cards.get().map(|cards| view! { <CardList cards/> });
 
     view! {
-        <Header>
+        <header>
             <a class="back-button" href="/">"<"</a>
             <h1>{name}</h1>
             <A href="study">"Begin study"</A>
-        </Header>
-        <div class="pack-view">
+        </header>
+        <main class="pack-view">
             <div class="sidebar">
                 <Transition>
                     {card_list}
@@ -157,7 +130,7 @@ fn Pack() -> impl IntoView {
             <div class="editor-window">
                 <Outlet/>
             </div>
-        </div>
+        </main>
     }
 }
 
@@ -297,16 +270,18 @@ fn Study() -> impl IntoView {
     let card_contents = create_resource(move || name.get(), invoke::deal_cards);
 
     view! {
-        <Header>
+        <header>
             <h1>"Practicing " {name}</h1>
-        </Header>
-        <Transition>
-            {move || card_contents.get().map(|card_contents| {
-                view! {
-                    <StudyCardSlides card_contents/>
-                }
-            })}
-        </Transition>
+        </header>
+        <main>
+            <Transition>
+                {move || card_contents.get().map(|card_contents| {
+                    view! {
+                        <StudyCardSlides card_contents/>
+                    }
+                })}
+            </Transition>
+        </main>
     }
 }
 

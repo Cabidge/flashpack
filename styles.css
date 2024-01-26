@@ -24,16 +24,15 @@ button:hover {
   cursor: pointer;
 }
 
-#header {
-  /* Tailwind slate-700 */
-  background-color: #334155;
+header {
   padding: 1rem;
-}
 
-#header div {
   display: flex;
   flex-direction: row;
   gap: 1rem;
+
+  /* Tailwind slate-700 */
+  background-color: #334155;
 }
 
 main {
