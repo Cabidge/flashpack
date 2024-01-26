@@ -173,13 +173,23 @@ fn CardEditor() -> impl IntoView {
 
     let editor = move || {
         contents.get().map(|initial_contents| {
-            let (contents, set_contents) = create_signal(initial_contents);
-            let on_click = move |_| save(contents.get());
+            let (saved_contents, set_saved_contents) = create_signal(initial_contents);
+            let (contents, set_contents) = create_signal(saved_contents.get_untracked());
+
+            let on_click = move |_| {
+                set_saved_contents.set(contents.get());
+                save(contents.get());
+            };
+
+            let can_save = move || with!(|saved_contents, contents| saved_contents != contents);
+
             view! {
                 <Editor initial_contents={contents.get_untracked()} set_contents/>
-                <button class="save-button" on:click=on_click>
-                    "Save"
-                </button>
+                <Show when=can_save>
+                    <button class="save-button" on:click=on_click>
+                        "Save"
+                    </button>
+                </Show>
             }
         })
     };
