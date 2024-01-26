@@ -141,23 +141,17 @@ fn CardEditor() -> impl IntoView {
     let card_name = params::use_card_name();
 
     #[component]
-    fn Editor(
-        #[prop(into)] initial_contents: String,
-        #[prop(into)] on_save: Callback<String>,
-    ) -> impl IntoView {
-        let (contents, set_contents) = create_signal(initial_contents);
+    fn Editor(initial_contents: String, set_contents: WriteSignal<String>) -> impl IntoView {
+        let on_input = move |ev| {
+            let target = event_target::<web_sys::HtmlDivElement>(&ev);
+            set_contents.set(target.inner_text());
+        };
 
         view! {
             <div class="editor">
-                <textarea
-                    prop:value=move || contents.get()
-                    on:input=move |ev| set_contents.set(event_target_value(&ev))
-                >
-                    {contents.get_untracked()}
-                </textarea>
-                <button class="save-button" on:click=move |_| on_save.call(contents.get())>
-                    "Save"
-                </button>
+                <div contenteditable on:input=on_input>
+                    {initial_contents}
+                </div>
             </div>
         }
     }
@@ -179,8 +173,13 @@ fn CardEditor() -> impl IntoView {
 
     let editor = move || {
         contents.get().map(|initial_contents| {
+            let (contents, set_contents) = create_signal(initial_contents);
+            let on_click = move |_| save(contents.get());
             view! {
-                <Editor initial_contents on_save=save/>
+                <Editor initial_contents={contents.get_untracked()} set_contents/>
+                <button class="save-button" on:click=on_click>
+                    "Save"
+                </button>
             }
         })
     };

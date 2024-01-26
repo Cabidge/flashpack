@@ -140,17 +140,30 @@ button {
   content: "> "
 }
 
-.editor textarea {
+.editor {
   width: 100%;
-  padding: 1rem;
-  border: none;
+  margin-bottom: 1rem;
+  padding: 0.25rem 0.5rem;
 
-  resize: none;
-
-  font-family: "monospace";
   color: inherit;
   /* Tailwind slate-700 */
   background-color: #334155;
+
+  transition: all 0.3s ease;
+}
+
+.editor:focus-within {
+  box-shadow: 0 0 0 3px rgba(21, 156, 228, 0.6);
+}
+
+.editor div {
+  outline: none;
+  padding: 0.25rem 0;
+
+  font-family: monospace;
+
+  overflow: auto;
+  white-space: pre;
 }
 
 .save-button {
