@@ -173,19 +173,39 @@ fn CardEditor() -> impl IntoView {
 
     let editor = move || {
         contents.get().map(|initial_contents| {
-            let (saved_contents, set_saved_contents) = create_signal(initial_contents);
-            let (contents, set_contents) = create_signal(saved_contents.get_untracked());
+            let (contents, set_contents) = create_signal(initial_contents);
+
+            let reset_edit_status = create_trigger();
+
+            let is_edited = create_memo(move |prev| {
+                let was_edited = prev.cloned().unwrap_or(true);
+
+                if was_edited {
+                    // if the previous state was true,
+                    // either this is the initial state or
+                    // the reset was triggered,
+                    // so we track for a change in contents
+                    // and set is_edited to false
+                    contents.track();
+                    false
+                } else {
+                    // if the previous state was false,
+                    // that means we were tracking a change in contents,
+                    // and contents was changed, so we set is_edited
+                    // to true and track the reset trigger
+                    reset_edit_status.track();
+                    true
+                }
+            });
 
             let on_click = move |_| {
-                set_saved_contents.set(contents.get());
+                reset_edit_status.notify();
                 save(contents.get());
             };
 
-            let can_save = move || with!(|saved_contents, contents| saved_contents != contents);
-
             view! {
                 <Editor initial_contents={contents.get_untracked()} set_contents/>
-                <Show when=can_save>
+                <Show when=move || is_edited.get()>
                     <button class="save-button" on:click=on_click>
                         "Save"
                     </button>
