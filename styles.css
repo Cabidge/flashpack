@@ -29,6 +29,7 @@ header {
 
   display: flex;
   flex-direction: row;
+  align-items: center;
   gap: 1rem;
 
   /* Tailwind slate-700 */
@@ -51,6 +52,16 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+.button,
+button {
+  padding: 0.5rem 1rem;
+  border: none;
+
+  color: inherit;
+  /* Tailwind slate-700 */
+  background-color: #334155;
 }
 
 .back-button {
@@ -144,10 +155,4 @@ a:hover {
 
 .save-button {
   width: 100%;
-  padding: 0.5rem;
-  border: none;
-
-  color: inherit;
-  /* Tailwind slate-700 */
-  background-color: #334155;
 }
