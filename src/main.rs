@@ -1,6 +1,7 @@
 mod app;
 mod context;
 mod invoke;
+mod params;
 
 mod slides;
 

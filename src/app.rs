@@ -1,11 +1,9 @@
-mod params;
-
 use std::collections::BTreeSet;
 
 use leptos::*;
 use leptos_router::*;
 
-use crate::{context, invoke};
+use crate::{context, invoke, params};
 
 #[component]
 pub fn App() -> impl IntoView {
