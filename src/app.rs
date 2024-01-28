@@ -50,7 +50,7 @@ fn AddInput(#[prop(into)] on_add: Callback<String>) -> impl IntoView {
     };
 
     view! {
-        <form on:submit=on_submit>
+        <form class="add-input" on:submit=on_submit>
             <input
                 type="text"
                 prop:value=input

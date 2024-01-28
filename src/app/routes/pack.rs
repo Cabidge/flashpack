@@ -25,15 +25,13 @@ pub fn PackPage() -> impl IntoView {
             <h1>{name}</h1>
             <A href="study">"Begin study"</A>
         </header>
-        <main class="pack-view">
-            <div class="sidebar">
-                <Transition>
-                    {card_list}
-                </Transition>
-            </div>
-            <div class="editor-window">
-                <Outlet/>
-            </div>
+        <aside>
+            <Transition>
+                {card_list}
+            </Transition>
+        </aside>
+        <main>
+            <Outlet/>
         </main>
     }
 }
