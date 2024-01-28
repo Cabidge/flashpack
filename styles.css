@@ -1,13 +1,19 @@
 :root {
+  /* Variables */
+  /* Tailwind slate-800 */
+  --bg-color: #1e293b;
+  /* Tailwind slate-700 */
+  --bg-highlight: #334155;
+  /* Tailwind slate-200 */
+  --text-color: #e2e8f0;
+
   /*font-family: Inter, Avenir, Helvetica, Arial, sans-serif;*/
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
 
-  /* Tailwind slate-800 */
-  background-color: #1e293b;
-  /* Tailwind slate-200 */
-  color: #e2e8f0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -40,8 +46,7 @@ header {
   align-items: center;
   gap: 1rem;
 
-  /* Tailwind slate-700 */
-  background-color: #334155;
+  background-color: var(--bg-highlight);
   overflow: hidden;
 }
 
@@ -83,8 +88,7 @@ input {
   border: none;
 
   color: inherit;
-  /* Tailwind slate-700 */
-  background-color: #334155;
+  background-color: var(--bg-highlight);
 }
 
 .button,
@@ -93,8 +97,7 @@ button {
   border: none;
 
   color: inherit;
-  /* Tailwind slate-700 */
-  background-color: #334155;
+  background-color: var(--bg-highlight);
 }
 
 button:hover {
@@ -133,7 +136,6 @@ button:hover {
 
 .back-button:hover {
   text-decoration: none;
-  /* Tailwind slate-700 */
   background-color: rgba(0, 0, 0, 0.1);
 }
 
@@ -167,8 +169,7 @@ button:hover {
 
   aspect-ratio: 3/2;
 
-  /* Tailwind slate-700 */
-  background-color: #334155;
+  background-color: var(--bg-highlight);
   color: inherit;
 
   font-size: 1.5rem;
@@ -205,8 +206,7 @@ button:hover {
 }
 
 .card-list-item a.selected {
-  /* Tailwind slate-700 */
-  background-color: #334155;
+  background-color: var(--bg-highlight);
 }
 
 .card-list-item a.selected::before {
@@ -219,8 +219,7 @@ button:hover {
   padding: 0.25rem 0.5rem;
 
   color: inherit;
-  /* Tailwind slate-700 */
-  background-color: #334155;
+  background-color: var(--bg-highlight);
 
   transition: all 0.3s ease;
 }
