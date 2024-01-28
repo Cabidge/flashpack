@@ -45,19 +45,20 @@ header {
   overflow: hidden;
 }
 
+aside, main {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 aside {
   grid-area: aside;
   width: max(300px, 30vw);
-
   padding: 1rem;
-  overflow: auto;
 }
 
 main {
   grid-area: main;
-
   padding: 1rem;
-  overflow: auto;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -137,26 +138,47 @@ button:hover {
 }
 
 .pack-list {
+  max-width: 1200px;
+
   /* Remove bullet list */
-  margin: 0;
-  padding: 0;
+  margin: 0 auto;
+  padding: 1rem 0;
   list-style: none;
 
   display: grid;
-  gap: 2rem;
-  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, 200px);
+
+  justify-content: space-evenly;
+
+  overflow: hidden;
+}
+
+.pack-list-item {
+  overflow: hidden;
 }
 
 .pack-list-item a {
   display: block;
 
   text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  aspect-ratio: 3/2;
+
   /* Tailwind slate-700 */
   background-color: #334155;
   color: inherit;
 
   font-size: 1.5rem;
   padding: 1.5rem;
+
+  /* Center the text */
+  /* Can't use vertical-align because we're in a 'display: block' */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .card-list {
