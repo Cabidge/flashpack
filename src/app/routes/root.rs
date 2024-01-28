@@ -15,12 +15,7 @@ pub fn RootPage() -> impl IntoView {
         |_| invoke::get_collection_name(),
     );
 
-    let title = move || {
-        collection_name
-            .get()
-            .flatten()
-            .unwrap_or_else(|| String::from("No Collection Selected..."))
-    };
+    let title = move || collection_name.get().flatten();
 
     let packs = create_resource(
         move || (save_action.version().get(), collection_name.get()),
@@ -54,13 +49,16 @@ pub fn RootPage() -> impl IntoView {
 
     view! {
         <header>
-            <h1>{title}</h1>
             <button on:click=move |_| open_collection_action.dispatch(())>
                 "Open Collection"
             </button>
+            <h1>{title}</h1>
         </header>
         <main>
-            <Show when=move || collection_name.with(|name| matches!(name, Some(Some(_))))>
+            <Show
+                when=move || collection_name.with(|name| matches!(name, Some(Some(_))))
+                fallback=|| view! { <h1>"No Collection Selected..."</h1> }
+            >
                 <h2>"Packs"</h2>
                 <ul class="pack-list">
                     <Transition>
