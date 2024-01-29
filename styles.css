@@ -20,6 +20,8 @@
   --text-color: var(--neutral-200);
   --primary-color: var(--blue-300);
 
+  --round-radius: 0.125rem;
+
   /* == Actual Styles == */
 
   /*font-family: Inter, Avenir, Helvetica, Arial, sans-serif;*/
@@ -99,24 +101,25 @@ a:hover {
   text-decoration: underline;
 }
 
+input, .button, button {
+  border: none;
+
+  color: var(--text-color);
+  background-color: var(--fg-color);
+
+  border-radius: var(--round-radius);
+}
+
 input {
   min-width: 0;
   overflow: hidden;
 
   padding: 0.5rem;
-  border: none;
-
-  color: inherit;
-  background-color: var(--fg-color);
 }
 
 .button,
 button {
   padding: 0.5rem 1rem;
-  border: none;
-
-  color: inherit;
-  background-color: var(--fg-color);
 }
 
 :is(button, .button):hover {
@@ -200,6 +203,8 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+
+  border-radius: var(--round-radius);
 }
 
 .pack-list-item a:hover {
@@ -210,7 +215,6 @@ button {
 .card-list {
   /* Remove bullet list */
   margin: 0;
-  margin-bottom: 1rem;
   padding: 0;
   list-style: none;
 
@@ -229,6 +233,8 @@ button {
   font-weight: 600;
 
   padding: 0.5rem 0.75rem;
+
+  border-radius: var(--round-radius);
 }
 
 .card-list-item a:hover {
@@ -253,6 +259,8 @@ button {
   background-color: var(--fg-color);
 
   transition: all 0.3s ease;
+
+  border-radius: var(--round-radius);
 }
 
 .editor:focus-within {
