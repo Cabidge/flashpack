@@ -1,11 +1,26 @@
 :root {
-  /* Variables */
-  /* Tailwind slate-800 */
-  --bg-color: #1e293b;
-  /* Tailwind slate-700 */
-  --bg-highlight: #334155;
-  /* Tailwind slate-200 */
-  --text-color: #e2e8f0;
+  /* == Variables == */
+
+  /* Tailwind Zinc */
+  --neutral-200: #e4e4e7;
+  --neutral-300: #d4d4d8;
+  /* 400-600 not included for now */
+  --neutral-700: #3f3f46;
+  --neutral-800: #27272a;
+  --neutral-900: #18181b;
+  --neutral-950: #09090b;
+
+  /* Tailwind Cyan */
+  --blue-300: #67e8f9;
+
+  /* Color definitions */
+  --bg-color: var(--neutral-900);
+  --fg-color: var(--neutral-800);
+  --fg-bright: var(--neutral-700);
+  --text-color: var(--neutral-200);
+  --primary-color: var(--blue-300);
+
+  /* == Actual Styles == */
 
   /*font-family: Inter, Avenir, Helvetica, Arial, sans-serif;*/
   font-size: 16px;
@@ -46,7 +61,7 @@ header {
   align-items: center;
   gap: 1rem;
 
-  background-color: var(--bg-highlight);
+  background-color: var(--fg-color);
   overflow: hidden;
 }
 
@@ -76,8 +91,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 a {
-  /* Tailwind cyan-300 */
-  color: #67e8f9;
+  color: var(--primary-color);
   text-decoration: none;
 }
 
@@ -93,7 +107,7 @@ input {
   border: none;
 
   color: inherit;
-  background-color: var(--bg-highlight);
+  background-color: var(--fg-color);
 }
 
 .button,
@@ -102,11 +116,12 @@ button {
   border: none;
 
   color: inherit;
-  background-color: var(--bg-highlight);
+  background-color: var(--fg-color);
 }
 
-button:hover {
+:is(button, .button):hover {
   cursor: pointer;
+  background-color: var(--fg-bright);
 }
 
 .add-input {
@@ -141,7 +156,7 @@ button:hover {
 
 .back-button:hover {
   text-decoration: none;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--fg-bright);
 }
 
 .pack-list {
@@ -174,7 +189,7 @@ button:hover {
 
   aspect-ratio: 3/2;
 
-  background-color: var(--bg-highlight);
+  background-color: var(--fg-color);
   color: inherit;
 
   font-size: 1.5rem;
@@ -187,9 +202,15 @@ button:hover {
   justify-content: center;
 }
 
+.pack-list-item a:hover {
+  text-decoration: none;
+  background-color: var(--fg-bright);
+}
+
 .card-list {
   /* Remove bullet list */
   margin: 0;
+  margin-bottom: 1rem;
   padding: 0;
   list-style: none;
 
@@ -210,8 +231,13 @@ button:hover {
   padding: 0.5rem 0.75rem;
 }
 
+.card-list-item a:hover {
+  background-color: var(--fg-color);
+  text-decoration: none;
+}
+
 .card-list-item a.selected {
-  background-color: var(--bg-highlight);
+  background-color: var(--fg-bright);
 }
 
 .card-list-item a.selected::before {
@@ -224,13 +250,13 @@ button:hover {
   padding: 0.25rem 0.5rem;
 
   color: inherit;
-  background-color: var(--bg-highlight);
+  background-color: var(--fg-color);
 
   transition: all 0.3s ease;
 }
 
 .editor:focus-within {
-  box-shadow: 0 0 0 3px rgba(21, 156, 228, 0.6);
+  box-shadow: 0 0 0 1px var(--primary-color);
 }
 
 .editor div {
