@@ -10,15 +10,17 @@
   --neutral-900: #18181b;
   --neutral-950: #09090b;
 
-  /* Tailwind Cyan */
-  --blue-300: #67e8f9;
+  /* Tailwind Sky */
+  --blue-300: #7dd3fc;
+  --blue-400: #38bdf8;
 
   /* Color definitions */
   --bg-color: var(--neutral-900);
   --fg-color: var(--neutral-800);
   --fg-bright: var(--neutral-700);
   --text-color: var(--neutral-200);
-  --primary-color: var(--blue-300);
+  --primary-color: var(--blue-400);
+  --primary-bright: var(--blue-300);
 
   --round-radius: 0.125rem;
 
@@ -125,6 +127,13 @@ button {
 :is(button, .button):hover {
   cursor: pointer;
   background-color: var(--fg-bright);
+}
+
+.primary:is(.button, button) {
+  --fg-color: var(--primary-color);
+  --fg-bright: var(--primary-bright);
+  --text-color: var(--bg-color);
+  font-weight: 500;
 }
 
 .add-input {
@@ -287,6 +296,11 @@ button {
   color: var(--text-color);
 }
 
-.save-button {
-  width: 100%;
+.editor-button-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.editor-button-group * {
+  flex: 1;
 }

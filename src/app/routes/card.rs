@@ -43,43 +43,32 @@ fn CardEditor(
     initial_contents: String,
 ) -> impl IntoView {
     let contents = create_rw_signal(initial_contents);
+    let (saved_contents, set_saved_contents) = create_signal(contents.get_untracked());
 
     let save_action = context::SaveAction::use_context().unwrap();
 
-    let reset_edit_status = create_trigger();
+    let is_edited = move || with!(|saved_contents, contents| saved_contents != contents);
 
-    let is_edited = create_memo(move |prev| {
-        let was_edited = prev.cloned().unwrap_or(true);
+    let on_reset = move |_| {
+        contents.set(saved_contents.get());
+    };
 
-        if was_edited {
-            // if the previous state was true,
-            // either this is the initial state or
-            // the reset was triggered,
-            // so we track for a change in contents
-            // and set is_edited to false
-            contents.track();
-            false
-        } else {
-            // if the previous state was false,
-            // that means we were tracking a change in contents,
-            // and contents was changed, so we set is_edited
-            // to true and track the reset trigger
-            reset_edit_status.track();
-            true
-        }
-    });
-
-    let on_click = move |_| {
-        reset_edit_status.notify();
+    let on_save = move |_| {
         save_action.dispatch((pack_name.get(), card_name.get(), contents.get()));
+        set_saved_contents.set(contents.get());
     };
 
     view! {
         <Editor contents/>
-        <Show when=move || is_edited.get()>
-            <button class="save-button" on:click=on_click>
-                "Save"
-            </button>
+        <Show when=is_edited>
+            <div class="editor-button-group">
+                <button on:click=on_reset>
+                    "Discard"
+                </button>
+                <button class="primary" on:click=on_save>
+                    "Save"
+                </button>
+            </div>
         </Show>
     }
 }
