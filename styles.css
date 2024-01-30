@@ -192,33 +192,48 @@ button {
   overflow: hidden;
 }
 
-.pack-list-item a {
-  display: block;
+/* Keep them the same size */
+.pack-list-item a,
+.pack-list-add {
+  aspect-ratio: 3/2;
+  width: 100%;
+  padding: 1.5rem;
 
+  font-size: 1.5rem;
+
+  border-radius: var(--round-radius);
+}
+
+.pack-list-item a {
   text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
 
-  aspect-ratio: 3/2;
-
   background-color: var(--fg-color);
   color: inherit;
 
-  font-size: 1.5rem;
-  padding: 1.5rem;
-
   /* Center the text */
-  /* Can't use vertical-align because we're in a 'display: block' */
   display: flex;
   align-items: center;
   justify-content: center;
-
-  border-radius: var(--round-radius);
 }
 
 .pack-list-item a:hover {
   text-decoration: none;
   background-color: var(--fg-bright);
+}
+
+.pack-list-add {
+  font-weight: 600;
+  background-color: transparent;
+  border: 5px dashed var(--fg-color);
+  color: var(--fg-color);
+}
+
+.pack-list-add:hover {
+  background-color: transparent;
+  border-color: var(--fg-bright);
+  color: var(--fg-bright);
 }
 
 .card-list {

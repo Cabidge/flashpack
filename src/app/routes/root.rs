@@ -64,6 +64,11 @@ pub fn RootPage() -> impl IntoView {
                     <Transition>
                         {pack_list_view}
                     </Transition>
+                    <li class="pack-list-item">
+                        <button class="pack-list-add">
+                            "Add"
+                        </button>
+                    </li>
                 </ul>
                 <AddInput on_add=add_pack/>
             </Show>
