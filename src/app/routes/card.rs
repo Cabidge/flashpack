@@ -42,7 +42,7 @@ fn CardEditor(
     #[prop(into)] card_name: Signal<String>,
     initial_contents: String,
 ) -> impl IntoView {
-    let (contents, set_contents) = create_signal(initial_contents);
+    let contents = create_rw_signal(initial_contents);
 
     let save_action = context::SaveAction::use_context().unwrap();
 
@@ -75,7 +75,7 @@ fn CardEditor(
     };
 
     view! {
-        <Editor initial_contents={contents.get_untracked()} set_contents/>
+        <Editor contents/>
         <Show when=move || is_edited.get()>
             <button class="save-button" on:click=on_click>
                 "Save"
@@ -84,18 +84,44 @@ fn CardEditor(
     }
 }
 
+/// A wrapper for AutosizeTextarea that has custom styling.
 #[component]
-fn Editor(initial_contents: String, set_contents: WriteSignal<String>) -> impl IntoView {
-    let on_input = move |ev| {
-        let target = event_target::<web_sys::HtmlDivElement>(&ev);
-        set_contents.set(target.inner_text());
-    };
-
+fn Editor(contents: RwSignal<String>) -> impl IntoView {
     view! {
         <div class="editor">
-            <div contenteditable on:input=on_input>
-                {initial_contents}
-            </div>
+            <AutosizeTextarea value=contents/>
         </div>
+    }
+}
+
+/// A textarea that automatically changes its height based on its contents.
+#[component]
+fn AutosizeTextarea(value: RwSignal<String>) -> impl IntoView {
+    let on_input = move |ev| {
+        let new_value = event_target_value(&ev);
+        value.set(new_value);
+    };
+
+    let textarea_ref = create_node_ref::<html::Textarea>();
+
+    create_effect(move |_| {
+        value.track();
+
+        if let Some(node_ref) = textarea_ref.get() {
+            let node_ref = node_ref.style("height", "auto");
+            let new_height = format!("{}px", node_ref.scroll_height());
+            let _ = node_ref.style("height", new_height);
+        }
+    });
+
+    view! {
+        <textarea
+            node_ref=textarea_ref
+            prop:value=move || value.get()
+            on:input=on_input
+            rows="1"
+        >
+            {value.get_untracked()}
+        </textarea>
     }
 }

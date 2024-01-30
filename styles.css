@@ -261,20 +261,30 @@ button {
   transition: all 0.3s ease;
 
   border-radius: var(--round-radius);
+
+  /* Without this, the inner textarea would randomly have a bit of space under
+     it and I just for the life of me couldn't figure out why */
+  display: flex;
 }
 
 .editor:focus-within {
   box-shadow: 0 0 0 1px var(--primary-color);
 }
 
-.editor div {
-  outline: none;
-  padding: 0.25rem 0;
-
+.editor textarea {
+  resize: none;
   font-family: monospace;
+
+  min-width: 100%;
+  outline: none;
+  border: none;
+  padding: 0.5rem 0;
 
   overflow: auto;
   white-space: pre;
+
+  background-color: var(--fg-color);
+  color: var(--text-color);
 }
 
 .save-button {
