@@ -197,9 +197,9 @@ button {
 .pack-list-add {
   aspect-ratio: 3/2;
   width: 100%;
-  padding: 1.5rem;
+  padding: 0.25rem;
 
-  font-size: 1.5rem;
+  font-size: 1.25rem;
 
   border-radius: var(--round-radius);
 }
@@ -234,6 +234,24 @@ button {
   background-color: transparent;
   border-color: var(--fg-bright);
   color: var(--fg-bright);
+}
+
+.pack-list-add.active {
+  font-weight: 400;
+  background-color: var(--fg-color);
+  border: 2px solid var(--primary-color);
+  color: var(--text-color);
+
+  /* Center the input */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pack-list-add.active input {
+  outline: none;
+  background-color: transparent;
+  text-align: center;
 }
 
 .card-list {

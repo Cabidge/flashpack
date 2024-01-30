@@ -1,7 +1,7 @@
 use leptos::*;
 use leptos_router::*;
 
-use crate::{app::AddInput, context, invoke};
+use crate::{context, invoke};
 
 // "/"
 #[component]
@@ -65,13 +65,75 @@ pub fn RootPage() -> impl IntoView {
                         {pack_list_view}
                     </Transition>
                     <li class="pack-list-item">
-                        <button class="pack-list-add">
-                            "Add"
-                        </button>
+                        <AddButton on_add=add_pack/>
                     </li>
                 </ul>
-                <AddInput on_add=add_pack/>
             </Show>
         </main>
+    }
+}
+
+#[component]
+fn AddButton(#[prop(into)] on_add: Callback<String>) -> impl IntoView {
+    let (value, set_value) = create_signal(None::<String>);
+
+    let is_active = move || value.with(Option::is_some);
+
+    let inactive_button = move || {
+        view! {
+            <button
+                class="pack-list-add"
+                on:click=move |_| set_value.set(Some(String::new()))
+            >
+                "Add"
+            </button>
+        }
+    };
+
+    let on_submit = move |ev: ev::SubmitEvent| {
+        ev.prevent_default();
+        let pack_name = set_value
+            .try_update(|value| value.take())
+            .flatten()
+            .unwrap_or_default();
+
+        on_add.call(pack_name);
+    };
+
+    let on_unfocus = move |_| {
+        set_value.set(None);
+    };
+
+    let on_input = move |ev| {
+        let new_value = event_target_value(&ev);
+        set_value.set(Some(new_value));
+    };
+
+    // auto focus
+    let input_ref = create_node_ref::<html::Input>();
+    create_effect(move |_| {
+        let Some(input) = input_ref.get() else {
+            return;
+        };
+
+        let _ = input.on_mount(|input| {
+            let _ = input.focus().ok();
+        });
+    });
+
+    view! {
+        <Show
+            when=is_active
+            fallback=inactive_button
+        >
+            <form class="pack-list-add active" on:submit=on_submit>
+                <input
+                    node_ref=input_ref
+                    placeholder="New Pack"
+                    on:input=on_input
+                    on:focusout=on_unfocus
+                />
+            </form>
+        </Show>
     }
 }
