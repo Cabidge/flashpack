@@ -31,7 +31,7 @@ pub fn RootPage() -> impl IntoView {
 
                     view! {
                         <li class="pack-list-item">
-                            <A href>{pack_name}</A>
+                            <A class="button" href>{pack_name}</A>
                         </li>
                     }
                 })
@@ -82,7 +82,7 @@ fn AddButton(#[prop(into)] on_add: Callback<String>) -> impl IntoView {
     let inactive_button = move || {
         view! {
             <button
-                class="pack-list-add"
+                class="ghost-add"
                 on:click=move |_| set_value.set(Some(String::new()))
             >
                 "Add"
@@ -126,7 +126,7 @@ fn AddButton(#[prop(into)] on_add: Callback<String>) -> impl IntoView {
             when=is_active
             fallback=inactive_button
         >
-            <form class="pack-list-add active" on:submit=on_submit>
+            <form class="ghost-add active" on:submit=on_submit>
                 <input
                     node_ref=input_ref
                     placeholder="New Pack"

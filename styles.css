@@ -127,6 +127,7 @@ button {
 :is(button, .button):hover {
   cursor: pointer;
   background-color: var(--fg-bright);
+  text-decoration: none;
 }
 
 .primary:is(.button, button) {
@@ -192,66 +193,48 @@ button {
   overflow: hidden;
 }
 
-/* Keep them the same size */
-.pack-list-item a,
-.pack-list-add {
+.pack-list-item * {
   aspect-ratio: 3/2;
   width: 100%;
   padding: 0.25rem;
 
+  text-align: center;
   font-size: 1.25rem;
 
-  border-radius: var(--round-radius);
-}
-
-.pack-list-item a {
-  text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
-
-  background-color: var(--fg-color);
-  color: inherit;
 
   /* Center the text */
   display: flex;
   align-items: center;
   justify-content: center;
+
+  border-radius: var(--round-radius);
 }
 
-.pack-list-item a:hover {
-  text-decoration: none;
-  background-color: var(--fg-bright);
-}
-
-.pack-list-add {
+.ghost-add {
   font-weight: 600;
   background-color: transparent;
   border: 5px dashed var(--fg-color);
   color: var(--fg-color);
 }
 
-.pack-list-add:hover {
+.ghost-add:hover {
   background-color: transparent;
   border-color: var(--fg-bright);
   color: var(--fg-bright);
 }
 
-.pack-list-add.active {
+.ghost-add.active {
   font-weight: 400;
   background-color: var(--fg-color);
   border: 2px solid var(--primary-color);
   color: var(--text-color);
-
-  /* Center the input */
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.pack-list-add.active input {
+.ghost-add.active input {
   outline: none;
   background-color: transparent;
-  text-align: center;
 }
 
 .card-list {
