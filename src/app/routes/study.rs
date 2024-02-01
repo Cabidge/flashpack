@@ -85,24 +85,22 @@ fn CardSlides(
     };
 
     view! {
-        <ul>
+        <ul class="study-list">
             {visible_sections}
-            <Show
-                when=move || visible_count.get() < section_count
-                fallback=move || view! {
-                    <li>
+            <li>
+                <Show
+                    when=move || visible_count.get() < section_count
+                    fallback=move || view! {
                         <button on:click=move |_| on_complete.call(())>
                             "Finish Card"
                         </button>
-                    </li>
-                }
-            >
-                <li>
+                    }
+                >
                     <button on:click=move |_| next_section()>
                         "Next"
                     </button>
-                </li>
-            </Show>
+                </Show>
+            </li>
         </ul>
     }
 }

@@ -321,3 +321,29 @@ button {
 .editor-button-group * {
   flex: 1;
 }
+
+.study-list {
+  max-width: 800px;
+
+  /* Remove bullet list */
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+
+  display: flex;
+  gap: 0.5rem;
+  flex-direction: column;
+}
+
+.study-list li {
+  background-color: var(--fg-color);
+  border-radius: var(--round-radius);
+}
+
+.study-list li * {
+  width: 100%;
+}
+
+.study-list li div {
+  padding: 1.25rem 1.75rem;
+}
