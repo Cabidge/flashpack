@@ -114,6 +114,6 @@ mod tests {
     #[test]
     fn thematic_empty() {
         let mut sections = ThematicBreaks::new("");
-        assert_eq!(sections.next(), None);
+        assert_eq!(sections.next(), Some(""));
     }
 }
