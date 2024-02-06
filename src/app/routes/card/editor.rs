@@ -186,17 +186,15 @@ pub fn SectionsEditor(
     };
 
     let handle_event = move |id, event| {
-        let focus_id = match event {
-            EditorEvent::Add => {
-                sections.try_update(|sections| sections.insert_after(id, String::new()))
-            }
-            EditorEvent::Delete => sections.try_update(|sections| sections.remove(id)),
-            EditorEvent::Split => sections.try_update(|sections| sections.split(id)),
+        let focus_id = sections.try_update(move |sections| match event {
+            EditorEvent::Add => sections.insert_after(id, String::new()),
+            EditorEvent::Delete => sections.remove(id),
+            EditorEvent::Split => sections.split(id),
             EditorEvent::Nudge(dir) => {
-                sections.update(|sections| sections.nudge(id, dir));
-                Some(id)
+                sections.nudge(id, dir);
+                id
             }
-        };
+        });
 
         if let Some(id) = focus_id {
             set_force_focus.set(id);
