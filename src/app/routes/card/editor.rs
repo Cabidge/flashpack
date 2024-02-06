@@ -12,6 +12,12 @@ struct RwSections {
     sections: Vec<RwSection>,
 }
 
+#[derive(Clone, Copy)]
+enum Dir {
+    Up,
+    Down,
+}
+
 impl RwSection {
     fn dispose(self) {
         self.value.dispose();
@@ -57,6 +63,22 @@ impl RwSections {
             .copied()
             .enumerate()
             .find(|(_, section)| section.id == id)
+    }
+
+    fn nudge(&mut self, id: u64, dir: Dir) {
+        let Some((index, _)) = self.get(id) else {
+            logging::warn!("Section editor with id of {} not found", id);
+            return;
+        };
+
+        let swap_index = match dir {
+            Dir::Up if index == 0 => return,
+            Dir::Up => index - 1,
+            Dir::Down if index + 1 == self.sections.len() => return,
+            Dir::Down => index + 1,
+        };
+
+        self.sections.swap(index, swap_index);
     }
 
     /// Add a section directly after a specific section.
@@ -173,6 +195,11 @@ pub fn SectionsEditor(
         }
     };
 
+    let nudge = move |id, dir| {
+        sections.update(|sections| sections.nudge(id, dir));
+        set_force_focus.set(id);
+    };
+
     let on_save_click = move |_| {
         let formatted = sections.with(|sections| {
             let mut formatted = String::new();
@@ -195,7 +222,6 @@ pub fn SectionsEditor(
     };
 
     let is_focused = move |id| force_focus.get() == id;
-    let create_focused = move |id| create_memo(move |_| is_focused(id));
 
     view! {
         <div class="section-editor">
@@ -206,10 +232,11 @@ pub fn SectionsEditor(
             >
                 <Editor
                     contents={section.value}
-                    is_force_focused=create_focused(section.id)
+                    is_force_focused=move || is_focused(section.id)
                     on_add=move |_| add_after(section.id)
                     on_delete=move |_| delete(section.id)
                     on_split=move |_| split(section.id)
+                    on_nudge=move |dir| nudge(section.id, dir)
                 />
             </For>
             <button on:click=move |_| add_to_end()>
@@ -230,10 +257,11 @@ pub fn SectionsEditor(
 #[component]
 fn Editor(
     contents: RwSignal<String>,
-    is_force_focused: Memo<bool>,
+    #[prop(into)] is_force_focused: Signal<bool>,
     #[prop(into)] on_add: Callback<()>,
     #[prop(into)] on_delete: Callback<()>,
     #[prop(into)] on_split: Callback<()>,
+    #[prop(into)] on_nudge: Callback<Dir>,
 ) -> impl IntoView {
     let on_input = move |ev| {
         let new_value = event_target_value(&ev);
@@ -248,16 +276,16 @@ fn Editor(
     };
 
     let handle_keydown = move |ev: ev::KeyboardEvent| {
-        let code = ev.code();
-
-        logging::warn!("{code}");
-
-        // if backspace is pressed on an already empty editor
-        if contents.with(String::is_empty) && code == "Backspace" {
-            ev.prevent_default();
-            on_delete.call(());
-        } else if code == "KeyN" && ev.ctrl_key() {
-            on_add.call(());
+        match (ev.code().as_str(), ev.ctrl_key(), ev.alt_key()) {
+            // if backspace is pressed on an already empty editor
+            ("Backspace", _, _) if contents.with(String::is_empty) => {
+                ev.prevent_default();
+                on_delete.call(());
+            }
+            ("KeyN", true, _) => on_add.call(()),
+            ("ArrowUp", _, true) => on_nudge.call(Dir::Up),
+            ("ArrowDown", _, true) => on_nudge.call(Dir::Down),
+            _ => (),
         }
     };
 
