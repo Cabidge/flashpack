@@ -3,12 +3,14 @@ use line_span::LineSpanExt;
 /// A way to break up a markdown string into multiple
 /// sections by "Thematic breaks" as per the CommonMark specification.
 pub struct ThematicBreaks<'a> {
-    source: &'a str,
+    source: Option<&'a str>,
 }
 
 impl<'a> ThematicBreaks<'a> {
     pub fn new(source: &'a str) -> Self {
-        Self { source }
+        Self {
+            source: Some(source),
+        }
     }
 }
 
@@ -16,15 +18,14 @@ impl<'a> Iterator for ThematicBreaks<'a> {
     type Item = &'a str;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.source.is_empty() {
-            return None;
-        }
+        let source = self.source.as_mut()?;
 
         // if this is false, the hyphens are a part of a "Setext heading"
         let mut can_break = true;
         let mut section_length = 0;
         let mut break_size = 0;
-        for span in self.source.line_spans() {
+        let mut has_next = false;
+        for span in source.line_spans() {
             let span_size = span.range_with_ending().len();
             section_length += span_size;
             let Some(line) = strip_indent(&span) else {
@@ -59,14 +60,19 @@ impl<'a> Iterator for ThematicBreaks<'a> {
 
             // if we pass all of the previous checks, we must be on a thematic break
             break_size = span_size;
+            has_next = true;
             break;
         }
 
-        let (section, rest) = self.source.split_at(section_length);
+        let (section, rest) = source.split_at(section_length);
         // trim off the thematic break lines from the result
         let section = &section[..(section_length - break_size)];
 
-        self.source = rest;
+        if has_next {
+            *source = rest;
+        } else {
+            self.source = None;
+        }
 
         Some(section)
     }

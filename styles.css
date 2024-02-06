@@ -276,15 +276,22 @@ button {
   content: "> "
 }
 
+.section-editor {
+  margin-bottom: 1rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .editor {
   width: 100%;
-  margin-bottom: 1rem;
   padding: 0.25rem 0.5rem;
 
   color: inherit;
   background-color: var(--fg-color);
 
-  transition: all 0.3s ease;
+  /*transition: all 0.3s ease;*/
 
   border-radius: var(--round-radius);
 
