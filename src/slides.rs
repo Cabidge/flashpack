@@ -60,7 +60,7 @@ impl<'a> Iterator for ThematicBreaks<'a> {
 
             // if we pass all of the previous checks, we must be on a thematic break
             break_size = span_size;
-            has_next = true;
+            has_next = !span.ending_str().is_empty();
             break;
         }
 
