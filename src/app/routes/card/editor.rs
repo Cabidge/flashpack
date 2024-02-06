@@ -185,34 +185,22 @@ pub fn SectionsEditor(
         }
     };
 
-    let add_after = move |id| {
-        if let Some(id) = sections.try_update(|sections| sections.insert_after(id, String::new())) {
+    let handle_event = move |id, event| {
+        let focus_id = match event {
+            EditorEvent::Add => {
+                sections.try_update(|sections| sections.insert_after(id, String::new()))
+            }
+            EditorEvent::Delete => sections.try_update(|sections| sections.remove(id)),
+            EditorEvent::Split => sections.try_update(|sections| sections.split(id)),
+            EditorEvent::Nudge(dir) => {
+                sections.update(|sections| sections.nudge(id, dir));
+                Some(id)
+            }
+        };
+
+        if let Some(id) = focus_id {
             set_force_focus.set(id);
         }
-    };
-
-    let delete = move |id| {
-        if let Some(id) = sections.try_update(|sections| sections.remove(id)) {
-            set_force_focus.set(id);
-        }
-    };
-
-    let split = move |id| {
-        if let Some(id) = sections.try_update(|sections| sections.split(id)) {
-            set_force_focus.set(id);
-        }
-    };
-
-    let nudge = move |id, dir| {
-        sections.update(|sections| sections.nudge(id, dir));
-        set_force_focus.set(id);
-    };
-
-    let handle_event = move |id, event| match event {
-        EditorEvent::Add => add_after(id),
-        EditorEvent::Delete => delete(id),
-        EditorEvent::Split => split(id),
-        EditorEvent::Nudge(dir) => nudge(id, dir),
     };
 
     let on_save_click = move |_| {
