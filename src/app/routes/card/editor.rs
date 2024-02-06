@@ -18,6 +18,14 @@ enum Dir {
     Down,
 }
 
+#[derive(Clone, Copy)]
+enum EditorEvent {
+    Add,
+    Delete,
+    Split,
+    Nudge(Dir),
+}
+
 impl RwSection {
     fn dispose(self) {
         self.value.dispose();
@@ -200,6 +208,13 @@ pub fn SectionsEditor(
         set_force_focus.set(id);
     };
 
+    let handle_event = move |id, event| match event {
+        EditorEvent::Add => add_after(id),
+        EditorEvent::Delete => delete(id),
+        EditorEvent::Split => split(id),
+        EditorEvent::Nudge(dir) => nudge(id, dir),
+    };
+
     let on_save_click = move |_| {
         let formatted = sections.with(|sections| {
             let mut formatted = String::new();
@@ -233,10 +248,7 @@ pub fn SectionsEditor(
                 <Editor
                     contents={section.value}
                     is_force_focused=move || is_focused(section.id)
-                    on_add=move |_| add_after(section.id)
-                    on_delete=move |_| delete(section.id)
-                    on_split=move |_| split(section.id)
-                    on_nudge=move |dir| nudge(section.id, dir)
+                    on_event=move |event| handle_event(section.id, event)
                 />
             </For>
             <button on:click=move |_| add_to_end()>
@@ -258,10 +270,7 @@ pub fn SectionsEditor(
 fn Editor(
     contents: RwSignal<String>,
     #[prop(into)] is_force_focused: Signal<bool>,
-    #[prop(into)] on_add: Callback<()>,
-    #[prop(into)] on_delete: Callback<()>,
-    #[prop(into)] on_split: Callback<()>,
-    #[prop(into)] on_nudge: Callback<Dir>,
+    #[prop(into)] on_event: Callback<EditorEvent>,
 ) -> impl IntoView {
     let on_input = move |ev| {
         let new_value = event_target_value(&ev);
@@ -270,7 +279,7 @@ fn Editor(
         batch(move || {
             contents.set(new_value);
             if contents.with(|content| can_split(content)) {
-                on_split.call(());
+                on_event.call(EditorEvent::Split);
             }
         });
     };
@@ -280,11 +289,11 @@ fn Editor(
             // if backspace is pressed on an already empty editor
             ("Backspace", _, _) if contents.with(String::is_empty) => {
                 ev.prevent_default();
-                on_delete.call(());
+                on_event.call(EditorEvent::Delete);
             }
-            ("KeyN", true, _) => on_add.call(()),
-            ("ArrowUp", _, true) => on_nudge.call(Dir::Up),
-            ("ArrowDown", _, true) => on_nudge.call(Dir::Down),
+            ("KeyN", true, _) => on_event.call(EditorEvent::Add),
+            ("ArrowUp", _, true) => on_event.call(EditorEvent::Nudge(Dir::Up)),
+            ("ArrowDown", _, true) => on_event.call(EditorEvent::Nudge(Dir::Down)),
             _ => (),
         }
     };
